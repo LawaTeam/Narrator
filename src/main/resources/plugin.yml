@@ -1,0 +1,4 @@
+name: Narrator
+version: '${project.version}'
+main: me.sakuratao.narrator.Narrator
+api-version: '1.19'
