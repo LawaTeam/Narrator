@@ -1,0 +1,4 @@
+name: Narrator
+version: '${project.version}'
+main: me.sakuratao.narrator.bungee.NarratorBungee
+author: SakuraTao

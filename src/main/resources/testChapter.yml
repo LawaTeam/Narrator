@@ -1,0 +1,72 @@
+chapterInfo:
+    name: "TEST"
+    author: "SakuraTao"
+    version: 1.0.0
+    ordinal: 1 # This determines the sequence of the story
+
+chapterTasks:
+    Task1:
+        name: "Task1"
+        content:
+            # T/TITLE
+            # --Feature:
+            #     send a title to player
+            # --Form: T/TITLE:in:keep:out:TEXT
+            - "T:3:5:3:This is a title"
+            # M/MESSAGE
+            # --Feature:
+            #     send a message to player's chat
+            #     TEXT supported ChatColor
+            # --Form: M/MESSAGE:TEXT
+            - "M:This is a test message"
+            # AB/ACTIONBAR
+            # --Feature:
+            #     send a message to player's actionbar
+            #     Time units is ms
+            #     you can type 1000 or 1*1000 for 1s
+            #     TEXT supported ChatColor
+            # --Form: AB/ACTIONBAR:isPrint:in:keep:out:TEXT
+            - "AB:true:200:2000:200:This is a test message"
+            # D/DELAY
+            # --Feature:
+            #     delay execute next content
+            #     Time units is ms
+            #     you can type 1000 or 1*1000 for 1s
+            # --Form: D/DELAY:keep
+            - "D:200"
+            - "M:This is message will send after 200ms"
+            # C/CONDITION
+            # --Feature:
+            #     need player finish some condition then can execute next content
+            # --Form:
+            #       a: C/CONDITION:CONDITION1
+            #       b: C/CONDITION:CONDITION1|CONDITION2
+            #       c: C/CONDITION:CONDITION1||CONDITION2
+            #       d: C/CONDITION:CONDITION1&CONDITION2
+            #       e: C/CONDITION:CONDITION1&&CONDITION2
+            #
+            #   CONDITION can be:
+            #       NPC - touch NPC
+            #       MOVE - appoint move to any location
+            #       INTERACT - touch something
+            #       KILL - need to kill appoint entity
+            #
+            #   | means if one of two conditions be false then execute
+            #   || means two conditions need to be false
+            #   & means if one of two conditions be true then execute
+            #   && means two conditions need to be true
+            - "C:NPC(NpcA)&&NPC(NpcB)"
+            - "M:This is message will send after touched NpcA and NpcB"
+            # TASK
+            # --Feature:
+            #     jump to another task
+            # --Form: TASK:name
+            - "TASK:Task2"
+    Task2:
+        name: "Task2"
+        content:
+            # JC/JUMPchapter
+            # --Feature:
+            #     jump to another chapter
+            # --Form: JC/JUMPchapter:name
+            - "JC:testChapter2"

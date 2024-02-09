@@ -1,4 +1,5 @@
 name: Narrator
 version: '${project.version}'
-main: me.sakuratao.narrator.Narrator
+main: me.sakuratao.narrator.spigot.NarratorSpigot
+author: SakuraTao
 api-version: '1.19'
