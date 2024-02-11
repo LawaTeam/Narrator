@@ -25,13 +25,10 @@ public class TaskHandler {
         for (Map<ChapterData,  YamlConfiguration> chapterDataMap : handlerManager.getChapterHandler().getChapters().values()) {
             for (YamlConfiguration contentConfig : chapterDataMap.values()) {
                 for (String task : Objects.requireNonNull(contentConfig.getConfigurationSection("chapterTasks")).getKeys(false)) {
-
                     TaskData taskData = new TaskData();
-
                     taskData.setName(contentConfig.getString("chapterTasks." + task + ".name"));
                     taskData.setOrdinal(contentConfig.getInt("chapterTasks." + task + ".ordinal"));
                     taskData.setContent(contentConfig.getStringList("chapterTasks." + task + ".content"));
-
                 }
             }
         }

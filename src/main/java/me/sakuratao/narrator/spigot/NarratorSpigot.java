@@ -1,28 +1,33 @@
 package me.sakuratao.narrator.spigot;
 
+import lombok.Getter;
 import me.sakuratao.narrator.common.Narrator;
 import org.bukkit.plugin.java.JavaPlugin;
-import top.jingwenmc.spigotpie.bungee.SpigotPieBungee;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
+import top.jingwenmc.spigotpie.common.instance.Platform;
 import top.jingwenmc.spigotpie.common.instance.Wire;
-import top.jingwenmc.spigotpie.common.lang.PieLang;
 import top.jingwenmc.spigotpie.spigot.SpigotPieSpigot;
 
-@PieComponent
+@PieComponent(platform = Platform.SPIGOT)
 public class NarratorSpigot extends JavaPlugin {
 
     @Wire
     private Narrator narrator;
 
+    @Getter
+    private static JavaPlugin pluginInstance;
+
     @Override
     public void onEnable() {
         this.getLogger().info("Injecting SpigotPie...");
+        pluginInstance = this;
         SpigotPieSpigot.inject(this,"META-INF", "org", "com", "dev", "net", "org");
-        narrator.init(this, null);
+        narrator.init(true, getLogger(), getDataFolder());
     }
 
     @Override
     public void onDisable() {
 
     }
+
 }

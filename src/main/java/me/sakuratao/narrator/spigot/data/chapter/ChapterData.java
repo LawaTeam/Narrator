@@ -17,7 +17,7 @@ public class ChapterData {
 
     private String name;
     private String author;
-    private String version;
+    private double version;
     private int ordinal;
 
     private List<TaskData> tasks;

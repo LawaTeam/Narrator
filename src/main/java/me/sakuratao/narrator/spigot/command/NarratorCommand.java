@@ -36,6 +36,7 @@ public class NarratorCommand {
 
         CommandSender sender = item.getSender();
         String[] args = item.getArgs();
+        narrator.getHandlerManager().getChapterHandler().load(true);
 
     }
 
