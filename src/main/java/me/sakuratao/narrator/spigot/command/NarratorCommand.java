@@ -9,6 +9,8 @@ import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Platform;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
+import java.util.logging.Level;
+
 @PieComponent(platform = Platform.SPIGOT)
 public class NarratorCommand {
 
@@ -36,7 +38,14 @@ public class NarratorCommand {
 
         CommandSender sender = item.getSender();
         String[] args = item.getArgs();
-        narrator.getHandlerManager().getChapterHandler().load(true);
+        if (args.length != 0) {
+            if (args[0].equalsIgnoreCase("force")) {
+                narrator.getLogger().log(Level.WARNING, "Confirm execute force reloading...");
+                narrator.getHandlerManager().getChapterHandler().load(true, true);
+                return;
+            }
+        }
+        narrator.getHandlerManager().getChapterHandler().load(true, false);
 
     }
 

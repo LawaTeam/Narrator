@@ -1,18 +1,19 @@
 chapterInfo:
-    name: "TEST"
+    name: "ChapterExample"
     author: "SakuraTao"
-    version: 1.0.0
+    version: 1.0
     ordinal: 1 # This determines the sequence of the story
 
 chapterTasks:
     Task1:
         name: "Task1"
+        ordinal: 1
         content:
             # T/TITLE
             # --Feature:
             #     send a title to player
-            # --Form: T/TITLE:in:keep:out:TEXT
-            - "T:3:5:3:This is a title"
+            # --Form: T/TITLE:in:keep:out:TEXT:SUBTEXT
+            - "T:3:5:3:This is a title:This is a subtitle"
             # M/MESSAGE
             # --Feature:
             #     send a message to player's chat
@@ -25,8 +26,10 @@ chapterTasks:
             #     Time units is ms
             #     you can type 1000 or 1*1000 for 1s
             #     TEXT supported ChatColor
-            # --Form: AB/ACTIONBAR:isPrint:in:keep:out:TEXT
-            - "AB:true:200:2000:200:This is a test message"
+            # --Form: AB/ACTIONBAR:isPrint:in:keep:TEXT
+            #         AB/ACTIONBAR:true:in:keep:TEXT
+            #         AB/ACTIONBAR:false:TEXT
+            - "AB:true:200:2000:This is a test message"
             # D/DELAY
             # --Feature:
             #     delay execute next content
@@ -57,6 +60,11 @@ chapterTasks:
             #   && means two conditions need to be true
             - "C:NPC(NpcA)&&NPC(NpcB)"
             - "M:This is message will send after touched NpcA and NpcB"
+            # COMMAND
+            # --Feature:
+            #     execute a command
+            # --Form: COMMAND:TEXT
+            - "COMMAND:give SakuraTao diamond"
             # TASK
             # --Feature:
             #     jump to another task
@@ -64,9 +72,10 @@ chapterTasks:
             - "TASK:Task2"
     Task2:
         name: "Task2"
+        ordinal: 2
         content:
-            # JC/JUMPchapter
+            # JC/JUMPChapter
             # --Feature:
             #     jump to another chapter
-            # --Form: JC/JUMPchapter:name
-            - "JC:testChapter2"
+            # --Form: JC/JUMPChapter:name
+            - "JC:ChapterExample2"

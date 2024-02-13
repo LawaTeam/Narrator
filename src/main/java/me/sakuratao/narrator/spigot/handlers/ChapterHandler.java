@@ -3,6 +3,7 @@ package me.sakuratao.narrator.spigot.handlers;
 import lombok.Getter;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.common.handlers.HandlerManager;
+import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.yaml.snakeyaml.Yaml;
@@ -10,11 +11,14 @@ import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 @PieComponent
 public class ChapterHandler {
@@ -23,16 +27,29 @@ public class ChapterHandler {
     private Narrator narrator;
 
     @Getter
+    private List<Map<ChapterData, YamlConfiguration>> sortedChapters;
+    @Getter
     private final ConcurrentHashMap<String, Map<ChapterData, YamlConfiguration>> chapters = new ConcurrentHashMap<>();
 
-    public void load(boolean reload) {
+
+    public void load(boolean reload, boolean force) {
 
         File path = new File(narrator.getWorkFolder().getPath() + "/chapters");
 
         if (!path.exists()) {
             path.mkdirs();
+
+            try {
+                InputStreamReader inputStreamReader = new InputStreamReader(NarratorSpigot.getPluginInstance().getResource("ChapterExample.yml"));
+                YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(inputStreamReader);
+                yamlConfiguration.save(new File(path.getPath() + "/ChapterExample.yml"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             narrator.getLogger().log(Level.WARNING, "Chapter folder created");
-            narrator.getLogger().log(Level.WARNING, "Please put your chapter files in the folder and use /nr to reload");
+            narrator.getLogger().log(Level.WARNING, "We put an example chapter in there, please edit it as your first chapter!");
+            narrator.getLogger().log(Level.WARNING, "Or put already edited chapter files in the folder and use /nr to reload");
             return;
         }
 
@@ -47,7 +64,7 @@ public class ChapterHandler {
                             chapter.getString("chapterInfo.ordinal") == null
             ) {
                 narrator.getLogger().log(Level.SEVERE, "Please check your chapter file " + chapterFile.getName());
-                narrator.getLogger().log(Level.SEVERE, "These options can't be null, the Version must be double and the Ordinal must be int");
+                narrator.getLogger().log(Level.SEVERE, "Check your options in chapterInfo about Name, Author, Version and Ordinal, they can't be null.");
                 return;
             }
 
@@ -60,18 +77,19 @@ public class ChapterHandler {
                     double version = Double.parseDouble(Objects.requireNonNull(chapter.getString("chapterInfo.version")));
                     int ordinal = Integer.parseInt(Objects.requireNonNull(chapter.getString("chapterInfo.ordinal")));
 
-                    if (chapters.containsKey(name)) {
+                    if (chapters.containsKey(name) && !force) {
 
                         ChapterData sameChapter = chapters.get(name).keySet().iterator().next();
 
                         if (version <= sameChapter.getVersion()){
                             narrator.getLogger().log(Level.SEVERE, "There is already a chapter with the name " + name + ", and it is higher version");
                             narrator.getLogger().log(Level.SEVERE, "We won't load the lower version");
+                            narrator.getLogger().log(Level.SEVERE, "If you want to reload this chapter, please use /nr force");
                             narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
                             narrator.getLogger().log(Level.SEVERE, "        Name: " + name);
                             narrator.getLogger().log(Level.SEVERE, "        Higher Version: " + sameChapter.getVersion());
                             narrator.getLogger().log(Level.SEVERE, "        Older Version: " + version);
-                            return;
+                            continue;
                         } else {
                             narrator.getLogger().log(Level.SEVERE, "There is already a chapter with the name " + name + ", and it is lower version");
                             narrator.getLogger().log(Level.SEVERE, "We will load the higher version");
@@ -103,18 +121,34 @@ public class ChapterHandler {
                     narrator.getLogger().log(Level.SEVERE, "        sameName: " + chapter.getString("chapterInfo.name"));
                     narrator.getLogger().log(Level.SEVERE, "        Ordinal: " + chapter.getString("chapterInfo.ordinal") + " | Version: " + chapter.getString("chapterInfo.version"));
                     narrator.getLogger().log(Level.SEVERE, "        Ordinal: " + sameChapter.getOrdinal() + " | Version: " + sameChapter.getVersion());
+                    narrator.getLogger().log(Level.SEVERE, "Load stopped!");
                     return;
-
                 }
 
             } catch (NumberFormatException e){
                 narrator.getLogger().log(Level.SEVERE, "Please check your chapter file " + chapterFile.getName());
                 narrator.getLogger().log(Level.SEVERE, "The Version must be double and the Ordinal must be int");
+                narrator.getLogger().log(Level.SEVERE, "Load stopped!");
+                return;
             }
 
         }
 
+        sortedChapters = chapters.values().stream()
+                .sorted(Comparator.comparingInt((Map<ChapterData, YamlConfiguration> chapter) -> chapter.keySet().stream().iterator().next().getOrdinal()))
+                .collect(Collectors.toList());
 
+        narrator.getLogger().info("Chapter information being printing out...");
+
+        for (Map<ChapterData, YamlConfiguration> sort : sortedChapters) {
+            ChapterData data = sort.keySet().iterator().next();
+            narrator.getLogger().info("Chapter: " + data.getName() +
+                    " | Ordinal: " + data.getOrdinal() +
+                    " | Version: " + data.getVersion());
+        }
+
+        narrator.getLogger().info("All chapters loaded!");
+        narrator.getLogger().info("If you were testing your project, please check the information above carefully");
     }
 
 }

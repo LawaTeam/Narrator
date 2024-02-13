@@ -13,12 +13,12 @@ import top.jingwenmc.spigotpie.common.instance.Wire;
 public class HandlerManager {
 
     @Wire
-    ChapterHandler chapterHandler;
+    private ChapterHandler chapterHandler;
     @Wire
-    ConditionHandler conditionHandler;
+    private ConditionHandler conditionHandler;
     @Wire
-    ContentHandler contentHandler;
+    private ContentHandler contentHandler;
     @Wire
-    TaskHandler taskHandler;
+    private TaskHandler taskHandler;
 
 }

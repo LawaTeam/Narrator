@@ -60,7 +60,7 @@ public class Narrator {
         logger.info("                                              ");
         logger.info("Platform: " + (isSpigot ? "Spigot" : "Bungee") + " | " + "Ver: " + version);
 
-        handlerManager.getChapterHandler().load(false);
+        handlerManager.getChapterHandler().load(false, false);
         handlerManager.getTaskHandler().load();
 
 
