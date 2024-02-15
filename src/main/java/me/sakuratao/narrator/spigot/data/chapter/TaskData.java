@@ -1,18 +1,15 @@
 package me.sakuratao.narrator.spigot.data.chapter;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class TaskData {
 
     private String name;
-    private int ordinal;
-    private List<String> content;
+    private int ordinal = 0;
+    private List<String> content = new ArrayList<>();
 
 }

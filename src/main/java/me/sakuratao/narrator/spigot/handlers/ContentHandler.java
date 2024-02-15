@@ -1,7 +1,7 @@
 package me.sakuratao.narrator.spigot.handlers;
 
 import me.sakuratao.narrator.common.Narrator;
-import me.sakuratao.narrator.common.utils.CCUtil;
+import me.sakuratao.narrator.spigot.utils.CCUtil;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -25,6 +24,11 @@ public class ContentHandler {
 
         List<String> type = Arrays.asList(content.split(":"));
 
+        /*
+         * 这里会解析 content 的内容
+         * type.get(0) 即是所对应的功能
+         * 其余的则是所对应功能的参数，详细请翻阅 ChapterExample.yml
+         */
         switch (type.get(0)) {
             case "T":
             case "TITLE":{
@@ -47,9 +51,9 @@ public class ContentHandler {
                     return true;
                 }
 
-                /**
-                 * 这里会对 text 处理成一个打字机的效果
-                 * text将会在 delay 限定的时间内完成逐字打印
+                /*
+                  这里会对 text 处理成一个打字机的效果
+                  text将会在 delay 限定的时间内完成逐字打印
                  */
                 String text = type.get(4);
                 long delay = Long.parseLong(type.get(2));
@@ -112,11 +116,16 @@ public class ContentHandler {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), type.get(1));
                 return true;
             }
-            case "TASK":{
+            case "JT":
+            case "JUMPTASK":{
                 // TODO:      # TASK
                 //            # --Feature:
                 //            #     jump to another task
                 //            # --Form: TASK:name
+                return true;
+            }
+            case "JC":
+            case "JUMPCHAPTER":{
                 return true;
             }
             default:{

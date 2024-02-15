@@ -2,21 +2,17 @@ package me.sakuratao.narrator.spigot.handlers;
 
 import lombok.Getter;
 import me.sakuratao.narrator.common.Narrator;
-import me.sakuratao.narrator.common.handlers.HandlerManager;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.yaml.snakeyaml.Yaml;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -81,7 +77,10 @@ public class ChapterHandler {
 
                         ChapterData sameChapter = chapters.get(name).keySet().iterator().next();
 
-                        if (version <= sameChapter.getVersion()){
+                        /*
+                            版本冲突
+                         */
+                        if (version < sameChapter.getVersion()){
                             narrator.getLogger().log(Level.SEVERE, "There is already a chapter with the name " + name + ", and it is higher version");
                             narrator.getLogger().log(Level.SEVERE, "We won't load the lower version");
                             narrator.getLogger().log(Level.SEVERE, "If you want to reload this chapter, please use /nr force");
@@ -90,16 +89,30 @@ public class ChapterHandler {
                             narrator.getLogger().log(Level.SEVERE, "        Higher Version: " + sameChapter.getVersion());
                             narrator.getLogger().log(Level.SEVERE, "        Older Version: " + version);
                             continue;
-                        } else {
-                            narrator.getLogger().log(Level.SEVERE, "There is already a chapter with the name " + name + ", and it is lower version");
-                            narrator.getLogger().log(Level.SEVERE, "We will load the higher version");
-                            narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
-                            narrator.getLogger().log(Level.SEVERE, "        Name: " + name);
-                            narrator.getLogger().log(Level.SEVERE, "        Higher Version: " + version);
-                            narrator.getLogger().log(Level.SEVERE, "        Older Version: " + sameChapter.getVersion());
+                        } else if (version > sameChapter.getVersion()){
+                            narrator.getLogger().log(Level.WARNING, "There is already a chapter with the name " + name + ", and it is lower version");
+                            narrator.getLogger().log(Level.WARNING, "We will load the higher version");
+                            narrator.getLogger().log(Level.WARNING, "Here are some information may help you:");
+                            narrator.getLogger().log(Level.WARNING, "        Name: " + name);
+                            narrator.getLogger().log(Level.WARNING, "        Higher Version: " + version);
+                            narrator.getLogger().log(Level.WARNING, "        Older Version: " + sameChapter.getVersion());
                         }
 
                     }
+
+                    /*
+                        ordinal 索引冲突
+                     */
+                    chapters.values().forEach(map -> {
+                        ChapterData data = map.keySet().iterator().next();
+                        if (data.getOrdinal() == ordinal && !data.getName().equalsIgnoreCase(name)){
+                            narrator.getLogger().log(Level.SEVERE, "There is an ordinal conflict about chapters");
+                            narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
+                            narrator.getLogger().log(Level.SEVERE, "        Name: " + name);
+                            narrator.getLogger().log(Level.SEVERE, "        Name: " + data.getName());
+                            narrator.getLogger().log(Level.SEVERE, "        Ordinal: " + ordinal);
+                        }
+                    });
 
                     ChapterData chapterData = new ChapterData();
                     chapterData.setName(name);
@@ -115,7 +128,7 @@ public class ChapterHandler {
 
                     ChapterData sameChapter = chapters.get(chapter.getString("chapterInfo.name")).keySet().iterator().next();
 
-                    narrator.getLogger().log(Level.SEVERE, "There have same name!");
+                    narrator.getLogger().log(Level.SEVERE, "There have same chapter!");
                     narrator.getLogger().log(Level.SEVERE, "Please check your chapter folder all files with chapterInfo name");
                     narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
                     narrator.getLogger().log(Level.SEVERE, "        sameName: " + chapter.getString("chapterInfo.name"));
@@ -138,17 +151,10 @@ public class ChapterHandler {
                 .sorted(Comparator.comparingInt((Map<ChapterData, YamlConfiguration> chapter) -> chapter.keySet().stream().iterator().next().getOrdinal()))
                 .collect(Collectors.toList());
 
-        narrator.getLogger().info("Chapter information being printing out...");
+    }
 
-        for (Map<ChapterData, YamlConfiguration> sort : sortedChapters) {
-            ChapterData data = sort.keySet().iterator().next();
-            narrator.getLogger().info("Chapter: " + data.getName() +
-                    " | Ordinal: " + data.getOrdinal() +
-                    " | Version: " + data.getVersion());
-        }
-
-        narrator.getLogger().info("All chapters loaded!");
-        narrator.getLogger().info("If you were testing your project, please check the information above carefully");
+    public ChapterData jump(int ordinal){
+        return null;
     }
 
 }

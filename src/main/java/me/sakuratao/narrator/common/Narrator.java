@@ -1,18 +1,13 @@
 package me.sakuratao.narrator.common;
 
 import lombok.Getter;
-import me.sakuratao.narrator.common.handlers.HandlerManager;
+import me.sakuratao.narrator.spigot.handlers.HandlerManager;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
+import me.sakuratao.narrator.spigot.manager.ManagerHandler;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.md_5.bungee.api.plugin.Plugin;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-import top.jingwenmc.spigotpie.bungee.SpigotPieBungee;
-import top.jingwenmc.spigotpie.common.instance.ObjectManager;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
-import top.jingwenmc.spigotpie.spigot.SpigotPieSpigot;
 
 import java.io.File;
 import java.util.logging.Logger;
@@ -33,6 +28,8 @@ public class Narrator {
 
     @Wire
     private HandlerManager handlerManager;
+    @Wire
+    private ManagerHandler managerHandler;
     @Wire
     private CacheData cacheData;
 
@@ -60,15 +57,17 @@ public class Narrator {
         logger.info("                                              ");
         logger.info("Platform: " + (isSpigot ? "Spigot" : "Bungee") + " | " + "Ver: " + version);
 
-        handlerManager.getChapterHandler().load(false, false);
-        handlerManager.getTaskHandler().load();
-
-
+        reloadChapter(false, false);
 
     }
 
     public void close() {
+    }
 
+    public void reloadChapter(boolean reload, boolean force){
+        handlerManager.getChapterHandler().load(reload, force);
+        handlerManager.getTaskHandler().load();
+        getLogger().info("All chapters loaded!");
     }
 
 }

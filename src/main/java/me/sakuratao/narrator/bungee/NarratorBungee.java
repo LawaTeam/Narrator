@@ -20,7 +20,7 @@ public class NarratorBungee extends Plugin {
     @Override
     public void onEnable() {
         this.getLogger().info("Injecting SpigotPie...");
-        SpigotPieBungee.inject(this,"META-INF", "org", "com", "dev", "net", "org");
+        SpigotPieBungee.inject(this,"META-INF", "org", "com", "dev", "net", "org","me.sakuratao.narrator.spigot");
         narrator.init(false, getLogger(), getDataFolder());
     }
 

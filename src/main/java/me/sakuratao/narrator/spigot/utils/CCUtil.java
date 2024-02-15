@@ -1,4 +1,4 @@
-package me.sakuratao.narrator.common.utils;
+package me.sakuratao.narrator.spigot.utils;
 
 public class CCUtil {
 

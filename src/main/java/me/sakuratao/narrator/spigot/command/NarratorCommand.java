@@ -16,7 +16,6 @@ public class NarratorCommand {
 
     @Wire
     private Narrator narrator;
-
     @PieCommand(value = "narrator help", aliases = {"nh"}, permission = "narrator.command.narrator", bungeeCord = false, spigot = true)
     public void onHelp(CommandItem item){
 
@@ -37,15 +36,14 @@ public class NarratorCommand {
     public void onReload(CommandItem item){
 
         CommandSender sender = item.getSender();
-        String[] args = item.getArgs();
-        if (args.length != 0) {
-            if (args[0].equalsIgnoreCase("force")) {
+        if (!item.isSingle()) {
+            if (item.getArgs()[0].equalsIgnoreCase("force")) {
                 narrator.getLogger().log(Level.WARNING, "Confirm execute force reloading...");
-                narrator.getHandlerManager().getChapterHandler().load(true, true);
+                narrator.reloadChapter(true, true);
                 return;
             }
         }
-        narrator.getHandlerManager().getChapterHandler().load(true, false);
+        narrator.reloadChapter(true, false);
 
     }
 

@@ -1,4 +1,4 @@
-package me.sakuratao.narrator.common.handlers;
+package me.sakuratao.narrator.spigot.handlers;
 
 import lombok.Getter;
 import me.sakuratao.narrator.spigot.handlers.ChapterHandler;

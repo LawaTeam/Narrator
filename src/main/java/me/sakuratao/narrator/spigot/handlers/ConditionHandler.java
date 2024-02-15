@@ -7,8 +7,5 @@ import top.jingwenmc.spigotpie.common.instance.PieComponent;
 public class ConditionHandler {
 
 
-    public void load(){
-
-    }
 
 }

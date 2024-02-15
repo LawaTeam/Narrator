@@ -21,7 +21,7 @@ public class NarratorSpigot extends JavaPlugin {
     public void onEnable() {
         this.getLogger().info("Injecting SpigotPie...");
         pluginInstance = this;
-        SpigotPieSpigot.inject(this,"META-INF", "org", "com", "dev", "net", "org");
+        SpigotPieSpigot.inject(this,"META-INF", "org", "com", "dev", "net", "org","me.sakuratao.narrator.bungee");
         narrator.init(true, getLogger(), getDataFolder());
     }
 
