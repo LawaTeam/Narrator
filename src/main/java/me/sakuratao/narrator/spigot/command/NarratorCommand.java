@@ -1,6 +1,10 @@
 package me.sakuratao.narrator.spigot.command;
 
 import me.sakuratao.narrator.common.Narrator;
+import me.sakuratao.narrator.spigot.data.Player.PlayerData;
+import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.command.CommandItem;
 import top.jingwenmc.spigotpie.common.command.CommandSender;
 import top.jingwenmc.spigotpie.common.command.NotRequiredCommandParam;
@@ -37,15 +41,36 @@ public class NarratorCommand {
 
         CommandSender sender = item.getSender();
         if (!item.isSingle()) {
-            if (item.getArgs()[0].equalsIgnoreCase("force")) {
-                narrator.getLogger().log(Level.WARNING, "Confirm execute force reloading...");
-                narrator.reloadChapter(true, true);
-                return;
+            switch (item.getArgs()[0]){
+                case "force": {
+                    narrator.getLogger().log(Level.WARNING, "Confirm execute force reloading...");
+                    narrator.reloadChapter(true, true);
+                    return;
+                }
             }
         }
         narrator.reloadChapter(true, false);
 
     }
 
+    @PieCommand(value = "narrator test", aliases = {"nt"}, permission = "narrator.command.admin", bungeeCord = false, spigot = true)
+    public void onTest(CommandItem item){
+
+        CommandSender sender = item.getSender();
+        String[] args = item.getArgs();
+        if (!item.isSingle()) {
+
+            String chapterOrdinal = args[1];
+            String taskOrdinal = args[2];
+
+            PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(Bukkit.getPlayer(sender.getName()));
+            playerData.setPlayingChapterOrdinal(Integer.parseInt(chapterOrdinal));
+            playerData.setPlayingTaskOrdinal(Integer.parseInt(taskOrdinal));
+
+            narrator.getManagerHandler().getTaskManager().createTask(playerData);
+
+        }
+
+    }
 
 }

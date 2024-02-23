@@ -12,6 +12,7 @@
 #   T/TITLE:
 #       --Feature:
 #           send a title to player
+#           in, keep, out must be int, they are ticks
 #       --Form: T/TITLE:in:keep:out:TEXT:SUBTEXT
 #
 #   M/MESSAGE:
@@ -72,7 +73,14 @@
 #       --Feature:
 #           jump to another chapter
 #       --Form: JC/JUMPCHAPTER:Name/Ordinal
-
+#
+#
+#   AB_ANSWER/ACTIONBAR_ANSWER:
+#       --Feature:
+#           let player swing right arm to choose and type drop key(Q) reply message in actionbar
+#       --Form: AB_ANSWER/ACTIONBAR_ANSWER:MESSAGE:MESSAGE:...:MESSAGE
+#
+#
 # Here is an example how they use in yaml
 chapterInfo:
     name: "ChapterExample"
@@ -92,6 +100,7 @@ chapterTasks:
             - "M:This is message will send after 200ms"
             - "C:NPC(NpcA)&&NPC(NpcB)"
             - "M:This is message will send after touched NpcA and NpcB"
+            - "AB_ANSWER:选择绿宝石:选择钻石"
             - "COMMAND:give SakuraTao diamond"
             - "JT:Task2"
     Task2:

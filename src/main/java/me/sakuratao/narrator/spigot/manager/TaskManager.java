@@ -32,15 +32,25 @@ public class TaskManager {
      * @param data - PlayerData
      */
     public void createTask(@NotNull PlayerData data) {
+
+        ChapterData playingChapter = narrator.getHandlerManager().getChapterHandler().getSortedChapters().get(data.getPlayingChapterOrdinal()).keySet().iterator().next();
+        data.setPlayingChapter(playingChapter);
+        data.setPlayingTask(playingChapter.getTasks().get(data.getPlayingTaskOrdinal()));
+        data.setExecutingContent(data.getPlayingTask().getContent().get(data.getExecutingContentIndex()));
+
         tasks.put(
                 data.getPlayerName(),
                 Bukkit.getScheduler().runTaskTimerAsynchronously(NarratorSpigot.getPluginInstance(), ContentTask.builder()
                         .narrator(narrator)
                         .data(data)
                         .build(),
-                        0, 500
+                        0, 10
                 )
         );
+    }
+
+    public TaskData jump(int ordinal){
+        return null;
     }
 
 }

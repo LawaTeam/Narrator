@@ -20,11 +20,11 @@ public class PlayerManager {
     }
 
     public void add(PlayerData playerData){
-        playerDataMap.putIfAbsent(playerData.getPlayerName(), playerData);
+        playerDataMap.putIfAbsent(playerData.getPlayerName().toLowerCase(), playerData);
     }
 
     public void replace(PlayerData playerData){
-        playerDataMap.replace(playerData.getPlayerName(), playerData);
+        playerDataMap.replace(playerData.getPlayerName().toLowerCase(), playerData);
     }
 
     public void removeByPlayer(Player player) {

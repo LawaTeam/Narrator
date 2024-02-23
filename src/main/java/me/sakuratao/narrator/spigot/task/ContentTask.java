@@ -20,18 +20,22 @@ public class ContentTask implements Runnable{
     @Override
     public void run() {
 
+        if (!data.isNextContent()) return;
+
         if (narrator.getHandlerManager().getContentHandler().execute(
                 data.getPlayer(),
                 data.getPlayingChapter(),
                 data.getExecutingContent()
         )){
 
+            data.setNextContent(true);
             data.setExecutingContentIndex(data.getExecutingContentIndex() + 1);
 
             List<String> content = data.getPlayingChapter().getTasks().get(data.getPlayingTaskOrdinal()).getContent();
             data.setExecutingContent(content.get(data.getExecutingContentIndex()));
 
         }
+
     }
 
 }

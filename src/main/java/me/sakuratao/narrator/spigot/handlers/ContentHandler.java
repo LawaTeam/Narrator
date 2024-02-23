@@ -1,6 +1,8 @@
 package me.sakuratao.narrator.spigot.handlers;
 
 import me.sakuratao.narrator.common.Narrator;
+import me.sakuratao.narrator.spigot.data.Player.PlayerData;
+import me.sakuratao.narrator.spigot.data.cache.CacheData;
 import me.sakuratao.narrator.spigot.utils.CCUtil;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import net.kyori.adventure.audience.Audience;
@@ -10,6 +12,7 @@ import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,10 +22,15 @@ public class ContentHandler {
 
     @Wire
     private Narrator narrator;
+    @Wire
+    private CacheData cacheData;
 
     public boolean execute(Player player, ChapterData chapterData, String content){
 
         List<String> type = Arrays.asList(content.split(":"));
+
+        PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(player);
+        playerData.setNextContent(false);
 
         /*
          * 这里会解析 content 的内容
@@ -56,11 +64,12 @@ public class ContentHandler {
                   text将会在 delay 限定的时间内完成逐字打印
                  */
                 String text = type.get(4);
-                long delay = Long.parseLong(type.get(2));
+                long delayTime = Long.parseLong(type.get(2));
                 for (int textLength = 0; textLength <= text.length(); textLength++){
-                    while ((System.currentTimeMillis() + delay/text.length() > System.currentTimeMillis())){
+                    while (delayTime > System.currentTimeMillis()){
                         // delay打印
                     }
+                    delayTime = System.currentTimeMillis() + Long.parseLong(type.get(2));
                     if (textLength % 2 == 0) {
                         audience.sendActionBar(Component.text(CCUtil.translate(text.substring(0, textLength) + "_")));
                     } else {
@@ -68,22 +77,68 @@ public class ContentHandler {
                     }
                 }
 
-                long time = 0;
-                long keep = Long.parseLong(type.get(3));
-                while ((System.currentTimeMillis() + keep) > System.currentTimeMillis()) {
-                    // 字幕停留
-                    time++;
-                    if (time >= 1000L) {
-                        time = 0;
-                        audience.sendActionBar(Component.text(CCUtil.translate(text)));
+                long time = System.currentTimeMillis();
+                long keep = System.currentTimeMillis() + Long.parseLong(type.get(3));
+                while (keep > System.currentTimeMillis()) {
+
+                    while (time >= System.currentTimeMillis()) {
+                        // 字幕停留
+                    }
+
+                    audience.sendActionBar(Component.text(CCUtil.translate(text)));
+                    time = System.currentTimeMillis();
+
+                }
+
+                return true;
+            }
+            case "AB_ANSWER":
+            case "ACTIONBAR_ANSWER": {
+
+                Audience audience = narrator.getAdventure().player(player);
+                List<String> messages = new ArrayList<>();
+
+                for (int i = 1; i < type.size(); i++) {
+                    messages.add(type.get(i));
+                }
+
+                cacheData.getContentIndex().put(player.getName().toLowerCase(), 0);
+                if (cacheData.getContentIndex().get(player.getName().toLowerCase()) > messages.size()){
+                    cacheData.getContentIndex().put(player.getName().toLowerCase(), 0);
+                }
+
+                StringBuilder message = new StringBuilder();
+                for (String m : messages) {
+                    if (cacheData.getContentIndex().get(player.getName().toLowerCase()) == messages.indexOf(m)) {
+                        message.append("&a&l").append(m);
+                    } else {
+                        message.append(m);
+                    }
+                    if (messages.indexOf(m) < messages.size()) {
+                        message.append(" &7| &r");
                     }
                 }
+
+                long time = System.currentTimeMillis() + 250L;
+                while (cacheData.getContentIndex().get(player.getName().toLowerCase()) == -1) {
+                    // 字幕停留
+                    if (System.currentTimeMillis() >= time) {
+                        time = System.currentTimeMillis() + 250L;
+                        audience.sendActionBar(Component.text(CCUtil.translate(message.toString())));
+                    }
+                }
+
+                playerData.setMessageOption(messages.get(cacheData.getContentIndex().get(player.getName().toLowerCase())));
+                player.sendMessage(playerData.getMessageOption());
+
+                cacheData.getContentIndex().remove(player.getName().toLowerCase());
 
                 return true;
             }
             case "D":
             case "DELAY":{
-                while ((System.currentTimeMillis() + Integer.parseInt(type.get(1))) > System.currentTimeMillis()) {
+                long delay = System.currentTimeMillis() + Integer.parseInt(type.get(1));
+                while (delay > System.currentTimeMillis()) {
                 }
                 return true;
             }
@@ -118,10 +173,7 @@ public class ContentHandler {
             }
             case "JT":
             case "JUMPTASK":{
-                // TODO:      # TASK
-                //            # --Feature:
-                //            #     jump to another task
-                //            # --Form: TASK:name
+                narrator.getManagerHandler().getTaskManager().jump(Integer.parseInt(type.get(1)));
                 return true;
             }
             case "JC":
@@ -129,7 +181,7 @@ public class ContentHandler {
                 return true;
             }
             default:{
-                return false;
+                return true;
             }
         }
 
