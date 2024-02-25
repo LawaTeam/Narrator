@@ -9,7 +9,7 @@ import java.util.List;
 public class TaskData {
 
     private String name;
-    private int ordinal = 0;
+    private int ordinal = 1;
     private List<String> content = new ArrayList<>();
 
 }

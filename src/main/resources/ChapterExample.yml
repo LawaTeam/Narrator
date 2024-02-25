@@ -13,40 +13,46 @@
 #       --Feature:
 #           send a title to player
 #           in, keep, out must be int, they are ticks
-#       --Form: T/TITLE:in:keep:out:TEXT:SUBTEXT
+#       --Form: T/TITLE|in|keep|out|TEXT|SUBTEXT
 #
 #   M/MESSAGE:
 #       --Feature:
 #           send a message to player's chat
 #           TEXT supported ChatColor
-#       --Form: M/MESSAGE:TEXT
+#       --Form: M/MESSAGE|TEXT
+#
+#   MC/MESSAGE_CLICK:
+#       --Feature:
+#           send a message to player's chat
+#           when they swing right arm then show next
+#           TEXT supported ChatColor
+#       --Form: MC/MESSAGE_CLICK|TEXT
 #
 #   AB/ACTIONBAR:
 #       --Feature:
 #           send a message to player's actionbar
 #           Time units is ms
-#           you can type 1000 or 1*1000 for 1s
 #           TEXT supported ChatColor
-#       --Form: AB/ACTIONBAR:isPrint:in:keep:TEXT
-#               AB/ACTIONBAR:true:in:keep:TEXT
-#               AB/ACTIONBAR:false:TEXT
+#       --Form: AB/ACTIONBAR|isPrint|in|keep|TEXT
+#               AB/ACTIONBAR|true|in|keep|TEXT
+#               AB/ACTIONBAR|false|TEXT
 #
 #   D/DELAY:
 #       --Feature:
-#           delay execute next content
-#           Time units is ms
+#           delay execute next contents=
+#           Time units is ticks (20ticks=1s)
 #           you can type 1000 or 1*1000 for 1s
-#       --Form: D/DELAY:keep
+#       --Form: D/DELAY|keep
 #
 #   C/CONDITION:
 #       --Feature:
 #           need player finish some condition then can execute next content
 #       --Form:
-#             a: C/CONDITION:CONDITION1
-#             b: C/CONDITION:CONDITION1|CONDITION2
-#             c: C/CONDITION:CONDITION1||CONDITION2
-#             d: C/CONDITION:CONDITION1&CONDITION2
-#             e: C/CONDITION:CONDITION1&&CONDITION2
+#             a: C/CONDITION|CONDITION1
+#             b: C/CONDITION|CONDITION1\CONDITION2
+#             c: C/CONDITION|CONDITION1\\CONDITION2
+#             d: C/CONDITION|CONDITION1&CONDITION2
+#             e: C/CONDITION|CONDITION1&&CONDITION2
 #
 #         CONDITION can be:
 #             NPC - touch NPC
@@ -54,31 +60,31 @@
 #             INTERACT - touch something
 #             KILL - need to kill appoint entity
 #
-#         | means if one of two conditions be false then execute
-#         || means two conditions need to be false
+#         \ means if one of two conditions be false then execute
+#         \\ means two conditions need to be false
 #         & means if one of two conditions be true then execute
 #         && means two conditions need to be true
 #
 #   COMMAND:
 #       --Feature:
 #           execute a command
-#       --Form: COMMAND:TEXT
+#       --Form: COMMAND|TEXT
 #
-#   JT/JUMPTASK:
+#   JT/JUMP_TASK:
 #       --Feature:
 #           jump to another task
-#       --Form: JT/JUMPTASK:Name/Ordinal
+#       --Form: JT/JUMP_TASK|taskOrdinal|contentIndex
 #
-#   JC/JUMPCHAPTER:
+#   JC/JUMP_CHAPTER:
 #       --Feature:
 #           jump to another chapter
-#       --Form: JC/JUMPCHAPTER:Name/Ordinal
+#       --Form: JC/JUMP_CHAPTER|chapterOrdinal|taskOrdinal|contentIndex
 #
 #
 #   AB_ANSWER/ACTIONBAR_ANSWER:
 #       --Feature:
-#           let player swing right arm to choose and type drop key(Q) reply message in actionbar
-#       --Form: AB_ANSWER/ACTIONBAR_ANSWER:MESSAGE:MESSAGE:...:MESSAGE
+#           更改物品栏进行选择，点击左键确认
+#       --Form: AB_ANSWER/ACTIONBAR_ANSWER|MESSAGE|MESSAGE|...|MESSAGE
 #
 #
 # Here is an example how they use in yaml
@@ -93,18 +99,18 @@ chapterTasks:
         name: "Task1"
         ordinal: 1
         content:
-            - "T:3:5:3:This is a title:This is a subtitle"
-            - "M:This is a test message"
-            - "AB:true:200:2000:This is a test message"
-            - "D:200"
-            - "M:This is message will send after 200ms"
-            - "C:NPC(NpcA)&&NPC(NpcB)"
-            - "M:This is message will send after touched NpcA and NpcB"
-            - "AB_ANSWER:选择绿宝石:选择钻石"
-            - "COMMAND:give SakuraTao diamond"
-            - "JT:Task2"
+            - "T|30|50|30|This is a title|This is a subtitle"
+            - "M|This is a test message"
+            - "AB|true|5|20|This is a test message"
+            - "D|200"
+            - "M|This is message will send after 200ms"
+            - "C|NPC(NpcA)&&NPC(NpcB)"
+            - "M|This is message will send after touched NpcA and NpcB"
+            - "AB_ANSWER|选择绿宝石|选择钻石"
+            - "COMMAND|give SakuraTao diamond"
+            - "JT|Task2"
     Task2:
         name: "Task2"
         ordinal: 2
         content:
-            - "JC:ChapterExample2"
+            - "JC|ChapterExample2"

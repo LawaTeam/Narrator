@@ -1,9 +1,12 @@
 package me.sakuratao.narrator.common;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import lombok.Getter;
 import me.sakuratao.narrator.spigot.handlers.HandlerManager;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
+import me.sakuratao.narrator.spigot.listener.packets.PacketsHandler;
 import me.sakuratao.narrator.spigot.manager.ManagerHandler;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
@@ -25,6 +28,9 @@ public class Narrator {
 
     @Getter
     private BukkitAudiences adventure;
+    @Getter
+    private ProtocolManager protocolManager;
+
 
     @Wire
     private HandlerManager handlerManager;
@@ -32,6 +38,8 @@ public class Narrator {
     private ManagerHandler managerHandler;
     @Wire
     private CacheData cacheData;
+    @Wire
+    private PacketsHandler packetsHandler;
 
     /**
      * 初始化
@@ -41,6 +49,8 @@ public class Narrator {
         // 判断 Spigot or Bungee
         if (isSpigot) {
             adventure = BukkitAudiences.create(NarratorSpigot.getPluginInstance());
+            protocolManager = ProtocolLibrary.getProtocolManager();
+            packetsHandler.register(protocolManager);
         } else {
             isBungee = true;
         }

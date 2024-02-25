@@ -3,6 +3,7 @@ package me.sakuratao.narrator.spigot.listener;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
+import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,26 +27,9 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
+
         narrator.getManagerHandler().getPlayerManager().create(e.getPlayer());
-    }
 
-    @EventHandler
-    public void onPlayerSwingToChoose(PlayerAnimationEvent e){
-
-        if (cacheData.getContentIndex().containsKey(e.getPlayer().getName().toLowerCase())) {
-            if (e.getAnimationType().equals(PlayerAnimationType.ARM_SWING)) {
-                cacheData.getContentIndex().replace(
-                        e.getPlayer().getName().toLowerCase(),
-                        cacheData.getContentIndex().get(e.getPlayer().getName().toLowerCase()) + 1
-                );
-            }
-        }
-
-    }
-
-    @EventHandler
-    public void onPlayerDropToConfirm(PlayerDropItemEvent e){
-        cacheData.getContentIndex().replace(e.getPlayer().getName().toLowerCase(), -1);
     }
 
 

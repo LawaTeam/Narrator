@@ -73,6 +73,13 @@ public class ChapterHandler {
                     double version = Double.parseDouble(Objects.requireNonNull(chapter.getString("chapterInfo.version")));
                     int ordinal = Integer.parseInt(Objects.requireNonNull(chapter.getString("chapterInfo.ordinal")));
 
+                    if (ordinal < 1) {
+                        narrator.getLogger().log(Level.SEVERE, "All ordinal must be over 1!");
+                        narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
+                        narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + name);
+                        return;
+                    }
+
                     if (chapters.containsKey(name) && !force) {
 
                         ChapterData sameChapter = chapters.get(name).keySet().iterator().next();

@@ -33,24 +33,35 @@ public class TaskManager {
      */
     public void createTask(@NotNull PlayerData data) {
 
-        ChapterData playingChapter = narrator.getHandlerManager().getChapterHandler().getSortedChapters().get(data.getPlayingChapterOrdinal()).keySet().iterator().next();
-        data.setPlayingChapter(playingChapter);
-        data.setPlayingTask(playingChapter.getTasks().get(data.getPlayingTaskOrdinal()));
-        data.setExecutingContent(data.getPlayingTask().getContent().get(data.getExecutingContentIndex()));
+        ChapterData playingChapter = narrator.getHandlerManager().getChapterHandler().getSortedChapters()
+                .stream()
+                .filter(k -> k.keySet().iterator().next().getOrdinal() == data.getPlayingChapterOrdinal()).iterator().next()
+                .keySet().iterator().next();
 
-        tasks.put(
-                data.getPlayerName(),
-                Bukkit.getScheduler().runTaskTimerAsynchronously(NarratorSpigot.getPluginInstance(), ContentTask.builder()
+        data.setPlayingChapter(playingChapter);
+        data.setPlayingTask(playingChapter.getTasks()
+                .stream()
+                .filter(taskData -> taskData.getOrdinal() == data.getPlayingTaskOrdinal()).iterator().next());
+
+        data.setExecutingContent(data.getPlayingTask().getContent().get(data.getExecutingContentIndex()-1));
+        data.setContentTask(ContentTask.builder()
                         .narrator(narrator)
                         .data(data)
-                        .build(),
+                        .build()
+        );
+
+        tasks.put(
+                data.getPlayerName().toLowerCase(),
+                Bukkit.getScheduler().runTaskTimerAsynchronously(NarratorSpigot.getPluginInstance(),
+                        data.getContentTask(),
                         0, 10
                 )
         );
     }
 
-    public TaskData jump(int ordinal){
-        return null;
+    public void finish(String playerName){
+        tasks.get(playerName).cancel();
+        tasks.remove(playerName);
     }
 
 }

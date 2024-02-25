@@ -1,6 +1,7 @@
 package me.sakuratao.narrator.spigot.handlers;
 
 import me.sakuratao.narrator.common.Narrator;
+import me.sakuratao.narrator.spigot.data.Player.PlayerData;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.data.chapter.TaskData;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -43,6 +44,14 @@ public class TaskHandler {
                         String name = contentConfig.getString("chapterTasks." + task + ".name");
                         int ordinal = Integer.parseInt(contentConfig.getString("chapterTasks." + task + ".ordinal")); // throw NumberFormatException
                         List<String> content = contentConfig.getStringList("chapterTasks." + task + ".content");
+
+                        if (ordinal < 1) {
+                            narrator.getLogger().log(Level.SEVERE, "All ordinal must be over 1!");
+                            narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
+                            narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + data.getName());
+                            narrator.getLogger().log(Level.SEVERE, "        Task Name: " + name);
+                            return;
+                        }
 
                         if (data.getTasks().stream().anyMatch(t -> {
 
@@ -95,8 +104,11 @@ public class TaskHandler {
         }
     }
 
-    public TaskData jump(int ordinal){
-        return null;
+    public void jump(PlayerData playerData, ChapterData chapterData, int taskOrdinal, int contentIndex){
+        playerData.setPlayingTaskOrdinal(taskOrdinal);
+        playerData.setExecutingContentIndex(contentIndex-2); // 此处 -2 是为了抵消 ContentTask 的+1, 能跑就行(
+        playerData.setPlayingTask(chapterData.getTasks().stream()
+                .filter(taskData -> taskData.getOrdinal() == playerData.getPlayingTaskOrdinal()).iterator().next());
     }
 
 }

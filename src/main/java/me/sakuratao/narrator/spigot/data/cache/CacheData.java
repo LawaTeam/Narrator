@@ -9,6 +9,4 @@ import java.util.concurrent.ConcurrentHashMap;
 @PieComponent
 public class CacheData {
 
-    private final ConcurrentHashMap<String, Integer> contentIndex = new ConcurrentHashMap<>();
-
 }
