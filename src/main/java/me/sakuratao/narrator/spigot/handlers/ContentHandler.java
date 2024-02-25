@@ -170,10 +170,17 @@ public class ContentHandler {
                 }
                 case "D":
                 case "DELAY": {
-                    long delay = System.currentTimeMillis() + Integer.parseInt(type.get(1));
-                    while (delay > System.currentTimeMillis()) {
+                    contentTask.setDelay(true);
+
+                    if (!contentTask.isDelaying()) {
+                        contentTask.setDelaying(true);
+                        long delay = Integer.parseInt(type.get(1));
+                        Bukkit.getScheduler().runTaskLater(NarratorSpigot.getPluginInstance(), () -> {
+                            contentTask.setDelay(false);
+                        }, delay);
                     }
-                    return true;
+
+                    return !contentTask.isDelay();
                 }
                 case "C":
                 case "CONDITION": {
@@ -236,7 +243,11 @@ public class ContentHandler {
                 }
             }
         } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
+            narrator.getLogger().log(Level.SEVERE, "Throw IndexOutOfBoundsException!");
+            narrator.getLogger().log(Level.SEVERE, "Please check your contents!");
+            narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
+            narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + chapterData.getName());
+            narrator.getLogger().log(Level.SEVERE, "        Content: " + content);
             return false;
         }
     }

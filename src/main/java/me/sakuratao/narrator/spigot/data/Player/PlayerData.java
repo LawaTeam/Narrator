@@ -8,6 +8,7 @@ import me.sakuratao.narrator.spigot.data.chapter.TaskData;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitTask;
 
 @Data
@@ -36,6 +37,9 @@ public class PlayerData {
     private String messageOption = "";
 
     private ContentTask contentTask;
+
+
+    private Inventory chatHandle; // TODO 提供过剧情时 聊天框的控制
 
     public PlayerData(Player player){
         this.playerName = player.getName().toLowerCase();

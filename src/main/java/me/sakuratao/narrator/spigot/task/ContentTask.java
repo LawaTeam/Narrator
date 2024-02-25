@@ -39,6 +39,9 @@ public class ContentTask implements Runnable{
     private boolean messageDecided = false;
     private BukkitTask messageTask = null;
 
+    private boolean delay = false;
+    private boolean delaying = false;
+
     @Override
     public void run() {
 
@@ -59,6 +62,9 @@ public class ContentTask implements Runnable{
             messageDeciding = false;
             messageDecided = false;
             messageTask = null;
+
+            delay = false;
+            delaying = false;
 
             List<String> content = data.getPlayingTask().getContent();
 
