@@ -62,6 +62,7 @@ public class NarratorCommand {
 
             int chapterOrdinal = Integer.parseInt(args[1]);
             int taskOrdinal = Integer.parseInt(args[2]);
+            int contentIndex = Integer.parseInt(args[3]);
 
             if (chapterOrdinal < 1) {
                 chapterOrdinal = 1;
@@ -69,10 +70,14 @@ public class NarratorCommand {
             if (taskOrdinal < 1) {
                 taskOrdinal = 1;
             }
+            if (contentIndex < 0) {
+                contentIndex = 0;
+            }
 
             PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(Bukkit.getPlayer(sender.getName()));
             playerData.setPlayingChapterOrdinal(chapterOrdinal);
             playerData.setPlayingTaskOrdinal(taskOrdinal);
+            playerData.setContentIndex(contentIndex);
 
             narrator.getManagerHandler().getTaskManager().createTask(playerData);
 

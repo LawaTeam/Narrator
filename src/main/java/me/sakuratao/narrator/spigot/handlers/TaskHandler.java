@@ -8,12 +8,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 @PieComponent
 public class TaskHandler {
@@ -106,7 +104,7 @@ public class TaskHandler {
 
     public void jump(PlayerData playerData, ChapterData chapterData, int taskOrdinal, int contentIndex){
         playerData.setPlayingTaskOrdinal(taskOrdinal);
-        playerData.setExecutingContentIndex(contentIndex-2); // 此处 -2 是为了抵消 ContentTask 的+1, 能跑就行(
+        playerData.setContentIndex(contentIndex-1); // 此处 -1 是为了抵消 ContentTask 的+1, 能跑就行(
         playerData.setPlayingTask(chapterData.getTasks().stream()
                 .filter(taskData -> taskData.getOrdinal() == playerData.getPlayingTaskOrdinal()).iterator().next());
     }

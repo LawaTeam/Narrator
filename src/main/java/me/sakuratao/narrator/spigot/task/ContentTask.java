@@ -1,46 +1,43 @@
 package me.sakuratao.narrator.spigot.task;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
-import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
-import me.sakuratao.narrator.spigot.data.chapter.TaskData;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import me.sakuratao.narrator.spigot.enums.DelayStatus;
+import me.sakuratao.narrator.spigot.enums.OptionStatus;
+import me.sakuratao.narrator.spigot.enums.PrintStatus;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
 
 @Getter
 @Setter
-@Builder
 public class ContentTask implements Runnable{
 
     private final Narrator narrator;
     private final PlayerData data;
 
+    public ContentTask(Narrator narrator, PlayerData data) {
+        this.narrator = narrator;
+        this.data = data;
+    }
+
     /*
         These are work for actionbar print model
      */
-    private boolean printing = false;
-    private boolean printKeeping = false;
-    private boolean printed = false;
+    private PrintStatus printStatus = PrintStatus.NONE;
     private BukkitTask printTask = null;
 
     /*
         These are work for 消息选择 model
      */
-    private int messageIndex = -1;
-    private int messageSize = 0;
-    private boolean messageDeciding = false;
-    private boolean messageDecided = false;
-    private BukkitTask messageTask = null;
+    private int optionIndex = -1;
+    private int optionSize = 0;
+    private OptionStatus optionStatus = OptionStatus.NONE;
+    private BukkitTask optionTask = null;
 
-    private boolean delay = false;
-    private boolean delaying = false;
+    private DelayStatus delayStatus = DelayStatus.NONE;
 
     @Override
     public void run() {
@@ -48,33 +45,28 @@ public class ContentTask implements Runnable{
         if (narrator.getHandlerManager().getContentHandler().execute(
                 data.getPlayer(),
                 data.getPlayingChapter(),
-                data.getExecutingContent(),
+                data.getPlayingTask().getContent().get(data.getContentIndex()),
                 this
         )){
 
-            printing = false;
-            printKeeping = false;
-            printed = false;
             printTask = null;
+            printStatus = PrintStatus.NONE;
 
-            messageIndex = -1;
-            messageSize = 0;
-            messageDeciding = false;
-            messageDecided = false;
-            messageTask = null;
+            optionIndex = 0;
+            optionSize = 0;
+            optionTask = null;
+            optionStatus = OptionStatus.NONE;
 
-            delay = false;
-            delaying = false;
+            delayStatus = DelayStatus.NONE;
 
             List<String> content = data.getPlayingTask().getContent();
 
-            data.setExecutingContentIndex(data.getExecutingContentIndex() + 1);
+            data.setContentIndex(data.getContentIndex() + 1);
 
-            if (data.getExecutingContentIndex() >= content.size()) {
+            if (data.getContentIndex() >= content.size()) {
                 narrator.getManagerHandler().getTaskManager().finish(data.getPlayerName());
                 return;
             }
-            data.setExecutingContent(content.get(data.getExecutingContentIndex()));
 
         }
 

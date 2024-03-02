@@ -5,10 +5,8 @@ import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
-import me.sakuratao.narrator.spigot.data.chapter.TaskData;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
@@ -35,7 +33,9 @@ public class TaskManager {
 
         ChapterData playingChapter = narrator.getHandlerManager().getChapterHandler().getSortedChapters()
                 .stream()
-                .filter(k -> k.keySet().iterator().next().getOrdinal() == data.getPlayingChapterOrdinal()).iterator().next()
+                .filter(
+                        k -> k.keySet().iterator().next().getOrdinal() == data.getPlayingChapterOrdinal()
+                ).iterator().next()
                 .keySet().iterator().next();
 
         data.setPlayingChapter(playingChapter);
@@ -43,12 +43,7 @@ public class TaskManager {
                 .stream()
                 .filter(taskData -> taskData.getOrdinal() == data.getPlayingTaskOrdinal()).iterator().next());
 
-        data.setExecutingContent(data.getPlayingTask().getContent().get(data.getExecutingContentIndex()-1));
-        data.setContentTask(ContentTask.builder()
-                        .narrator(narrator)
-                        .data(data)
-                        .build()
-        );
+        data.setContentTask(new ContentTask(narrator, data));
 
         tasks.put(
                 data.getPlayerName().toLowerCase(),

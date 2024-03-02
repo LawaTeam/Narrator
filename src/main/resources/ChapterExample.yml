@@ -28,6 +28,13 @@
 #           TEXT supported ChatColor
 #       --Form: MC/MESSAGE_CLICK|TEXT
 #
+#   MD/MESSAGE_DROP:
+#       --Feature:
+#           send a message to player's chat
+#           when they drop item then show next
+#           TEXT supported ChatColor
+#       --Form: MD/MESSAGE_DROP|TEXT
+#
 #   AB/ACTIONBAR:
 #       --Feature:
 #           send a message to player's actionbar

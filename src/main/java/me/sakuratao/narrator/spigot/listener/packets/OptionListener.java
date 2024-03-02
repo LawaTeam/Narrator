@@ -7,9 +7,9 @@ import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
+import me.sakuratao.narrator.spigot.enums.OptionStatus;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
@@ -36,15 +36,15 @@ public class OptionListener extends PacketAdapter {
         PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(player);
         ContentTask contentTask = playerData.getContentTask();
 
-        if (contentTask == null || contentTask.getMessageIndex() == -1) return;
+        if (contentTask == null || contentTask.getOptionStatus().equals(OptionStatus.DECIDED)) return;
 
         if (packetEvent.getPacketType().equals(PacketType.Play.Client.ARM_ANIMATION)) {
-            contentTask.setMessageDecided(true);
+            contentTask.setOptionStatus(OptionStatus.DECIDED);
         }
         if (packetEvent.getPacketType().equals(PacketType.Play.Client.HELD_ITEM_SLOT)) {
-            contentTask.setMessageIndex(contentTask.getMessageIndex() + 1);
-            if (contentTask.getMessageIndex() >= contentTask.getMessageSize()) {
-                contentTask.setMessageIndex(0);
+            contentTask.setOptionIndex(contentTask.getOptionIndex() + 1);
+            if (contentTask.getOptionIndex() >= contentTask.getOptionSize()) {
+                contentTask.setOptionIndex(0);
             }
         }
 
