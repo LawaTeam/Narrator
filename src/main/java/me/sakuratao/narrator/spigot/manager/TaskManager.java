@@ -31,6 +31,10 @@ public class TaskManager {
      */
     public void createTask(@NotNull PlayerData data) {
 
+        if (tasks.containsKey(data.getPlayerName())) {
+            tasks.get(data.getPlayerName()).cancel();
+        }
+
         ChapterData playingChapter = narrator.getHandlerManager().getChapterHandler().getSortedChapters()
                 .stream()
                 .filter(

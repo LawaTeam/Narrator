@@ -7,10 +7,7 @@ import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerAnimationType;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.*;
 import top.jingwenmc.spigotpie.common.event.SpigotEventListener;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -32,5 +29,9 @@ public class PlayerListener implements Listener {
 
     }
 
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent e){
+        narrator.getManagerHandler().getPlayerManager().removeByPlayer(e.getPlayer());
+    }
 
 }

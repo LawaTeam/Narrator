@@ -29,5 +29,4 @@ public class NarratorSpigot extends JavaPlugin {
     public void onDisable() {
 
     }
-
 }

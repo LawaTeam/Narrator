@@ -1,5 +1,9 @@
 package me.sakuratao.narrator.spigot.handlers;
 
+import eu.endercentral.crazy_advancements.JSONMessage;
+import eu.endercentral.crazy_advancements.advancement.Advancement;
+import eu.endercentral.crazy_advancements.advancement.AdvancementDisplay;
+import eu.endercentral.crazy_advancements.advancement.AdvancementVisibility;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
@@ -12,7 +16,9 @@ import me.sakuratao.narrator.spigot.utils.CCUtil;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -20,6 +26,8 @@ import top.jingwenmc.spigotpie.common.instance.Wire;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @PieComponent
 public class ContentHandler {
@@ -35,9 +43,15 @@ public class ContentHandler {
 
         PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(player);
 
+
+
         /*
             TODO: 物品栏文字调用，生成剧情对话背包，
-            todo: MESSAGE_CLICK、MESSAGE_DROP、INV_ANSWER、CONDITION
+
+            TODO: MESSAGE_CLICK、MESSAGE_DROP、INV_ANSWER、CONDITION、SOUND(播放声音)
+
+            TODO: 玩家自定义字幕速度以及停留时间，并提供 " 上一条 " 的功能
+
          */
 
 
@@ -83,6 +97,10 @@ public class ContentHandler {
                 case "JUMP_TASK": {
                     return jumpTask(type, playerData, chapterData, content);
                 }
+                case "TOAST":{
+                    toast(type, player);
+                    return true;
+                }
                 case "C":
                 case "CONDITION": {
                     // todo
@@ -103,8 +121,62 @@ public class ContentHandler {
             narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
             narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + chapterData.getName());
             narrator.getLogger().log(Level.SEVERE, "        Content: " + content);
+            e.printStackTrace();
             return false;
         }
+    }
+
+    private void toast(List<String> type, Player player){
+
+        String[] t = type.get(3).split("<br>");
+        StringBuilder sb = new StringBuilder();
+
+        /*
+            这段屎山，没事别碰
+            因为实在是太乱了
+         */
+        for (int i = 0; i < t.length; i ++) {
+            String t1 = t[i];
+
+            if (i > 2 && i == t.length - 1) {
+                if (t[i-1].getBytes().length >= 21) {
+                    sb.append(" ").append(t1);
+                } else {
+                    sb.append(t1);
+                }
+                break;
+            }
+
+            for (int k = 0; k < t1.length(); k++) {
+                if (i > 2) {
+                    char ch = t1.charAt(k);
+                    if (ch == ' ') {
+                        sb.append(" ");
+                    }
+                }
+            }
+
+            sb.append(t1);
+
+            if (t1.getBytes().length <= 25) {
+                sb.append(" ".repeat((25 - t1.getBytes().length)));
+            }
+
+        }
+
+        TextComponent title = new TextComponent(CCUtil.translate(sb.toString()));
+
+        AdvancementDisplay rootDisplay =  new AdvancementDisplay(
+                Material.valueOf(type.get(2)),
+                new JSONMessage(title),
+                new JSONMessage(new TextComponent("")),
+                AdvancementDisplay.AdvancementFrame.parse(type.get(1)),
+                AdvancementVisibility.ALWAYS
+        );
+        Advancement rootAdvancement = new Advancement(null, rootDisplay);
+
+        rootAdvancement.displayToast(player);
+
     }
 
     private boolean title(List<String> type, Player player) {

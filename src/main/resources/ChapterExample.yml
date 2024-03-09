@@ -38,7 +38,7 @@
 #   AB/ACTIONBAR:
 #       --Feature:
 #           send a message to player's actionbar
-#           Time units is ms
+#           Time units is ticks
 #           TEXT supported ChatColor
 #       --Form: AB/ACTIONBAR|isPrint|in|keep|TEXT
 #               AB/ACTIONBAR|true|in|keep|TEXT
@@ -93,6 +93,11 @@
 #           更改物品栏进行选择，点击左键确认
 #       --Form: AB_ANSWER/ACTIONBAR_ANSWER|MESSAGE|MESSAGE|...|MESSAGE
 #
+#   TOAST:
+#       --Feature:
+#           发送自定义成就信息
+#           使用<br>作为换行分隔符，每一行字符不应超过 25 个字节
+#       --Form: TOAST|GOAL/CHALLENGE/TASK|MATERIAL|MESSAGE
 #
 # Here is an example how they use in yaml
 chapterInfo:
@@ -109,13 +114,13 @@ chapterTasks:
             - "T|30|50|30|This is a title|This is a subtitle"
             - "M|This is a test message"
             - "AB|true|5|20|This is a test message"
-            - "D|200"
-            - "M|This is message will send after 200ms"
+            - "D|20"
+            - "M|This is message will send after 20ticks(1s)"
             - "C|NPC(NpcA)&&NPC(NpcB)"
             - "M|This is message will send after touched NpcA and NpcB"
             - "AB_ANSWER|选择绿宝石|选择钻石"
             - "COMMAND|give SakuraTao diamond"
-            - "JT|Task2"
+            - "JT|2|0"
     Task2:
         name: "Task2"
         ordinal: 2

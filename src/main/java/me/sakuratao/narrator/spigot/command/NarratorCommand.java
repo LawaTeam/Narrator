@@ -20,6 +20,7 @@ public class NarratorCommand {
 
     @Wire
     private Narrator narrator;
+
     @PieCommand(value = "narrator help", aliases = {"nh"}, permission = "narrator.command.narrator", bungeeCord = false, spigot = true)
     public void onHelp(CommandItem item){
 

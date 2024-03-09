@@ -5,3 +5,4 @@ author: SakuraTao
 api-version: '1.19'
 depend:
   - ProtocolLib
+  - CrazyAdvancementsAPI

@@ -22,7 +22,7 @@ public class PlayerData {
     /*
         these decided what will be set in TaskManager
      */
-    private int playingChapterOrdinal = 1;
+    private int playingChapterOrdinal = 1; // TODO: 这俩playing倒时后要存库
     private int playingTaskOrdinal = 1;
     private int contentIndex = 0;
 
@@ -32,7 +32,6 @@ public class PlayerData {
     private String messageOption = "";
 
     private ContentTask contentTask;
-
 
     private Inventory chatHandle; // TODO 提供过剧情时 聊天框的控制
 
