@@ -1,9 +1,12 @@
 package me.sakuratao.narrator.spigot.command;
 
 import me.sakuratao.narrator.common.Narrator;
+import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
+import me.sakuratao.narrator.spigot.utils.CCUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.command.CommandItem;
 import top.jingwenmc.spigotpie.common.command.CommandSender;
@@ -13,6 +16,7 @@ import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Platform;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
+import java.util.Map;
 import java.util.logging.Level;
 
 @PieComponent(platform = Platform.SPIGOT)
@@ -35,6 +39,16 @@ public class NarratorCommand {
         CommandSender sender = item.getSender();
         String[] args = item.getArgs();
 
+        if (item.isSingle()) {
+            sender.sendMessage(CCUtil.translate("&b所有章节信息如下: "));
+            for (String lang : narrator.getHandlerManager().getChapterHandler().getLangSortedChapters().keySet()) {
+                for (Map<ChapterData, YamlConfiguration> chapter : narrator.getHandlerManager().getChapterHandler().getLangSortedChapters().get(lang)) {
+                    ChapterData data = chapter.keySet().iterator().next();
+                    sender.sendMessage(CCUtil.translate("   &7- &f语言: " + lang + " &8| &f名字: " + data.getName() +" &8| &f版本: " + data.getVersion()));
+                }
+            }
+        }
+
     }
 
     @PieCommand(value = "narrator reload", aliases = {"nr"}, permission = "narrator.command.reload", bungeeCord = false, spigot = true)
@@ -42,12 +56,10 @@ public class NarratorCommand {
 
         CommandSender sender = item.getSender();
         if (!item.isSingle()) {
-            switch (item.getArgs()[0]){
-                case "force": {
-                    narrator.getLogger().log(Level.WARNING, "Confirm execute force reloading...");
-                    narrator.reloadChapter(true, true);
-                    return;
-                }
+            if (item.getArgs()[0].equals("force")) {
+                narrator.getLogger().log(Level.WARNING, Lang.CHAPTERS_LOAD_FORCE);
+                narrator.reloadChapter(true, true);
+                return;
             }
         }
         narrator.reloadChapter(true, false);
@@ -65,6 +77,8 @@ public class NarratorCommand {
             int taskOrdinal = Integer.parseInt(args[2]);
             int contentIndex = Integer.parseInt(args[3]);
 
+            String lang = args[4].toLowerCase();
+
             if (chapterOrdinal < 1) {
                 chapterOrdinal = 1;
             }
@@ -75,10 +89,15 @@ public class NarratorCommand {
                 contentIndex = 0;
             }
 
+            if (!narrator.getHandlerManager().getChapterHandler().isLangExists(lang)){
+                lang = "zh_cn";
+            }
+
             PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(Bukkit.getPlayer(sender.getName()));
             playerData.setPlayingChapterOrdinal(chapterOrdinal);
             playerData.setPlayingTaskOrdinal(taskOrdinal);
             playerData.setContentIndex(contentIndex);
+            playerData.setLang(lang);
 
             narrator.getManagerHandler().getTaskManager().createTask(playerData);
 

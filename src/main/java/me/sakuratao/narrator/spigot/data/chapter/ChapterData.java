@@ -16,6 +16,8 @@ public class ChapterData {
     private double version;
     private int ordinal = 1;
 
+    private String lang; // todo
+
     private List<TaskData> tasks = new ArrayList<>();
 
 }

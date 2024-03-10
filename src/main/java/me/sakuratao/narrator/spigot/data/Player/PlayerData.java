@@ -13,6 +13,8 @@ public class PlayerData {
     private final String playerName; // lowercase
     private final Player player;
 
+    private String lang; // todo
+
     /*
         these were been set in TaskManager
      */

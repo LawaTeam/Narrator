@@ -103,6 +103,7 @@
 chapterInfo:
     name: "ChapterExample"
     author: "SakuraTao"
+    lang: "en_US"
     version: 1.0
     ordinal: 1 # This determines the sequence of the story
 

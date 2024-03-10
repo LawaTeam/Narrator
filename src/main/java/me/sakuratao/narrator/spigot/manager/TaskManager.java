@@ -35,7 +35,7 @@ public class TaskManager {
             tasks.get(data.getPlayerName()).cancel();
         }
 
-        ChapterData playingChapter = narrator.getHandlerManager().getChapterHandler().getSortedChapters()
+        ChapterData playingChapter = narrator.getHandlerManager().getChapterHandler().getLangSortedChapters().get(data.getLang())
                 .stream()
                 .filter(
                         k -> k.keySet().iterator().next().getOrdinal() == data.getPlayingChapterOrdinal()
@@ -58,9 +58,9 @@ public class TaskManager {
         );
     }
 
-    public void finish(String playerName){
-        tasks.get(playerName).cancel();
-        tasks.remove(playerName);
+    public void end(String playerName){
+        tasks.get(playerName.toLowerCase()).cancel();
+        tasks.remove(playerName.toLowerCase());
     }
 
 }

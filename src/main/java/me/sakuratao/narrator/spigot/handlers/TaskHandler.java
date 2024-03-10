@@ -88,8 +88,16 @@ public class TaskHandler {
                         taskData.setContent(content);
                         data.getTasks().add(taskData);
 
-                    }
+                        /*
+                            fixme 此处用于解决 langSorted 与 chapters 里存的 chapterdata 不一致
+                         */
+                        ChapterData same = handlerManager.getChapterHandler().getSameChapterData(data, data.getLang());
+                        if (same != null) {
+                            same.getTasks().removeIf(taskData1 -> taskData1.getOrdinal() == taskData.getOrdinal());
+                            same.getTasks().add(taskData);
+                        }
 
+                    }
                     data.getTasks().sort(Comparator.comparingInt(TaskData::getOrdinal));
 
                 } catch (NumberFormatException e) {
@@ -99,7 +107,9 @@ public class TaskHandler {
                     return;
                 }
             }
+
         }
+
     }
 
     public void jump(PlayerData playerData, ChapterData chapterData, int taskOrdinal, int contentIndex){

@@ -3,12 +3,14 @@ package me.sakuratao.narrator.common;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import lombok.Getter;
+import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.handlers.HandlerManager;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
 import me.sakuratao.narrator.spigot.listener.packets.PacketsHandler;
 import me.sakuratao.narrator.spigot.manager.ManagerHandler;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import org.bukkit.scheduler.BukkitTask;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
@@ -77,7 +79,10 @@ public class Narrator {
     public void reloadChapter(boolean reload, boolean force){
         handlerManager.getChapterHandler().load(reload, force);
         handlerManager.getTaskHandler().load();
-        getLogger().info("All chapters loaded!");
+
+        managerHandler.getTaskManager().getTasks().values().forEach(BukkitTask::cancel);
+
+        getLogger().info(Lang.CHAPTERS_LOADED);
     }
 
 }

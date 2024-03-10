@@ -8,7 +8,6 @@ import top.jingwenmc.spigotpie.common.instance.PieComponent;
 @ConfigurationFile("config.yml")
 public class Config {
 
-    @Configuration(value = "language_type")
-    public static String LANGUAGE_TYPE = "en_US";
+
 
 }

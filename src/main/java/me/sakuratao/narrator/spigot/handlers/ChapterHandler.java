@@ -2,6 +2,7 @@ package me.sakuratao.narrator.spigot.handlers;
 
 import lombok.Getter;
 import me.sakuratao.narrator.common.Narrator;
+import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -23,7 +24,7 @@ public class ChapterHandler {
     private Narrator narrator;
 
     @Getter
-    private List<Map<ChapterData, YamlConfiguration>> sortedChapters;
+    private ConcurrentHashMap<String, List<Map<ChapterData, YamlConfiguration>>> langSortedChapters = new ConcurrentHashMap<>(); // fixme langSorted 与 chapters 里存的 chapterdata 不一致
     @Getter
     private final ConcurrentHashMap<String, Map<ChapterData, YamlConfiguration>> chapters = new ConcurrentHashMap<>();
 
@@ -43,9 +44,9 @@ public class ChapterHandler {
                 e.printStackTrace();
             }
 
-            narrator.getLogger().log(Level.WARNING, "Chapter folder created");
-            narrator.getLogger().log(Level.WARNING, "We put an example chapter in there, please edit it as your first chapter!");
-            narrator.getLogger().log(Level.WARNING, "Or put already edited chapter files in the folder and use /nr to reload");
+            narrator.getLogger().log(Level.WARNING, Lang.CHAPTERS_FOLDER_CREATED);
+            narrator.getLogger().log(Level.WARNING, Lang.CHAPTERS_FOLDER_EDIT);
+            narrator.getLogger().log(Level.WARNING, Lang.CHAPTERS_FOLDER_RELOAD);
             return;
         }
 
@@ -57,10 +58,11 @@ public class ChapterHandler {
                     chapter.getString("chapterInfo.name") == null ||
                             chapter.getString("chapterInfo.author") == null ||
                             chapter.getString("chapterInfo.version") == null ||
-                            chapter.getString("chapterInfo.ordinal") == null
+                            chapter.getString("chapterInfo.ordinal") == null ||
+                            chapter.getString("chapterInfo.lang") == null
             ) {
-                narrator.getLogger().log(Level.SEVERE, "Please check your chapter file " + chapterFile.getName());
-                narrator.getLogger().log(Level.SEVERE, "Check your options in chapterInfo about Name, Author, Version and Ordinal, they can't be null.");
+                narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK + chapterFile.getName());
+                narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NULL);
                 return;
             }
 
@@ -72,10 +74,11 @@ public class ChapterHandler {
                     String author = chapter.getString("chapterInfo.author");
                     double version = Double.parseDouble(Objects.requireNonNull(chapter.getString("chapterInfo.version")));
                     int ordinal = Integer.parseInt(Objects.requireNonNull(chapter.getString("chapterInfo.ordinal")));
+                    String lang = chapter.getString("chapterInfo.lang").toLowerCase();
 
                     if (ordinal < 1) {
-                        narrator.getLogger().log(Level.SEVERE, "All ordinal must be over 1!");
-                        narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
+                        narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_ORDINAL_OVER_ONE);
+                        narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
                         narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + name);
                         return;
                     }
@@ -84,25 +87,27 @@ public class ChapterHandler {
 
                         ChapterData sameChapter = chapters.get(name).keySet().iterator().next();
 
-                        /*
+                        if (sameChapter.getLang().equalsIgnoreCase(lang)) {
+                         /*
                             版本冲突
                          */
-                        if (version < sameChapter.getVersion()){
-                            narrator.getLogger().log(Level.SEVERE, "There is already a chapter with the name " + name + ", and it is higher version");
-                            narrator.getLogger().log(Level.SEVERE, "We won't load the lower version");
-                            narrator.getLogger().log(Level.SEVERE, "If you want to reload this chapter, please use /nr force");
-                            narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
-                            narrator.getLogger().log(Level.SEVERE, "        Name: " + name);
-                            narrator.getLogger().log(Level.SEVERE, "        Higher Version: " + sameChapter.getVersion());
-                            narrator.getLogger().log(Level.SEVERE, "        Older Version: " + version);
-                            continue;
-                        } else if (version > sameChapter.getVersion()){
-                            narrator.getLogger().log(Level.WARNING, "There is already a chapter with the name " + name + ", and it is lower version");
-                            narrator.getLogger().log(Level.WARNING, "We will load the higher version");
-                            narrator.getLogger().log(Level.WARNING, "Here are some information may help you:");
-                            narrator.getLogger().log(Level.WARNING, "        Name: " + name);
-                            narrator.getLogger().log(Level.WARNING, "        Higher Version: " + version);
-                            narrator.getLogger().log(Level.WARNING, "        Older Version: " + sameChapter.getVersion());
+                            if (version < sameChapter.getVersion()){
+                                narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_VERSION_HIGHER.replace("%chapterName%", name));
+                                narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_VERSION_HIGHER_WONT_LOAD);
+                                narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_VERSION_HIGHER_FORCE);
+                                narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+                                narrator.getLogger().log(Level.SEVERE, "        Name: " + name);
+                                narrator.getLogger().log(Level.SEVERE, "        Higher Version: " + sameChapter.getVersion());
+                                narrator.getLogger().log(Level.SEVERE, "        Older Version: " + version);
+                                continue;
+                            } else if (version > sameChapter.getVersion()){
+                                narrator.getLogger().log(Level.WARNING, Lang.CHAPTERS_FOLDER_CHECK_VERSION_LOWER.replace("%chapterName%", name));
+                                narrator.getLogger().log(Level.WARNING, Lang.CHAPTERS_FOLDER_CHECK_VERSION_LOWER_LOADED);
+                                narrator.getLogger().log(Level.WARNING, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+                                narrator.getLogger().log(Level.WARNING, "        Name: " + name);
+                                narrator.getLogger().log(Level.WARNING, "        Higher Version: " + version);
+                                narrator.getLogger().log(Level.WARNING, "        Older Version: " + sameChapter.getVersion());
+                            }
                         }
 
                     }
@@ -112,9 +117,9 @@ public class ChapterHandler {
                      */
                     chapters.values().forEach(map -> {
                         ChapterData data = map.keySet().iterator().next();
-                        if (data.getOrdinal() == ordinal && !data.getName().equalsIgnoreCase(name)){
-                            narrator.getLogger().log(Level.SEVERE, "There is an ordinal conflict about chapters");
-                            narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
+                        if (data.getLang().equalsIgnoreCase(lang) && data.getOrdinal() == ordinal && !data.getName().equalsIgnoreCase(name)){
+                            narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_ORDINAL_CONFLICT);
+                            narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
                             narrator.getLogger().log(Level.SEVERE, "        Name: " + name);
                             narrator.getLogger().log(Level.SEVERE, "        Name: " + data.getName());
                             narrator.getLogger().log(Level.SEVERE, "        Ordinal: " + ordinal);
@@ -126,38 +131,81 @@ public class ChapterHandler {
                     chapterData.setAuthor(author);
                     chapterData.setVersion(version);
                     chapterData.setOrdinal(ordinal);
+                    chapterData.setLang(lang);
 
-                    Map<ChapterData, YamlConfiguration> chapterDataMap = new HashMap<>();
-                    chapterDataMap.put(chapterData, chapter);
-                    chapters.put(name, chapterDataMap);
+                    Map<ChapterData, YamlConfiguration> dataMap = new HashMap<>();
+                    dataMap.put(chapterData, chapter);
+
+                    addLangSort(dataMap, dataMap.keySet().iterator().next());
+                    chapters.put(name, dataMap);
 
                 } else {
-
                     ChapterData sameChapter = chapters.get(chapter.getString("chapterInfo.name")).keySet().iterator().next();
-
-                    narrator.getLogger().log(Level.SEVERE, "There have same chapter!");
-                    narrator.getLogger().log(Level.SEVERE, "Please check your chapter folder all files with chapterInfo name");
-                    narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
+                    narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK);
+                    narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NAME_SAME);
+                    narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
                     narrator.getLogger().log(Level.SEVERE, "        sameName: " + chapter.getString("chapterInfo.name"));
                     narrator.getLogger().log(Level.SEVERE, "        Ordinal: " + chapter.getString("chapterInfo.ordinal") + " | Version: " + chapter.getString("chapterInfo.version"));
                     narrator.getLogger().log(Level.SEVERE, "        Ordinal: " + sameChapter.getOrdinal() + " | Version: " + sameChapter.getVersion());
-                    narrator.getLogger().log(Level.SEVERE, "Load stopped!");
+                    narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_LOAD_STOP);
                     return;
                 }
-
             } catch (NumberFormatException e){
-                narrator.getLogger().log(Level.SEVERE, "Please check your chapter file " + chapterFile.getName());
-                narrator.getLogger().log(Level.SEVERE, "The Version must be double and the Ordinal must be int");
-                narrator.getLogger().log(Level.SEVERE, "Load stopped!");
+                narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK + chapterFile.getName());
+                narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_VERSION);
+                narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_ORDINAL);
+                narrator.getLogger().log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_LOAD_STOP);
                 return;
             }
-
         }
 
-        sortedChapters = chapters.values().stream()
-                .sorted(Comparator.comparingInt((Map<ChapterData, YamlConfiguration> chapter) -> chapter.keySet().stream().iterator().next().getOrdinal()))
-                .collect(Collectors.toList());
+        sortLangChapter();
 
+    }
+
+    private void sortLangChapter(){
+        for (String lang : langSortedChapters.keySet()) {
+
+            List<Map<ChapterData, YamlConfiguration>> langChapter = langSortedChapters.get(lang);
+
+            langSortedChapters.put(
+                    lang, langChapter.stream()
+                            .sorted(Comparator.comparingInt((Map<ChapterData, YamlConfiguration> chapter) -> chapter.keySet().stream().iterator().next().getOrdinal()))
+                            .toList()
+            );
+
+        }
+    }
+
+    private void addLangSort(Map<ChapterData, YamlConfiguration> dataMap, ChapterData chapterData){
+        List<Map<ChapterData, YamlConfiguration>> langSort = new ArrayList<>();
+        if (langSortedChapters.containsKey(chapterData.getLang())) {
+            langSort = new ArrayList<>(langSortedChapters.get(chapterData.getLang()));
+        }
+        langSort.add(dataMap);
+        langSortedChapters.put(chapterData.getLang(), langSort);
+    }
+
+    public boolean isLangExists(String lang){
+        return langSortedChapters.containsKey(lang.toLowerCase());
+    }
+
+    public boolean isSameDataExists(ChapterData data, String lang){
+        return getSameChapterData(data, lang) != null;
+    }
+
+    public List<Map<ChapterData, YamlConfiguration>> getLangChapters(String lang){
+        return langSortedChapters.get(lang.toLowerCase());
+    }
+
+    public ChapterData getSameChapterData(ChapterData data, String lang){
+        for (Map<ChapterData, YamlConfiguration> map : getLangChapters(data.getLang())) {
+            ChapterData data1 = map.keySet().iterator().next();
+            if (data1.getName().equalsIgnoreCase(data.getName())) {
+                return data1;
+            }
+        }
+        return null;
     }
 
     public ChapterData jump(int ordinal){
