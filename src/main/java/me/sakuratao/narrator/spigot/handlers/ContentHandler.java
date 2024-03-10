@@ -158,8 +158,8 @@ public class ContentHandler {
 
             sb.append(t1);
 
-            if (t1.getBytes().length <= 25) {
-                sb.append(" ".repeat((25 - t1.getBytes().length)));
+            if (t1.getBytes().length <= 26) {
+                sb.append(" ".repeat((26 - t1.getBytes().length)));
             }
 
         }
