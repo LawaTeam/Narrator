@@ -80,7 +80,7 @@ public class Narrator {
 
         managerHandler.getTaskManager().getTasks().values().forEach(BukkitTask::cancel);
 
-        handlerManager.getChapterHandler().load(reload, force);
+        handlerManager.getChapterHandler().load(force);
         handlerManager.getTaskHandler().load();
 
 

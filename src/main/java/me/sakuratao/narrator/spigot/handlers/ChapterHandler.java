@@ -1,10 +1,11 @@
 package me.sakuratao.narrator.spigot.handlers;
 
+import lombok.extern.java.Log;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
-import me.sakuratao.narrator.spigot.utils.ServerUtil;
+import me.sakuratao.narrator.spigot.utils.LogUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
 @PieComponent
@@ -26,39 +28,17 @@ public class ChapterHandler {
     private final ConcurrentHashMap<String, List<String>> totalChapters = new ConcurrentHashMap<>();
 
 
-    public void load(boolean reload, boolean force) {
+    public void load(boolean force) {
 
         File path = new File(narrator.getWorkFolder().getPath() + "/chapters");
 
-        if (!path.exists()) {
-            path.mkdirs();
-
-            try {
-                InputStreamReader inputStreamReader = new InputStreamReader(NarratorSpigot.getPluginInstance().getResource("ChapterExample.yml"));
-                YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(inputStreamReader);
-                yamlConfiguration.save(new File(path.getPath() + "/ChapterExample.yml"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            ServerUtil.log(Level.WARNING, Lang.CHAPTERS_FOLDER_CREATED);
+        if (isValidChapterFolder(path)) {
             return;
         }
 
-        for (File chapterFile : Objects.requireNonNull(path.listFiles())) {
-
+        for (File chapterFile : path.listFiles()) {
             YamlConfiguration chapter = YamlConfiguration.loadConfiguration(chapterFile);
-
-            if (
-                    chapter.getString("chapterInfo.name") == null ||
-                            chapter.getString("chapterInfo.author") == null ||
-                            chapter.getString("chapterInfo.version") == null ||
-                            chapter.getString("chapterInfo.ordinal") == null ||
-                            chapter.getString("chapterInfo.lang") == null
-            ) {
-                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NULL);
-                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
-                ServerUtil.log(Level.SEVERE, "        chapterFile: " + chapterFile.getName());
+            if (isSectionsNull(chapterFile, chapter)) {
                 return;
             }
 
@@ -70,99 +50,171 @@ public class ChapterHandler {
                 int ordinal = Integer.parseInt(Objects.requireNonNull(chapter.getString("chapterInfo.ordinal")));
                 String lang = chapter.getString("chapterInfo.lang").toLowerCase();
 
-                if (ordinal < 1) {
-                    ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
-                    ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
-                    ServerUtil.log(Level.SEVERE, "        chapterName: " + name);
+                if (isOrdinalLowerThanOne(ordinal, name)) {
                     return;
                 }
 
-                ChapterData chapterData = new ChapterData();
-                chapterData.setName(name);
-                chapterData.setAuthor(author);
-                chapterData.setVersion(version);
-                chapterData.setOrdinal(ordinal);
-                chapterData.setLang(lang.toLowerCase());
+                ChapterData chapterData = createData(name, author, version, ordinal, lang.toLowerCase());
 
                 Map<ChapterData, YamlConfiguration> dataMap = new HashMap<>();
                 dataMap.put(chapterData, chapter);
 
                 if (getTotal(lang) == null || getLangChapterMaps(lang) == null) {
-
                     putLang(dataMap, getDataByMap(dataMap));
-
                 } else {
 
+                    // 判断同名版本
                     if (getTotal(lang).contains(name)) {
                         ChapterData equalData = getDataByLang(name, lang);
-
                         if (equalData != null) {
-                             /*
-                                版本冲突
-                             */
+                            // 是否存在版本冲突
                             if (version < equalData.getVersion()) {
                                 if (force) {
                                     putLang(dataMap, getDataByMap(dataMap));
                                     continue;
                                 }
-                                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_VERSION_HIGHER);
-                                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
-                                ServerUtil.log(Level.SEVERE, "        chapterName: " + name);
-                                ServerUtil.log(Level.SEVERE, "        higherVersion: " + equalData.getVersion());
-                                ServerUtil.log(Level.SEVERE, "        olderVersion: " + version);
+                                logVersionHigher(name, equalData.getVersion(), version);
                                 continue;
                             } else if (version > equalData.getVersion()) {
-                                ServerUtil.log(Level.WARNING, Lang.CHAPTERS_FOLDER_CHECK_VERSION_LOWER);
-                                ServerUtil.log(Level.WARNING, Lang.CHAPTERS_FOLDER_CHECK_HELP);
-                                ServerUtil.log(Level.WARNING, "        chapterName: " + name);
-                                ServerUtil.log(Level.WARNING, "        higherVersion: " + version);
-                                ServerUtil.log(Level.WARNING, "        olderVersion: " + equalData.getVersion());
+                                logVersionLower(name, version, equalData.getVersion());
                                 continue;
                             } else {
                                 if (force) {
                                     putLang(dataMap, getDataByMap(dataMap));
                                     continue;
                                 }
-                                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NAME_SAME);
-                                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
-                                ServerUtil.log(Level.SEVERE, "        equalName: " + name);
-                                ServerUtil.log(Level.SEVERE, "        Ordinal: " + ordinal + " | Version: " + version);
-                                ServerUtil.log(Level.SEVERE, "        Ordinal: " + equalData.getOrdinal() + " | Version: " + equalData.getVersion());
-                                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_LOAD_STOP);
+                                logVersionEqual(name, ordinal, equalData.getOrdinal(), version, equalData.getVersion());
                                 continue;
                             }
-
                         }
                     }
 
-                    /*
-                        检查同语言间的 ordinal 索引是否存在冲突
-                     */
-                    getLangChapterData(lang).forEach(data -> {
-                        if (data.getOrdinal() == ordinal && !data.getName().equalsIgnoreCase(name)) {
-                            ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_ORDINAL_CONFLICT);
-                            ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
-                            ServerUtil.log(Level.SEVERE, "        chapterName: " + name);
-                            ServerUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
-                            ServerUtil.log(Level.SEVERE, "        equalOrdinal: " + ordinal);
-                            throw new RuntimeException("");
-                        }
-                    });
+                    if (isConflictedOrdinal(lang, name, ordinal)){
+                        return;
+                    }
 
                     putLang(dataMap, getDataByMap(dataMap));
 
                 }
             } catch (NumberFormatException e){
-                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
-                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
-                ServerUtil.log(Level.SEVERE, "        chapterFile: " + chapterFile.getName());
-                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_LOAD_STOP);
+                logNumberFormat(chapterFile);
                 return;
             }
         }
 
         sortLang();
 
+    }
+
+    /**
+     * 检查是否存在 ordinal 冲突
+     * @param lang - 语言
+     * @param name - 章节名
+     * @param ordinal - 序数
+     * @return 是否存在冲突
+     */
+    private boolean isConflictedOrdinal(String lang, String name, int ordinal){
+        AtomicBoolean conflicted = new AtomicBoolean(false);
+        getLangChapterData(lang).forEach(data -> {
+            if (data.getOrdinal() == ordinal && !data.getName().equalsIgnoreCase(name)) {
+                logOrdinalConflicted(name, data, ordinal);
+                conflicted.set(true);
+            }
+        });
+        return conflicted.get();
+    }
+
+    /**
+     * 输出 数字格式 冲突日志
+     * @param chapterFile - 文件
+     */
+    public void logNumberFormat(File chapterFile){
+        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
+        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+        LogUtil.log(Level.SEVERE, "        chapterFile: " + chapterFile.getName());
+        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_LOAD_STOP);
+    }
+
+    /**
+     * 输出 ordinal 冲突日志
+     * @param name - 章节名
+     * @param data - 章节数据
+     * @param ordinal - 序数
+     */
+    public void logOrdinalConflicted(String name, ChapterData data, int ordinal){
+        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_ORDINAL_CONFLICT);
+        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+        LogUtil.log(Level.SEVERE, "        chapterName: " + name);
+        LogUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
+        LogUtil.log(Level.SEVERE, "        equalOrdinal: " + ordinal);
+    }
+
+    /**
+     * 输出 高版本号 冲突日志
+     * @param name - 章节名
+     * @param higherVersion - 更高的版本号
+     * @param lowerVersion - 更低的版本号
+     */
+    public void logVersionHigher(String name, double higherVersion, double lowerVersion){
+        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_VERSION_HIGHER);
+        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+        LogUtil.log(Level.SEVERE, "        chapterName: " + name);
+        LogUtil.log(Level.SEVERE, "        higherVersion: " + higherVersion);
+        LogUtil.log(Level.SEVERE, "        lowerVersion: " + lowerVersion);
+    }
+
+    /**
+     * 输出 低版本号 冲突日志
+     * @param name - 章节名
+     * @param higherVersion - 更高的版本号
+     * @param lowerVersion - 更低的版本号
+     */
+    public void logVersionLower(String name, double higherVersion, double lowerVersion){
+        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_VERSION_LOWER);
+        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+        LogUtil.log(Level.SEVERE, "        chapterName: " + name);
+        LogUtil.log(Level.SEVERE, "        higherVersion: " + higherVersion);
+        LogUtil.log(Level.SEVERE, "        lowerVersion: " + lowerVersion);
+    }
+
+    /**
+     * 输出 同版本号 冲突日志
+     * @param name - 章节名
+     * @param ordinal1 - 冲突序数1
+     * @param ordinal2 - 冲突序数2
+     * @param version1 - 冲突版本1
+     * @param version2 - 冲突版本2
+     */
+    public void logVersionEqual(String name, int ordinal1, int ordinal2, double version1, double version2){
+        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NAME_EQUAL);
+        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+        LogUtil.log(Level.SEVERE, "        equalName: " + name);
+        LogUtil.log(Level.SEVERE, "        Ordinal: " + ordinal1 + " | Version: " + version1);
+        LogUtil.log(Level.SEVERE, "        Ordinal: " + ordinal2 + " | Version: " + version2);
+        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_LOAD_STOP);
+    }
+
+    /**
+     * 检查章节文件夹是否存在
+     * @param path - 路径
+     * @return 存在与否
+     */
+    private boolean isValidChapterFolder(File path) {
+        if (!path.exists()) {
+            path.mkdirs();
+
+            try {
+                InputStreamReader inputStreamReader = new InputStreamReader(NarratorSpigot.getPluginInstance().getResource("ChapterExample.yml"));
+                YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(inputStreamReader);
+                yamlConfiguration.save(new File(path.getPath() + "/ChapterExample.yml"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            LogUtil.log(Level.WARNING, Lang.CHAPTERS_FOLDER_CREATED);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -182,6 +234,63 @@ public class ChapterHandler {
 
         }
     }
+
+    /**
+     * 创建章节 data
+     * @param name - 章节名
+     * @param author - 作者名
+     * @param version - 版本
+     * @param ordinal - 序号
+     * @param lang - 语言
+     * @return 处理好的 data
+     */
+    private ChapterData createData(String name, String author, double version, int ordinal, String lang){
+        ChapterData chapterData = new ChapterData();
+        chapterData.setName(name);
+        chapterData.setAuthor(author);
+        chapterData.setVersion(version);
+        chapterData.setOrdinal(ordinal);
+        chapterData.setLang(lang.toLowerCase());
+        return chapterData;
+    }
+
+    /**
+     * 检查相关项是否有一个为空
+     * @param chapter - 需要检查的yaml
+     * @return 是否有一个为空
+     */
+    private boolean isSectionsNull(File chapterFile, YamlConfiguration chapter){
+
+        if (chapter.getString("chapterInfo.name") == null ||
+                chapter.getString("chapterInfo.author") == null ||
+                chapter.getString("chapterInfo.version") == null ||
+                chapter.getString("chapterInfo.ordinal") == null ||
+                chapter.getString("chapterInfo.lang") == null) {
+            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NULL);
+            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+            LogUtil.log(Level.SEVERE, "        chapterFile: " + chapterFile.getName());
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 检查ordinal是否小于 1
+     * @param ordinal - 序数
+     * @param name - 章节名
+     * @return 是否小于 1
+     */
+    private boolean isOrdinalLowerThanOne(int ordinal, String name){
+        if (ordinal >= 1) return false;
+
+        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
+        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+        LogUtil.log(Level.SEVERE, "        chapterName: " + name);
+        return true;
+    }
+
+
 
     /**
      * 在总章节列表中添加章节

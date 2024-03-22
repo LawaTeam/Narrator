@@ -48,8 +48,8 @@ public class Lang {
             "如果您仍想加载此版本的章节, 使用 /nr force 进行强制重载."
     );
 
-    @Configuration("chapter_folder_check_name_same")
-    public static List<String> CHAPTERS_FOLDER_CHECK_NAME_SAME = Arrays.asList(
+    @Configuration("chapter_folder_check_name_equal")
+    public static List<String> CHAPTERS_FOLDER_CHECK_NAME_EQUAL = Arrays.asList(
             "请检查你的章节文件，",
             "章节名字存在冲突，请确保所有章节名字唯一.",
             "如果您仍想加载此章节, 使用 /nr force 进行强制重载."

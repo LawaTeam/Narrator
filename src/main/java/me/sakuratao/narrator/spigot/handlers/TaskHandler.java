@@ -5,7 +5,7 @@ import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.data.chapter.TaskData;
-import me.sakuratao.narrator.spigot.utils.ServerUtil;
+import me.sakuratao.narrator.spigot.utils.LogUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -41,10 +41,10 @@ public class TaskHandler {
                                     contentConfig.getString("chapterTasks." + section + ".name") == null ||
                                             contentConfig.getString("chapterTasks." + section + ".ordinal") == null
                             ) {
-                                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
-                                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
-                                ServerUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
-                                ServerUtil.log(Level.SEVERE, "        taskName: " + section);
+                                LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
+                                LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+                                LogUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
+                                LogUtil.log(Level.SEVERE, "        taskName: " + section);
                                 return;
                             }
 
@@ -53,10 +53,10 @@ public class TaskHandler {
                             List<String> content = contentConfig.getStringList("chapterTasks." + section + ".content");
 
                             if (ordinal < 1) {
-                                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
-                                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
-                                ServerUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
-                                ServerUtil.log(Level.SEVERE, "        taskName: " + section);
+                                LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
+                                LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+                                LogUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
+                                LogUtil.log(Level.SEVERE, "        taskName: " + section);
                                 return;
                             }
 
@@ -68,10 +68,10 @@ public class TaskHandler {
                                 if (!t.getSection().equalsIgnoreCase(section)) {
 
                                     if (t.getName().equalsIgnoreCase(name)) {
-                                        ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_TASK_NAME_SAME);
-                                        ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
-                                        ServerUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
-                                        ServerUtil.log(Level.SEVERE, "        taskName: " + t.getName());
+                                        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_TASK_NAME_SAME);
+                                        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+                                        LogUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
+                                        LogUtil.log(Level.SEVERE, "        taskName: " + t.getName());
                                         return true;
                                     }
 
@@ -79,12 +79,12 @@ public class TaskHandler {
                                         同序号
                                      */
                                     if (t.getOrdinal() == ordinal) {
-                                        ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_ORDINAL_CONFLICT);
-                                        ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
-                                        ServerUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
-                                        ServerUtil.log(Level.SEVERE, "        taskName: " + section);
-                                        ServerUtil.log(Level.SEVERE, "        taskName: " + t.getName());
-                                        ServerUtil.log(Level.SEVERE, "        ordinal: " + t.getOrdinal());
+                                        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_ORDINAL_CONFLICT);
+                                        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+                                        LogUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
+                                        LogUtil.log(Level.SEVERE, "        taskName: " + section);
+                                        LogUtil.log(Level.SEVERE, "        taskName: " + t.getName());
+                                        LogUtil.log(Level.SEVERE, "        ordinal: " + t.getOrdinal());
                                         return true;
                                     }
                                 }
@@ -103,9 +103,9 @@ public class TaskHandler {
                         data.getTasks().sort(Comparator.comparingInt(TaskData::getOrdinal));
 
                     } catch (NumberFormatException e) {
-                        ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
-                        ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
-                        ServerUtil.log(Level.SEVERE, "        chapterFile: " + contentConfig.getName());
+                        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
+                        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+                        LogUtil.log(Level.SEVERE, "        chapterFile: " + contentConfig.getName());
                         return;
                     }
                 }
