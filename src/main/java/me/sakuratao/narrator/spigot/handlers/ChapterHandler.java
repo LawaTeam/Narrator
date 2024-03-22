@@ -194,6 +194,9 @@ public class ChapterHandler {
         if (totalChapters.containsKey(lang)) {
             chapters = new ArrayList<>(totalChapters.get(lang));
         }
+
+        if (chapters.contains(name)) return;
+
         chapters.add(name);
         totalChapters.put(lang, chapters);
 
@@ -210,6 +213,9 @@ public class ChapterHandler {
         if (langChapters.containsKey(chapterData.getLang())) {
             langSort = new ArrayList<>(langChapters.get(chapterData.getLang()));
         }
+
+        langSort.removeIf(map -> getDataByMap(map).getName().equalsIgnoreCase(chapterData.getName()));
+
         langSort.add(dataMap);
         langChapters.put(chapterData.getLang(), langSort);
 

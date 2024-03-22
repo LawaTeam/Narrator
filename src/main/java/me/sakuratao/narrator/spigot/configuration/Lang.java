@@ -51,7 +51,7 @@ public class Lang {
     @Configuration("chapter_folder_check_name_same")
     public static List<String> CHAPTERS_FOLDER_CHECK_NAME_SAME = Arrays.asList(
             "请检查你的章节文件，",
-            "章节/任务 名字存在冲突，请确保所有 章节/任务 名字唯一.",
+            "章节名字存在冲突，请确保所有章节名字唯一.",
             "如果您仍想加载此章节, 使用 /nr force 进行强制重载."
     );
 
@@ -63,6 +63,12 @@ public class Lang {
 
     @Configuration("chapter_folder_check_ordinal_conflict")
     public static String CHAPTERS_FOLDER_CHECK_ORDINAL_CONFLICT = "以下的 章节/任务 存在 Ordinal 冲突，章节/任务 之间的 Ordinal 必须是唯一的.";
+
+    @Configuration("chapter_folder_check_task_name_same")
+    public static List<String> CHAPTERS_FOLDER_CHECK_TASK_NAME_SAME = Arrays.asList(
+            "请检查你的章节文件，",
+            "任务名字存在冲突，请确保所有任务名字唯一."
+    );
 
     @Configuration("chapter_folder_check_load_stop")
     public static String CHAPTERS_FOLDER_CHECK_LOAD_STOP = "加载停止.";

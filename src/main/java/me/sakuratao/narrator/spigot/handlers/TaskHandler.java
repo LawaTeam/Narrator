@@ -67,14 +67,8 @@ public class TaskHandler {
                                  */
                                 if (!t.getSection().equalsIgnoreCase(section)) {
 
-                                    System.out.println(name);
-                                    System.out.println(ordinal);
-                                    System.out.println("");
-                                    System.out.println(t.getName());
-                                    System.out.println(t.getOrdinal());
-
                                     if (t.getName().equalsIgnoreCase(name)) {
-                                        ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NAME_SAME);
+                                        ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_TASK_NAME_SAME);
                                         ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
                                         ServerUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
                                         ServerUtil.log(Level.SEVERE, "        taskName: " + t.getName());
