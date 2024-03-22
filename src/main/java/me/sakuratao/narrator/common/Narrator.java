@@ -77,10 +77,13 @@ public class Narrator {
     }
 
     public void reloadChapter(boolean reload, boolean force){
+
+        managerHandler.getTaskManager().getTasks().values().forEach(BukkitTask::cancel);
+
         handlerManager.getChapterHandler().load(reload, force);
         handlerManager.getTaskHandler().load();
 
-        managerHandler.getTaskManager().getTasks().values().forEach(BukkitTask::cancel);
+
 
         getLogger().info(Lang.CHAPTERS_LOADED);
     }

@@ -66,7 +66,7 @@ public class ContentTask implements Runnable{
             data.setContentIndex(data.getContentIndex() + 1);
 
             if (data.getContentIndex() >= content.size()) {
-                narrator.getManagerHandler().getTaskManager().end(data.getPlayerName());
+                narrator.getManagerHandler().getTaskManager().kill(data.getPlayerName());
                 return;
             }
 

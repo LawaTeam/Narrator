@@ -3,9 +3,7 @@ package me.sakuratao.narrator.spigot.listener;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
-import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
@@ -38,7 +36,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e){
 
-        narrator.getManagerHandler().getTaskManager().end(e.getPlayer().getName().toLowerCase());
+        narrator.getManagerHandler().getTaskManager().kill(e.getPlayer().getName().toLowerCase());
         narrator.getManagerHandler().getPlayerManager().removeByPlayer(e.getPlayer());
 
     }

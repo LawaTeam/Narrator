@@ -64,7 +64,8 @@ public class ContentHandler {
             switch (type.get(0)) {
                 case "T":
                 case "TITLE": {
-                    return title(type, player);
+                    title(type, player);
+                    return true;
                 }
                 case "M":
                 case "MESSAGE": {
@@ -179,12 +180,11 @@ public class ContentHandler {
 
     }
 
-    private boolean title(List<String> type, Player player) {
+    private void title(List<String> type, Player player) {
         player.sendTitle(
                 CCUtil.translate(type.get(4)), CCUtil.translate(type.get(5)),
                 Integer.parseInt(type.get(1)), Integer.parseInt(type.get(2)), Integer.parseInt(type.get(3))
         );
-        return true;
     }
 
     private boolean actionbar(List<String> type, Player player, ContentTask contentTask) {

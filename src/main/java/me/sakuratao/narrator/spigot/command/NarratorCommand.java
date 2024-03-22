@@ -33,24 +33,6 @@ public class NarratorCommand {
 
     }
 
-    @PieCommand(value = "narrator chapter", aliases = {"nc"}, permission = "narrator.command.chapter", bungeeCord = false, spigot = true)
-    public void onChapter(CommandItem item){
-
-        CommandSender sender = item.getSender();
-        String[] args = item.getArgs();
-
-        if (item.isSingle()) {
-            sender.sendMessage(CCUtil.translate("&b所有章节信息如下: "));
-            for (String lang : narrator.getHandlerManager().getChapterHandler().getLangSortedChapters().keySet()) {
-                for (Map<ChapterData, YamlConfiguration> chapter : narrator.getHandlerManager().getChapterHandler().getLangSortedChapters().get(lang)) {
-                    ChapterData data = chapter.keySet().iterator().next();
-                    sender.sendMessage(CCUtil.translate("   &7- &f语言: " + lang + " &8| &f名字: " + data.getName() +" &8| &f版本: " + data.getVersion()));
-                }
-            }
-        }
-
-    }
-
     @PieCommand(value = "narrator reload", aliases = {"nr"}, permission = "narrator.command.reload", bungeeCord = false, spigot = true)
     public void onReload(CommandItem item){
 

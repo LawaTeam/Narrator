@@ -5,6 +5,8 @@ import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
+import me.sakuratao.narrator.spigot.handlers.ChapterHandler;
+import me.sakuratao.narrator.spigot.handlers.TaskHandler;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
@@ -35,17 +37,13 @@ public class TaskManager {
             tasks.get(data.getPlayerName()).cancel();
         }
 
-        ChapterData playingChapter = narrator.getHandlerManager().getChapterHandler().getLangSortedChapters().get(data.getLang())
-                .stream()
-                .filter(
-                        k -> k.keySet().iterator().next().getOrdinal() == data.getPlayingChapterOrdinal()
-                ).iterator().next()
-                .keySet().iterator().next();
+        ChapterHandler ch = narrator.getHandlerManager().getChapterHandler();
+        TaskHandler th = narrator.getHandlerManager().getTaskHandler();
+
+        ChapterData playingChapter = ch.getDataByOrdinal(data.getPlayingChapterOrdinal(), data.getLang());
 
         data.setPlayingChapter(playingChapter);
-        data.setPlayingTask(playingChapter.getTasks()
-                .stream()
-                .filter(taskData -> taskData.getOrdinal() == data.getPlayingTaskOrdinal()).iterator().next());
+        data.setPlayingTask(th.getTaskByOrdinal(playingChapter, data.getPlayingTaskOrdinal()));
 
         data.setContentTask(new ContentTask(narrator, data));
 
@@ -58,7 +56,11 @@ public class TaskManager {
         );
     }
 
-    public void end(String playerName){
+    /**
+     * 结束一个 task
+     * @param playerName - 玩家名
+     */
+    public void kill(String playerName){
         tasks.get(playerName.toLowerCase()).cancel();
         tasks.remove(playerName.toLowerCase());
     }

@@ -1,9 +1,11 @@
 package me.sakuratao.narrator.spigot.handlers;
 
 import me.sakuratao.narrator.common.Narrator;
+import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.data.chapter.TaskData;
+import me.sakuratao.narrator.spigot.utils.ServerUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -22,101 +24,115 @@ public class TaskHandler {
     @Wire
     private HandlerManager handlerManager;
 
+    /*
+        对任务进行加载
+     */
     public void load(){
-        for (Map<ChapterData,  YamlConfiguration> chapterDataMap : handlerManager.getChapterHandler().getChapters().values()) {
-            for (YamlConfiguration contentConfig : chapterDataMap.values()) {
-                try {
-                    ChapterData data = chapterDataMap.keySet().iterator().next();
+        for (String lang : handlerManager.getChapterHandler().getTotalLang()) {
+            for (Map<ChapterData, YamlConfiguration> chapterDataMap : handlerManager.getChapterHandler().getLangChapterMaps(lang)) {
+                for (YamlConfiguration contentConfig : chapterDataMap.values()) {
+                    try {
+                        ChapterData data = handlerManager.getChapterHandler().getDataByMap(chapterDataMap);
+                        clear(data);
 
-                    for (String task : contentConfig.getConfigurationSection("chapterTasks").getKeys(false)) {
+                        for (String section : contentConfig.getConfigurationSection("chapterTasks").getKeys(false)) {
 
-                        if (
-                                contentConfig.getString("chapterTasks." + task + ".name") == null ||
-                                        contentConfig.getString("chapterTasks." + task + ".ordinal") == null
-                        ) {
-                            narrator.getLogger().log(Level.SEVERE, "Please check your chapter file " + contentConfig.getName());
-                            narrator.getLogger().log(Level.SEVERE, "Check your options in chapterTasks about Name and Ordinal, they can't be null.");
-                            return;
-                        }
-
-                        String name = contentConfig.getString("chapterTasks." + task + ".name");
-                        int ordinal = Integer.parseInt(contentConfig.getString("chapterTasks." + task + ".ordinal")); // throw NumberFormatException
-                        List<String> content = contentConfig.getStringList("chapterTasks." + task + ".content");
-
-                        if (ordinal < 1) {
-                            narrator.getLogger().log(Level.SEVERE, "All ordinal must be over 1!");
-                            narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
-                            narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + data.getName());
-                            narrator.getLogger().log(Level.SEVERE, "        Task Name: " + name);
-                            return;
-                        }
-
-                        if (data.getTasks().stream().anyMatch(t -> {
-
-                            boolean result = false;
-                            /*
-                                同名
-                             */
-                            if (t.getName().equalsIgnoreCase(name)){
-                                narrator.getLogger().log(Level.SEVERE, "It is about tasks! There can't be same name!");
-                                result = true;
-                            }
-                            /*
-                                同序号
-                             */
-                            if (t.getOrdinal() == ordinal && !t.getName().equalsIgnoreCase(name)){
-                                narrator.getLogger().log(Level.SEVERE, "It is about tasks! There can't be same ordinal!");
-                                result = true;
+                            if (
+                                    contentConfig.getString("chapterTasks." + section + ".name") == null ||
+                                            contentConfig.getString("chapterTasks." + section + ".ordinal") == null
+                            ) {
+                                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
+                                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+                                ServerUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
+                                ServerUtil.log(Level.SEVERE, "        taskName: " + section);
+                                return;
                             }
 
-                            if (result) {
-                                narrator.getLogger().log(Level.SEVERE, "Please check your chapter " + data.getName() + " about Tasks");
-                                narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
-                                narrator.getLogger().log(Level.SEVERE, "        Name: " + name);
-                                narrator.getLogger().log(Level.SEVERE, "        Name: " + t.getName());
-                                narrator.getLogger().log(Level.SEVERE, "        sameOrdinal: " + ordinal);
-                                narrator.getLogger().log(Level.SEVERE, "Load stopped!");
+                            String name = contentConfig.getString("chapterTasks." + section + ".name");
+                            int ordinal = Integer.parseInt(contentConfig.getString("chapterTasks." + section + ".ordinal")); // throw NumberFormatException
+                            List<String> content = contentConfig.getStringList("chapterTasks." + section + ".content");
+
+                            if (ordinal < 1) {
+                                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
+                                ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+                                ServerUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
+                                ServerUtil.log(Level.SEVERE, "        taskName: " + section);
+                                return;
                             }
 
-                            return result;
+                            if (data.getTasks().stream().anyMatch(t -> {
 
-                        })) return;
+                                /*
+                                    同名
+                                 */
+                                if (!t.getSection().equalsIgnoreCase(section)) {
 
-                        TaskData taskData = new TaskData();
-                        taskData.setName(name);
-                        taskData.setOrdinal(ordinal);
-                        taskData.setContent(content);
-                        data.getTasks().add(taskData);
+                                    System.out.println(name);
+                                    System.out.println(ordinal);
+                                    System.out.println("");
+                                    System.out.println(t.getName());
+                                    System.out.println(t.getOrdinal());
 
-                        /*
-                            fixme 此处用于解决 langSorted 与 chapters 里存的 chapterdata 不一致
-                         */
-                        ChapterData same = handlerManager.getChapterHandler().getSameChapterData(data, data.getLang());
-                        if (same != null) {
-                            same.getTasks().removeIf(taskData1 -> taskData1.getOrdinal() == taskData.getOrdinal());
-                            same.getTasks().add(taskData);
+                                    if (t.getName().equalsIgnoreCase(name)) {
+                                        ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NAME_SAME);
+                                        ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+                                        ServerUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
+                                        ServerUtil.log(Level.SEVERE, "        taskName: " + t.getName());
+                                        return true;
+                                    }
+
+                                    /*
+                                        同序号
+                                     */
+                                    if (t.getOrdinal() == ordinal) {
+                                        ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_ORDINAL_CONFLICT);
+                                        ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+                                        ServerUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
+                                        ServerUtil.log(Level.SEVERE, "        taskName: " + section);
+                                        ServerUtil.log(Level.SEVERE, "        taskName: " + t.getName());
+                                        ServerUtil.log(Level.SEVERE, "        ordinal: " + t.getOrdinal());
+                                        return true;
+                                    }
+                                }
+
+                                return false;
+
+                            })) return;
+
+                            TaskData taskData = new TaskData();
+                            taskData.setSection(section);
+                            taskData.setName(name);
+                            taskData.setOrdinal(ordinal);
+                            taskData.setContent(content);
+                            data.getTasks().add(taskData);
                         }
+                        data.getTasks().sort(Comparator.comparingInt(TaskData::getOrdinal));
 
+                    } catch (NumberFormatException e) {
+                        ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
+                        ServerUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_HELP);
+                        ServerUtil.log(Level.SEVERE, "        chapterFile: " + contentConfig.getName());
+                        return;
                     }
-                    data.getTasks().sort(Comparator.comparingInt(TaskData::getOrdinal));
-
-                } catch (NumberFormatException e) {
-                    narrator.getLogger().log(Level.SEVERE, "Please check your chapter file " + contentConfig.getName() + " about Task's ordinal");
-                    narrator.getLogger().log(Level.SEVERE, "The Ordinal must be int");
-                    narrator.getLogger().log(Level.SEVERE, "Load stopped!");
-                    return;
                 }
-            }
 
+            }
         }
 
     }
 
+    public TaskData getTaskByOrdinal(ChapterData data, int ordinal){
+        return data.getTasks().stream().filter(taskData -> taskData.getOrdinal() == ordinal).iterator().next();
+    }
+
+    public void clear(ChapterData data){
+        data.getTasks().clear();
+    }
+
     public void jump(PlayerData playerData, ChapterData chapterData, int taskOrdinal, int contentIndex){
         playerData.setPlayingTaskOrdinal(taskOrdinal);
-        playerData.setContentIndex(contentIndex-1); // 此处 -1 是为了抵消 ContentTask 的+1, 能跑就行(
-        playerData.setPlayingTask(chapterData.getTasks().stream()
-                .filter(taskData -> taskData.getOrdinal() == playerData.getPlayingTaskOrdinal()).iterator().next());
+        playerData.setContentIndex(contentIndex - 1); // 此处 -1 是为了抵消 ContentTask 的+1
+        playerData.setPlayingTask(getTaskByOrdinal(chapterData, taskOrdinal));
     }
 
 }
