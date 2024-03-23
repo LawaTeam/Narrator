@@ -19,6 +19,7 @@ import me.sakuratao.narrator.spigot.utils.CCUtil;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.utils.LogUtil;
 import me.sakuratao.narrator.spigot.utils.PacketUtil;
+import me.sakuratao.narrator.spigot.utils.ToastUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -57,7 +58,7 @@ public class ContentHandler {
         /*
             TODO: 物品栏文字调用，生成剧情对话背包，
 
-            TODO: MESSAGE_CLICK、MESSAGE_DROP、INV_ANSWER、CONDITION、SOUND(播放声音)、BOOM_AROUND
+            TODO: MESSAGE_CLICK、MESSAGE_DROP、INV_ANSWER、CONDITION、SOUND(播放声音)、BOOM_AROUND、SPAWN_ENTITY
 
             TODO: 玩家自定义字幕速度以及停留时间，并提供 " 上一条 " 的功能
 
@@ -186,14 +187,11 @@ public class ContentHandler {
         StringBuilder sb = new StringBuilder();
 
         /*
-            这段屎山，没事别碰
-            因为实在是太乱了
-
+            这段屎山，没事别碰，因为实在是太乱了
             主要是让单句文字不串行
          */
         for (int i = 0; i < t.length; i ++) {
             String t1 = t[i];
-
             if (i > 2 && i == t.length - 1) {
                 if (t[i-1].getBytes().length >= 21) {
                     sb.append(" ").append(t1);
@@ -202,7 +200,6 @@ public class ContentHandler {
                 }
                 break;
             }
-
             for (int k = 0; k < t1.length(); k++) {
                 if (i > 2) {
                     char ch = t1.charAt(k);
@@ -211,27 +208,13 @@ public class ContentHandler {
                     }
                 }
             }
-
             sb.append(t1);
-
             if (t1.getBytes().length <= 26) {
                 sb.append(" ".repeat((26 - t1.getBytes().length)));
             }
-
         }
 
-        TextComponent title = new TextComponent(CCUtil.translate(sb.toString()));
-
-        AdvancementDisplay rootDisplay =  new AdvancementDisplay(
-                Material.valueOf(contentList.get(2)),
-                new JSONMessage(title),
-                new JSONMessage(new TextComponent("")),
-                AdvancementDisplay.AdvancementFrame.parse(contentList.get(1)),
-                AdvancementVisibility.ALWAYS
-        );
-        Advancement rootAdvancement = new Advancement(null, rootDisplay);
-
-        rootAdvancement.displayToast(player);
+        ToastUtil.showToast(player, Material.valueOf(contentList.get(2)), sb.toString(), contentList.get(1));
 
     }
 
@@ -413,7 +396,6 @@ public class ContentHandler {
             }
         }
 
-        System.out.println(sb);
         Bukkit.getScheduler().runTaskLaterAsynchronously(NarratorSpigot.getPluginInstance(), () -> {
             execute(player, chapterData, sb.toString(), contentTask);
         }, delay);

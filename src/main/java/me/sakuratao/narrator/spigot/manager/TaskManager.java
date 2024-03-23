@@ -66,4 +66,13 @@ public class TaskManager {
         tasks.remove(playerName.toLowerCase());
     }
 
+    /**
+     * 检查是否存在与该 playerName 相关的 task
+     * @param playerName - 玩家名
+     * @return 是否存在
+     */
+    public boolean isExists(String playerName){
+        return tasks.containsKey(playerName.toLowerCase());
+    }
+
 }
