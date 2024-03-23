@@ -99,6 +99,10 @@
 #           使用<br>作为换行分隔符，每一行字符不应超过 25 个字节
 #       --Form: TOAST|GOAL/CHALLENGE/TASK|MATERIAL|MESSAGE
 #
+#   WEATHER:
+#       --Feature:
+#           设置玩家的天气
+#       --Form: WEATHER|TYPE
 # Here is an example how they use in yaml
 chapterInfo:
     name: "ChapterExample"

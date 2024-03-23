@@ -1,11 +1,14 @@
 package me.sakuratao.narrator.spigot.handlers;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
 import eu.endercentral.crazy_advancements.JSONMessage;
 import eu.endercentral.crazy_advancements.advancement.Advancement;
 import eu.endercentral.crazy_advancements.advancement.AdvancementDisplay;
 import eu.endercentral.crazy_advancements.advancement.AdvancementVisibility;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
+import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
 import me.sakuratao.narrator.spigot.enums.DelayStatus;
@@ -14,6 +17,8 @@ import me.sakuratao.narrator.spigot.enums.PrintStatus;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import me.sakuratao.narrator.spigot.utils.CCUtil;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
+import me.sakuratao.narrator.spigot.utils.LogUtil;
+import me.sakuratao.narrator.spigot.utils.PacketUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -26,20 +31,24 @@ import top.jingwenmc.spigotpie.common.instance.Wire;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @PieComponent
 public class ContentHandler {
 
     @Wire
     private Narrator narrator;
-    @Wire
-    private CacheData cacheData;
 
+    /**
+     * 执行对 content 的解析
+     * @param player - 玩家
+     * @param chapterData - 章节数据
+     * @param content - 内容
+     * @param contentTask - contentTask
+     * @return 执行完毕
+     */
     public boolean execute(Player player, ChapterData chapterData, String content, ContentTask contentTask) {
 
-        List<String> type = Arrays.asList(content.split("\\|"));
+        List<String> contentList = Arrays.asList(content.split("\\|"));
 
         PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(player);
 
@@ -48,7 +57,7 @@ public class ContentHandler {
         /*
             TODO: 物品栏文字调用，生成剧情对话背包，
 
-            TODO: MESSAGE_CLICK、MESSAGE_DROP、INV_ANSWER、CONDITION、SOUND(播放声音)
+            TODO: MESSAGE_CLICK、MESSAGE_DROP、INV_ANSWER、CONDITION、SOUND(播放声音)、BOOM_AROUND
 
             TODO: 玩家自定义字幕速度以及停留时间，并提供 " 上一条 " 的功能
 
@@ -57,36 +66,40 @@ public class ContentHandler {
 
         /*
          * 这里会解析 content 的内容
-         * type.get(0) 即是所对应的功能
+         * contentList.get(0) 即是所对应的功能
          * 其余的则是所对应功能的参数，详细请翻阅 ChapterExample.yml
          */
         try {
-            switch (type.get(0)) {
+            switch (contentList.get(0)) {
                 case "T":
                 case "TITLE": {
-                    title(type, player);
+                    showTitle(contentList, player);
                     return true;
                 }
                 case "M":
                 case "MESSAGE": {
-                    player.sendMessage(CCUtil.translate(type.get(1)));
+                    player.sendMessage(CCUtil.translate(contentList.get(1)));
                     return true;
                 }
                 case "AB":
                 case "ACTIONBAR": {
-                    return actionbar(type, player, contentTask);
+                    return showActionbar(contentList, player, contentTask);
                 }
                 case "AB_ANSWER":
                 case "ACTIONBAR_ANSWER": {
-                    return actionBarAnswer(type, narrator, player, playerData, contentTask);
+                    return answerByActionbar(contentList, narrator, player, playerData, contentTask);
                 }
                 case "D":
                 case "DELAY": {
-                    return delay(type, contentTask);
+                    if (contentList.size() > 2){
+                        delaySingle(contentList, player, chapterData, contentTask);
+                        return true;
+                    }
+                    return delayOverall(contentList, contentTask);
                 }
                 case "COMMAND": {
-                    narrator.getLogger().log(Level.WARNING, "Executed command: " + type.get(1) + " | Chapter: " + chapterData.getName());
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), type.get(1));
+                    narrator.getLogger().log(Level.WARNING, "Executed command: " + contentList.get(1) + " | Chapter: " + chapterData.getName());
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), contentList.get(1));
                     return true;
                 }
                 case "MC":
@@ -96,10 +109,14 @@ public class ContentHandler {
                 }
                 case "JT":
                 case "JUMP_TASK": {
-                    return jumpTask(type, playerData, chapterData, content);
+                    return jumpTask(contentList, playerData, chapterData, content);
                 }
                 case "TOAST":{
-                    toast(type, player);
+                    showToast(contentList, player);
+                    return true;
+                }
+                case "WEATHER": {
+                    changeWeather(contentList.get(1), player);
                     return true;
                 }
                 case "C":
@@ -127,14 +144,51 @@ public class ContentHandler {
         }
     }
 
-    private void toast(List<String> type, Player player){
+    /**
+     * 更改玩家的天气
+     * @param weather - 天气
+     * @param player - 玩家
+     */
+    private void changeWeather(String weather, Player player){
+        if (weather.equalsIgnoreCase("CLEAR")) {
+            player.resetPlayerWeather();
+        }
 
-        String[] t = type.get(3).split("<br>");
+        PacketContainer weatherPacket = PacketUtil.createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
+        if (weather.equalsIgnoreCase("SUNSHINE")) {
+            player.resetPlayerWeather();
+        }
+        if (weather.equalsIgnoreCase("THUNDER")) {
+
+            //weatherPacket.getGameStateIDs().write(0, 2);
+            //PacketUtil.sendPacket(player, weatherPacket);
+
+            weatherPacket.getGameStateIDs().write(0, 7);
+            weatherPacket.getModifier().write(1, 1);
+            PacketUtil.sendPacket(player, weatherPacket);
+        }
+        if (weather.equalsIgnoreCase("RAINING")) {
+            weatherPacket.getGameStateIDs().write(0, 2);
+            weatherPacket.getModifier().write(1, 0.5F);
+        }
+        PacketUtil.sendPacket(player, weatherPacket);
+    }
+
+    /**
+     * 向玩家发送 toast 形式的信息
+     * @param contentList - 切割的content
+     * @param player - 玩家
+     */
+    private void showToast(List<String> contentList, Player player){
+
+        String[] t = contentList.get(3).split("<br>");
         StringBuilder sb = new StringBuilder();
 
         /*
             这段屎山，没事别碰
             因为实在是太乱了
+
+            主要是让单句文字不串行
          */
         for (int i = 0; i < t.length; i ++) {
             String t1 = t[i];
@@ -168,10 +222,10 @@ public class ContentHandler {
         TextComponent title = new TextComponent(CCUtil.translate(sb.toString()));
 
         AdvancementDisplay rootDisplay =  new AdvancementDisplay(
-                Material.valueOf(type.get(2)),
+                Material.valueOf(contentList.get(2)),
                 new JSONMessage(title),
                 new JSONMessage(new TextComponent("")),
-                AdvancementDisplay.AdvancementFrame.parse(type.get(1)),
+                AdvancementDisplay.AdvancementFrame.parse(contentList.get(1)),
                 AdvancementVisibility.ALWAYS
         );
         Advancement rootAdvancement = new Advancement(null, rootDisplay);
@@ -180,17 +234,32 @@ public class ContentHandler {
 
     }
 
-    private void title(List<String> type, Player player) {
+    /**
+     * 给玩家发送 title
+     * @param contentList - 总content
+     * @param player - 玩家
+     */
+    private void showTitle(List<String> contentList, Player player) {
         player.sendTitle(
-                CCUtil.translate(type.get(4)), CCUtil.translate(type.get(5)),
-                Integer.parseInt(type.get(1)), Integer.parseInt(type.get(2)), Integer.parseInt(type.get(3))
+                CCUtil.translate(contentList.get(4)), CCUtil.translate(contentList.get(5)),
+                Integer.parseInt(contentList.get(1)), Integer.parseInt(contentList.get(2)), Integer.parseInt(contentList.get(3))
         );
     }
 
-    private boolean actionbar(List<String> type, Player player, ContentTask contentTask) {
+    /**
+     * 给玩家发送 actionbar
+     *
+     * actionbar 发送过程中会影响整体进程
+     *
+     * @param contentList - 总content
+     * @param player - 玩家
+     * @param contentTask - contentTask
+     * @return 发送成功
+     */
+    private boolean showActionbar(List<String> contentList, Player player, ContentTask contentTask) {
         Audience audience = narrator.getAdventure().player(player);
-        if (!Boolean.parseBoolean(type.get(1))) {
-            audience.sendActionBar(Component.text(CCUtil.translate(type.get(2))));
+        if (!Boolean.parseBoolean(contentList.get(1))) {
+            audience.sendActionBar(Component.text(CCUtil.translate(contentList.get(2))));
             return true;
         }
 
@@ -198,12 +267,12 @@ public class ContentHandler {
                       这里会对 text 处理成一个打字机的效果
                       text将会在 delay 限定的时间内完成逐字打印
                      */
-        String text = type.get(4);
+        String text = contentList.get(4);
 
         if (contentTask.getPrintStatus().equals(PrintStatus.NONE)) {
             contentTask.setPrintStatus(PrintStatus.PRINTING);
 
-            long delayTime = Long.parseLong(type.get(2));
+            long delayTime = Long.parseLong(contentList.get(2));
             AtomicInteger textLength = new AtomicInteger(0);
 
             contentTask.setPrintTask(
@@ -230,7 +299,7 @@ public class ContentHandler {
             contentTask.setPrintStatus(PrintStatus.KEPT);
             contentTask.getPrintTask().cancel();
 
-            long keep = (Long.parseLong(type.get(3))/20 * 1000) + System.currentTimeMillis();
+            long keep = (Long.parseLong(contentList.get(3))/20 * 1000) + System.currentTimeMillis();
             contentTask.setPrintTask(Bukkit.getScheduler().runTaskTimerAsynchronously(NarratorSpigot.getPluginInstance(), () -> {
                 if (System.currentTimeMillis() >= keep) {
                     contentTask.setPrintStatus(PrintStatus.PRINTED);
@@ -248,12 +317,21 @@ public class ContentHandler {
         return false;
     }
 
-    private boolean actionBarAnswer(List<String> type, Narrator narrator, Player player, PlayerData playerData,  ContentTask contentTask){
+    /**
+     * 让玩家通过 actionbar 进行回答选择
+     * @param contentList - 总content
+     * @param narrator - narrator 实例
+     * @param player - 玩家
+     * @param playerData - 玩家数据
+     * @param contentTask - contentTask
+     * @return 是否做出选择
+     */
+    private boolean answerByActionbar(List<String> contentList, Narrator narrator, Player player, PlayerData playerData, ContentTask contentTask){
         Audience audience = narrator.getAdventure().player(player);
         List<String> messages = new ArrayList<>();
 
-        for (int i = 1; i < type.size(); i++) {
-            messages.add(type.get(i));
+        for (int i = 1; i < contentList.size(); i++) {
+            messages.add(contentList.get(i));
         }
 
         if (contentTask.getOptionStatus().equals(OptionStatus.NONE)) {
@@ -293,11 +371,19 @@ public class ContentHandler {
         return false;
     }
 
-    private boolean delay(List<String> type, ContentTask contentTask){
+    /**
+     * 整体延迟
+     * @param contentList - 总content
+     * @param contentTask - contentTask
+     * @return 是否延迟结束
+     */
+    private boolean delayOverall(List<String> contentList, ContentTask contentTask){
+
+        long delay = Integer.parseInt(contentList.get(1));
+
         if (contentTask.getDelayStatus().equals(DelayStatus.NONE)) {
             contentTask.setDelayStatus(DelayStatus.DELAYING);
 
-            long delay = Integer.parseInt(type.get(1));
             Bukkit.getScheduler().runTaskLater(NarratorSpigot.getPluginInstance(), () -> {
                 contentTask.setDelayStatus(DelayStatus.DELAYED);
             }, delay);
@@ -306,14 +392,45 @@ public class ContentHandler {
         return contentTask.getDelayStatus().equals(DelayStatus.DELAYED);
     }
 
-    private boolean jumpTask(List<String> type, PlayerData playerData, ChapterData chapterData, String content) {
-        int taskOrdinal = Integer.parseInt(type.get(1));
-        int contentIndex = Integer.parseInt(type.get(2));
+    /**
+     * 单条延迟
+     * @param contentList - 总content
+     * @param player - 玩家
+     * @param chapterData - 章节数据
+     * @param contentTask - contentTask
+     */
+    private void delaySingle(List<String> contentList, Player player, ChapterData chapterData, ContentTask contentTask){
+        long delay = Integer.parseInt(contentList.get(1));
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 2; i <= contentList.size() - 1; i++){
+            sb.append(contentList.get(i));
+            if (i != contentList.size() - 1) {
+                sb.append("|");
+            }
+        }
+
+        System.out.println(sb);
+        Bukkit.getScheduler().runTaskLater(NarratorSpigot.getPluginInstance(), () -> {
+            execute(player, chapterData, sb.toString(), contentTask);
+        }, delay);
+    }
+
+    /**
+     * 进行任务转跳
+     * @param contentList - 总content
+     * @param playerData - 玩家数据
+     * @param chapterData - 章节数据
+     * @param content - 当前content
+     * @return 是否转跳完毕
+     */
+    private boolean jumpTask(List<String> contentList, PlayerData playerData, ChapterData chapterData, String content) {
+        int taskOrdinal = Integer.parseInt(contentList.get(1));
+        int contentIndex = Integer.parseInt(contentList.get(2));
 
         if (taskOrdinal < 1 || contentIndex < 0) {
-            narrator.getLogger().log(Level.SEVERE, "Task Ordinal must be over 1, Content Index must be over 0!");
-            narrator.getLogger().log(Level.SEVERE, "Please check your content about 'JT/JUMP_TASK'");
-            narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
+            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_EXECUTE_NUMBER_FORMAT);
+            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
             narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + chapterData.getName());
             narrator.getLogger().log(Level.SEVERE, "        Content: " + content);
             return false;

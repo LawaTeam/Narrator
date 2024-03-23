@@ -30,8 +30,8 @@ public class Lang {
     @Configuration("chapter_folder_check_null")
     public static String CHAPTERS_FOLDER_CHECK_NULL = "留意查看 chapterInfo 中的 Name, Author, Lang, Version, Ordinal是否填写，这些不能留空.";
 
-    @Configuration("chapter_folder_check_help")
-    public static String CHAPTERS_FOLDER_CHECK_HELP = "这些信息也许可以快速帮助你排查问题:";
+    @Configuration("chapter_console_help")
+    public static String CHAPTERS_CONSOLE_HELP = "这些信息也许可以快速帮助你排查问题:";
 
     @Configuration("chapter_folder_check_number_format")
     public static List<String> CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT = Arrays.asList(
@@ -68,6 +68,12 @@ public class Lang {
     public static List<String> CHAPTERS_FOLDER_CHECK_TASK_NAME_SAME = Arrays.asList(
             "请检查你的章节文件，",
             "任务名字存在冲突，请确保所有任务名字唯一."
+    );
+
+    @Configuration("chapter_execute_number_format")
+    public static List<String> CHAPTERS_EXECUTE_NUMBER_FORMAT = Arrays.asList(
+            "请检查你的内容 'JT/JUMPTASK', 其中存在格式问题.",
+            "所填写的 Ordinal 必须大于 1, Content 索引必须大于 0"
     );
 
     @Configuration("chapter_folder_check_load_stop")

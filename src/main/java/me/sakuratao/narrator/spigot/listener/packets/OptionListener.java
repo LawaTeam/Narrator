@@ -30,13 +30,19 @@ public class OptionListener extends PacketAdapter {
 
     public void onPacketReceiving(PacketEvent packetEvent) {
 
+
+        // fixme reamke
         Player player = packetEvent.getPlayer();
 
         String playerName = player.getName().toLowerCase();
         PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(player);
         ContentTask contentTask = playerData.getContentTask();
 
-        if (contentTask == null || contentTask.getOptionStatus().equals(OptionStatus.DECIDED)) return;
+        if (
+                contentTask == null
+                || contentTask.getOptionTask() == null
+                || contentTask.getOptionStatus().equals(OptionStatus.DECIDED)
+        ) return;
 
         if (packetEvent.getPacketType().equals(PacketType.Play.Client.ARM_ANIMATION)) {
             contentTask.setOptionStatus(OptionStatus.DECIDED);

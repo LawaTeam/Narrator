@@ -66,10 +66,26 @@ public class ContentTask implements Runnable{
             data.setContentIndex(data.getContentIndex() + 1);
 
             if (data.getContentIndex() >= content.size()) {
-                narrator.getManagerHandler().getTaskManager().kill(data.getPlayerName());
+                narrator.getManagerHandler().getTaskManager().killTask(data.getPlayerName());
                 return;
             }
 
+        }
+
+    }
+
+    /**
+     * 清理相关附属 task
+     */
+    public void killSubTasks(){
+        if (printTask != null) {
+            printTask.cancel();
+            printTask = null;
+        }
+
+        if (optionTask != null) {
+            optionTask.cancel();
+            optionTask = null;
         }
 
     }

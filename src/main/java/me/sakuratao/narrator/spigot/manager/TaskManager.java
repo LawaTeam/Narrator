@@ -34,6 +34,7 @@ public class TaskManager {
     public void createTask(@NotNull PlayerData data) {
 
         if (tasks.containsKey(data.getPlayerName())) {
+            data.getContentTask().killSubTasks();
             tasks.get(data.getPlayerName()).cancel();
         }
 
@@ -60,7 +61,7 @@ public class TaskManager {
      * 结束一个 task
      * @param playerName - 玩家名
      */
-    public void kill(String playerName){
+    public void killTask(String playerName){
         tasks.get(playerName.toLowerCase()).cancel();
         tasks.remove(playerName.toLowerCase());
     }

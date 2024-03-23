@@ -36,7 +36,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e){
 
-        narrator.getManagerHandler().getTaskManager().kill(e.getPlayer().getName().toLowerCase());
+        narrator.getManagerHandler().getTaskManager().killTask(e.getPlayer().getName().toLowerCase());
         narrator.getManagerHandler().getPlayerManager().removeByPlayer(e.getPlayer());
 
     }
