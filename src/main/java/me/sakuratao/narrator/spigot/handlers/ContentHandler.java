@@ -152,6 +152,7 @@ public class ContentHandler {
     private void changeWeather(String weather, Player player){
         if (weather.equalsIgnoreCase("CLEAR")) {
             player.resetPlayerWeather();
+            return;
         }
 
         PacketContainer weatherPacket = PacketUtil.createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
@@ -384,7 +385,7 @@ public class ContentHandler {
         if (contentTask.getDelayStatus().equals(DelayStatus.NONE)) {
             contentTask.setDelayStatus(DelayStatus.DELAYING);
 
-            Bukkit.getScheduler().runTaskLater(NarratorSpigot.getPluginInstance(), () -> {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(NarratorSpigot.getPluginInstance(), () -> {
                 contentTask.setDelayStatus(DelayStatus.DELAYED);
             }, delay);
         }
@@ -394,6 +395,8 @@ public class ContentHandler {
 
     /**
      * 单条延迟
+     * fixme 存在延迟计算的问题，需要优化
+     *
      * @param contentList - 总content
      * @param player - 玩家
      * @param chapterData - 章节数据
@@ -411,7 +414,7 @@ public class ContentHandler {
         }
 
         System.out.println(sb);
-        Bukkit.getScheduler().runTaskLater(NarratorSpigot.getPluginInstance(), () -> {
+        Bukkit.getScheduler().runTaskLaterAsynchronously(NarratorSpigot.getPluginInstance(), () -> {
             execute(player, chapterData, sb.toString(), contentTask);
         }, delay);
     }

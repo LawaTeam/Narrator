@@ -27,7 +27,7 @@ public class TaskManager {
 
     /**
      *
-     * 创建任务，作用于玩家游玩时可以解析对应 content 并执行
+     * 创建任务，作用于玩家游玩时解析对应 content 并执行
      *
      * @param data - PlayerData
      */
