@@ -7,6 +7,8 @@ import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
 import me.sakuratao.narrator.spigot.enums.DelayStatus;
+import me.sakuratao.narrator.spigot.enums.Weather;
+import me.sakuratao.narrator.spigot.events.content.WeatherChangeEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
 import me.sakuratao.narrator.spigot.events.content.MessageEvent;
@@ -172,7 +174,11 @@ public class ContentHandler {
                     return true;
                 }
                 case "WEATHER": {
-                    changeWeather(contentList.get(1), player);
+                    WeatherChangeEvent weatherChangeEvent = new WeatherChangeEvent(player, Weather.valueOf(contentList.get(1)));
+                    EventUtil.callEvent(weatherChangeEvent);
+                    if (!weatherChangeEvent.isCancelled()) {
+                        weatherChangeEvent.changeWeather();
+                    }
                     return true;
                 }
                 case "C":
@@ -198,37 +204,6 @@ public class ContentHandler {
             e.printStackTrace();
             return false;
         }
-    }
-
-    /**
-     * 更改玩家的天气
-     * @param weather - 天气
-     * @param player - 玩家
-     */
-    private void changeWeather(String weather, Player player){
-        if (weather.equalsIgnoreCase("CLEAR")) {
-            player.resetPlayerWeather();
-            return;
-        }
-
-        PacketContainer weatherPacket = PacketUtil.createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
-        if (weather.equalsIgnoreCase("SUNSHINE")) {
-            player.resetPlayerWeather();
-        }
-        if (weather.equalsIgnoreCase("THUNDER")) {
-
-            //weatherPacket.getGameStateIDs().write(0, 2);
-            //PacketUtil.sendPacket(player, weatherPacket);
-
-            weatherPacket.getGameStateIDs().write(0, 7);
-            weatherPacket.getModifier().write(1, 1);
-            PacketUtil.sendPacket(player, weatherPacket);
-        }
-        if (weather.equalsIgnoreCase("RAINING")) {
-            weatherPacket.getGameStateIDs().write(0, 2);
-            weatherPacket.getModifier().write(1, 0.5F);
-        }
-        PacketUtil.sendPacket(player, weatherPacket);
     }
 
     /**
@@ -297,6 +272,7 @@ public class ContentHandler {
     /**
      * 单条延迟
      * fixme 存在延迟计算的问题，需要优化
+     * fixme 重开后仍然存在此次delay
      *
      * @param contentList - 总content
      * @param player - 玩家
@@ -314,7 +290,7 @@ public class ContentHandler {
             }
         }
 
-        Bukkit.getScheduler().runTaskLaterAsynchronously(NarratorSpigot.getPluginInstance(), () -> { // fixme 重开后仍然存在此次delay
+        Bukkit.getScheduler().runTaskLaterAsynchronously(NarratorSpigot.getPluginInstance(), () -> {
             execute(player, chapterData, sb.toString(), contentTask);
         }, delay);
     }
