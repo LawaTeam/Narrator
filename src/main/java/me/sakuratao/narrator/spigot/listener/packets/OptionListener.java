@@ -8,7 +8,10 @@ import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
 import me.sakuratao.narrator.spigot.enums.OptionStatus;
+import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEvent;
+import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnsweredEvent;
 import me.sakuratao.narrator.spigot.task.ContentTask;
+import me.sakuratao.narrator.spigot.utils.EventUtil;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -30,27 +33,29 @@ public class OptionListener extends PacketAdapter {
 
     public void onPacketReceiving(PacketEvent packetEvent) {
 
-
-        // fixme reamke
         Player player = packetEvent.getPlayer();
 
         String playerName = player.getName().toLowerCase();
         PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(player);
         ContentTask contentTask = playerData.getContentTask();
 
+        ActionBarAnswerEvent actionBarAnswerEvent = narrator.getCacheData().getCurrentActionBarAnswerEvent(player);
+
         if (
                 contentTask == null
-                || contentTask.getOptionTask() == null
-                || contentTask.getOptionStatus().equals(OptionStatus.DECIDED)
+                || actionBarAnswerEvent == null
+                || actionBarAnswerEvent.getOptionTask() == null
+                || actionBarAnswerEvent.getOptionStatus().equals(OptionStatus.DECIDED)
         ) return;
 
         if (packetEvent.getPacketType().equals(PacketType.Play.Client.ARM_ANIMATION)) {
-            contentTask.setOptionStatus(OptionStatus.DECIDED);
+            actionBarAnswerEvent.setOptionStatus(OptionStatus.DECIDED);
+            EventUtil.callEvent(new ActionBarAnsweredEvent(player, actionBarAnswerEvent.getOptions().get(actionBarAnswerEvent.getOptionIndex())));
         }
         if (packetEvent.getPacketType().equals(PacketType.Play.Client.HELD_ITEM_SLOT)) {
-            contentTask.setOptionIndex(contentTask.getOptionIndex() + 1);
-            if (contentTask.getOptionIndex() >= contentTask.getOptionSize()) {
-                contentTask.setOptionIndex(0);
+            actionBarAnswerEvent.setOptionIndex(actionBarAnswerEvent.getOptionIndex() + 1);
+            if (actionBarAnswerEvent.getOptionIndex() >= actionBarAnswerEvent.getOptions().size()) {
+                actionBarAnswerEvent.setOptionIndex(0);
             }
         }
 

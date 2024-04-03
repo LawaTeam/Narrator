@@ -34,7 +34,7 @@ public class TaskManager {
     public void createTask(@NotNull PlayerData data) {
 
         if (tasks.containsKey(data.getPlayerName())) {
-            data.getContentTask().killSubTasks();
+            narrator.getCacheData().clear(data.getPlayer());
             tasks.get(data.getPlayerName()).cancel();
         }
 

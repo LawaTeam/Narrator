@@ -23,20 +23,6 @@ public class ContentTask implements Runnable{
         this.data = data;
     }
 
-    /*
-        These are work for actionbar print model
-     */
-    private PrintStatus printStatus = PrintStatus.NONE;
-    private BukkitTask printTask = null;
-
-    /*
-        These are work for 消息选择 model
-     */
-    private int optionIndex = -1;
-    private int optionSize = 0;
-    private OptionStatus optionStatus = OptionStatus.NONE;
-    private BukkitTask optionTask = null;
-
     private DelayStatus delayStatus = DelayStatus.NONE;
 
     @Override
@@ -51,18 +37,9 @@ public class ContentTask implements Runnable{
                 this
         )){
 
-            printTask = null;
-            printStatus = PrintStatus.NONE;
-
-            optionIndex = 0;
-            optionSize = 0;
-            optionTask = null;
-            optionStatus = OptionStatus.NONE;
-
             delayStatus = DelayStatus.NONE;
 
             List<String> content = data.getPlayingTask().getContent();
-
             data.setContentIndex(data.getContentIndex() + 1);
 
             if (data.getContentIndex() >= content.size()) {
@@ -70,22 +47,6 @@ public class ContentTask implements Runnable{
                 return;
             }
 
-        }
-
-    }
-
-    /**
-     * 清理相关附属 task
-     */
-    public void killSubTasks(){
-        if (printTask != null) {
-            printTask.cancel();
-            printTask = null;
-        }
-
-        if (optionTask != null) {
-            optionTask.cancel();
-            optionTask = null;
         }
 
     }

@@ -2,27 +2,18 @@ package me.sakuratao.narrator.spigot.handlers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import eu.endercentral.crazy_advancements.JSONMessage;
-import eu.endercentral.crazy_advancements.advancement.Advancement;
-import eu.endercentral.crazy_advancements.advancement.AdvancementDisplay;
-import eu.endercentral.crazy_advancements.advancement.AdvancementVisibility;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
-import me.sakuratao.narrator.spigot.data.cache.CacheData;
 import me.sakuratao.narrator.spigot.enums.DelayStatus;
-import me.sakuratao.narrator.spigot.enums.OptionStatus;
-import me.sakuratao.narrator.spigot.enums.PrintStatus;
+import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEvent;
+import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
+import me.sakuratao.narrator.spigot.events.content.MessageEvent;
+import me.sakuratao.narrator.spigot.events.content.TitleEvent;
 import me.sakuratao.narrator.spigot.task.ContentTask;
-import me.sakuratao.narrator.spigot.utils.CCUtil;
+import me.sakuratao.narrator.spigot.utils.*;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
-import me.sakuratao.narrator.spigot.utils.LogUtil;
-import me.sakuratao.narrator.spigot.utils.PacketUtil;
-import me.sakuratao.narrator.spigot.utils.ToastUtil;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,7 +21,6 @@ import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 @PieComponent
@@ -72,24 +62,89 @@ public class ContentHandler {
          */
         try {
             switch (contentList.get(0)) {
+                /*
+                  Title
+                 */
                 case "T":
                 case "TITLE": {
-                    showTitle(contentList, player);
+                    TitleEvent titleEvent = new TitleEvent(contentList, player);
+                    EventUtil.callEvent(titleEvent);
+                    if (!titleEvent.isCancelled()) {
+                        titleEvent.showTitle();
+                    }
                     return true;
                 }
+                /*
+                    MESSAGE
+                 */
                 case "M":
                 case "MESSAGE": {
-                    player.sendMessage(CCUtil.translate(contentList.get(1)));
+                    MessageEvent messageEvent = new MessageEvent(player, CCUtil.translate(contentList.get(1)));
+                    EventUtil.callEvent(messageEvent);
+                    if (!messageEvent.isCancelled()) {
+                        messageEvent.sendMessage();
+                    }
                     return true;
                 }
+                /*
+                    ACTIONABR
+                 */
                 case "AB":
                 case "ACTIONBAR": {
-                    return showActionbar(contentList, player, contentTask);
+                    boolean isPrint = Boolean.parseBoolean(contentList.get(1));
+
+                    ActionBarEvent actionBarEvent;
+                    if (isPrint) {
+                        if (narrator.getCacheData().isCurrentActionBarEventExist(player)) {
+                            narrator.getCacheData().getCurrentActionBarEvent(player).showActionbar();
+                            return narrator.getCacheData().isCurrentActionbarEnded(player);
+                        }
+                        actionBarEvent = new ActionBarEvent(
+                                narrator,
+                                player,
+                                true,
+                                Long.parseLong(contentList.get(2)),
+                                Long.parseLong(contentList.get(3)),
+                                CCUtil.translate(contentList.get(4))
+                        );
+                        narrator.getCacheData().putCurrentActionBarEvent(player, actionBarEvent);
+                    } else {
+                        actionBarEvent = new ActionBarEvent(
+                                narrator,
+                                player,
+                                false,
+                                0,
+                                0,
+                                CCUtil.translate(contentList.get(2))
+                        );
+                    }
+
+                    EventUtil.callEvent(actionBarEvent);
+                    actionBarEvent.showActionbar();
+                    return actionBarEvent.isEnded();
                 }
+                /*
+                    ACTIONBAR_ANSWER
+                 */
                 case "AB_ANSWER":
                 case "ACTIONBAR_ANSWER": {
-                    return answerByActionbar(contentList, narrator, player, playerData, contentTask);
+
+                    if (narrator.getCacheData().isCurrentActionBarAnswerEventExist(player)) {
+                        narrator.getCacheData().getCurrentActionBarAnswerEvent(player).checkAnswer();
+                        return narrator.getCacheData().isCurrentActionBarAnswerEventDecided(player);
+                    }
+                    ActionBarAnswerEvent actionBarAnswerEvent = new ActionBarAnswerEvent(
+                            narrator,
+                            player,
+                            playerData,
+                            contentList.subList(1, contentList.size())
+                    );
+                    narrator.getCacheData().putCurrentActionBarAnswerEvent(player, actionBarAnswerEvent);
+                    return false;
                 }
+                /*
+                    DELAY
+                 */
                 case "D":
                 case "DELAY": {
                     if (contentList.size() > 2){
@@ -219,143 +274,6 @@ public class ContentHandler {
     }
 
     /**
-     * 给玩家发送 title
-     * @param contentList - 总content
-     * @param player - 玩家
-     */
-    private void showTitle(List<String> contentList, Player player) {
-        player.sendTitle(
-                CCUtil.translate(contentList.get(4)), CCUtil.translate(contentList.get(5)),
-                Integer.parseInt(contentList.get(1)), Integer.parseInt(contentList.get(2)), Integer.parseInt(contentList.get(3))
-        );
-    }
-
-    /**
-     * 给玩家发送 actionbar
-     *
-     * actionbar 发送过程中会影响整体进程
-     *
-     * @param contentList - 总content
-     * @param player - 玩家
-     * @param contentTask - contentTask
-     * @return 发送成功
-     */
-    private boolean showActionbar(List<String> contentList, Player player, ContentTask contentTask) {
-        Audience audience = narrator.getAdventure().player(player);
-        if (!Boolean.parseBoolean(contentList.get(1))) {
-            audience.sendActionBar(Component.text(CCUtil.translate(contentList.get(2))));
-            return true;
-        }
-
-                    /*
-                      这里会对 text 处理成一个打字机的效果
-                      text将会在 delay 限定的时间内完成逐字打印
-                     */
-        String text = contentList.get(4);
-
-        if (contentTask.getPrintStatus().equals(PrintStatus.NONE)) {
-            contentTask.setPrintStatus(PrintStatus.PRINTING);
-
-            long delayTime = Long.parseLong(contentList.get(2));
-            AtomicInteger textLength = new AtomicInteger(0);
-
-            contentTask.setPrintTask(
-                    Bukkit.getScheduler().runTaskTimerAsynchronously(NarratorSpigot.getPluginInstance(), () -> {
-                        if (textLength.get() >= text.length()) {
-                            contentTask.setPrintStatus(PrintStatus.KEEPING);
-                            return;
-                        }
-
-                        textLength.set(textLength.get() + 1);
-                        String outputText = text.substring(0, textLength.get());
-
-                        if (textLength.get() % 2 == 0 && textLength.get() != text.length()) {
-                            audience.sendActionBar(Component.text(CCUtil.translate(outputText + "&kA&r_")));
-                            return;
-                        }
-                        audience.sendActionBar(Component.text(CCUtil.translate(outputText)));
-                    }, 0, delayTime)
-            );
-        }
-
-        if (contentTask.getPrintStatus().equals(PrintStatus.KEEPING)) {
-
-            contentTask.setPrintStatus(PrintStatus.KEPT);
-            contentTask.getPrintTask().cancel();
-
-            long keep = (Long.parseLong(contentList.get(3))/20 * 1000) + System.currentTimeMillis();
-            contentTask.setPrintTask(Bukkit.getScheduler().runTaskTimerAsynchronously(NarratorSpigot.getPluginInstance(), () -> {
-                if (System.currentTimeMillis() >= keep) {
-                    contentTask.setPrintStatus(PrintStatus.PRINTED);
-                    return;
-                }
-                audience.sendActionBar(Component.text(CCUtil.translate(text)));
-            }, 0, 20));
-        }
-
-        if (contentTask.getPrintStatus().equals(PrintStatus.PRINTED)) {
-            contentTask.getPrintTask().cancel();
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * 让玩家通过 actionbar 进行回答选择
-     * @param contentList - 总content
-     * @param narrator - narrator 实例
-     * @param player - 玩家
-     * @param playerData - 玩家数据
-     * @param contentTask - contentTask
-     * @return 是否做出选择
-     */
-    private boolean answerByActionbar(List<String> contentList, Narrator narrator, Player player, PlayerData playerData, ContentTask contentTask){
-        Audience audience = narrator.getAdventure().player(player);
-        List<String> messages = new ArrayList<>();
-
-        for (int i = 1; i < contentList.size(); i++) {
-            messages.add(contentList.get(i));
-        }
-
-        if (contentTask.getOptionStatus().equals(OptionStatus.NONE)) {
-
-            contentTask.setOptionSize(messages.size());
-            contentTask.setOptionIndex(0);
-            contentTask.setOptionStatus(OptionStatus.DECIDING);
-
-            contentTask.setOptionTask(Bukkit.getScheduler().runTaskTimerAsynchronously(NarratorSpigot.getPluginInstance(), () -> {
-
-                if (contentTask.getOptionStatus().equals(OptionStatus.DECIDED)) {
-                    playerData.setMessageOption(messages.get(contentTask.getOptionIndex()));
-                    return;
-                }
-
-                StringBuilder message = new StringBuilder();
-                for (String m : messages) {
-                    if (contentTask.getOptionIndex() == messages.indexOf(m)) {
-                        message.append("&a&l").append(m);
-                    } else {
-                        message.append(m);
-                    }
-                    if (messages.indexOf(m) < messages.size() - 1) {
-                        message.append(" &7| &r");
-                    }
-                }
-                audience.sendActionBar(Component.text(CCUtil.translate(message.toString())));
-
-            }, 0, 5));
-
-        }
-
-        if (contentTask.getOptionStatus().equals(OptionStatus.DECIDED)) {
-            contentTask.getOptionTask().cancel();
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * 整体延迟
      * @param contentList - 总content
      * @param contentTask - contentTask
@@ -396,7 +314,7 @@ public class ContentHandler {
             }
         }
 
-        Bukkit.getScheduler().runTaskLaterAsynchronously(NarratorSpigot.getPluginInstance(), () -> {
+        Bukkit.getScheduler().runTaskLaterAsynchronously(NarratorSpigot.getPluginInstance(), () -> { // fixme 重开后仍然存在此次delay
             execute(player, chapterData, sb.toString(), contentTask);
         }, delay);
     }
