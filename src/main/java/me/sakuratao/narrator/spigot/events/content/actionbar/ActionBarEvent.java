@@ -6,6 +6,7 @@ import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.enums.PrintStatus;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
 import me.sakuratao.narrator.spigot.utils.CCUtil;
+import me.sakuratao.narrator.spigot.utils.TaskUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -50,28 +51,9 @@ public class ActionBarEvent extends NarratorEvent{
           这里会对 text 处理成一个打字机的效果
           text将会在 delay 限定的时间内完成逐字打印
          */
-
         if (printStatus.equals(PrintStatus.NONE)) {
             printStatus = PrintStatus.PRINTING;
-
-            AtomicInteger textLength = new AtomicInteger(0);
-
-            printTask = Bukkit.getScheduler().runTaskTimerAsynchronously(
-                    NarratorSpigot.getPluginInstance(), () -> {
-                            if (textLength.get() >= text.length()) {
-                                printStatus = (PrintStatus.KEEPING);
-                                return;
-                            }
-
-                            textLength.set(textLength.get() + 1);
-                            String outputText = text.substring(0, textLength.get());
-
-                            if (textLength.get() % 2 == 0 && textLength.get() != text.length()) {
-                                audience.sendActionBar(Component.text(CCUtil.translate(outputText + "&kA&r_")));
-                                return;
-                            }
-                            audience.sendActionBar(Component.text(CCUtil.translate(outputText)));
-                    }, 0, printInterval);
+            printTask = runActionBarPrint(audience, new AtomicInteger(0));
         }
 
         if (printStatus.equals(PrintStatus.KEEPING)) {
@@ -79,15 +61,36 @@ public class ActionBarEvent extends NarratorEvent{
             printTask.cancel();
 
             long keepTime = (keep/20 * 1000) + System.currentTimeMillis();
-            printTask = Bukkit.getScheduler().runTaskTimerAsynchronously(NarratorSpigot.getPluginInstance(), () -> {
-                if (System.currentTimeMillis() >= keepTime) {
-                    printStatus = PrintStatus.ENDED;
-                    return;
-                }
-                audience.sendActionBar(Component.text(CCUtil.translate(text)));
-            }, 0, 20);
+            printTask = runActionBarKeep(audience, keepTime);
         }
 
+    }
+
+    private BukkitTask runActionBarKeep(Audience audience, long keepTime){
+        return TaskUtil.taskTimerAsync(() -> {
+            if (System.currentTimeMillis() >= keepTime) {
+                printStatus = PrintStatus.ENDED;
+                return;
+            }
+            audience.sendActionBar(Component.text(CCUtil.translate(text)));
+        }, 0, 20);
+    }
+
+    private BukkitTask runActionBarPrint(Audience audience, AtomicInteger textLength){
+        return TaskUtil.taskTimerAsync(() -> {
+            if (textLength.get() >= text.length()) {
+                printStatus = (PrintStatus.KEEPING);
+                return;
+            }
+            textLength.set(textLength.get() + 1);
+            String outputText = text.substring(0, textLength.get());
+
+            if (textLength.get() % 2 == 0 && textLength.get() != text.length()) {
+                audience.sendActionBar(Component.text(CCUtil.translate(outputText + "&kA&r_")));
+                return;
+            }
+            audience.sendActionBar(Component.text(CCUtil.translate(outputText)));
+        }, 0, printInterval);
     }
 
     public boolean isEnded(){

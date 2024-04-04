@@ -2,17 +2,17 @@ package me.sakuratao.narrator.spigot.handlers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.sun.java.accessibility.util.EventID;
+import jdk.jfr.Event;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
 import me.sakuratao.narrator.spigot.enums.DelayStatus;
 import me.sakuratao.narrator.spigot.enums.Weather;
-import me.sakuratao.narrator.spigot.events.content.WeatherChangeEvent;
+import me.sakuratao.narrator.spigot.events.content.*;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
-import me.sakuratao.narrator.spigot.events.content.MessageEvent;
-import me.sakuratao.narrator.spigot.events.content.TitleEvent;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import me.sakuratao.narrator.spigot.utils.*;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
@@ -150,10 +150,24 @@ public class ContentHandler {
                 case "D":
                 case "DELAY": {
                     if (contentList.size() > 2){
-                        delaySingle(contentList, player, chapterData, contentTask);
+                        DelaySingleEvent delaySingleEvent = new DelaySingleEvent(narrator, player, chapterData, contentTask, contentList);
+                        EventUtil.callEvent(delaySingleEvent);
+                        if (!delaySingleEvent.isCancelled()) {
+                            delaySingleEvent.delay();
+                        }
                         return true;
                     }
-                    return delayOverall(contentList, contentTask);
+
+                    if (narrator.getCacheData().isCurrentDelayEventExist(player)) {
+                        return narrator.getCacheData().isCurrentDelayEventDelayed(player);
+                    }
+                    DelayEvent delayEvent = new DelayEvent(Long.parseLong(contentList.get(1)));
+                    EventUtil.callEvent(delayEvent);
+                    if (!delayEvent.isCancelled()) {
+                        delayEvent.delay();
+                        narrator.getCacheData().putCurrentDelayEvent(player, delayEvent);
+                    }
+                    return delayEvent.isDelayed();
                 }
                 case "COMMAND": {
                     narrator.getLogger().log(Level.WARNING, "Executed command: " + contentList.get(1) + " | Chapter: " + chapterData.getName());
@@ -246,53 +260,6 @@ public class ContentHandler {
 
         ToastUtil.showToast(player, Material.valueOf(contentList.get(2)), sb.toString(), contentList.get(1));
 
-    }
-
-    /**
-     * 整体延迟
-     * @param contentList - 总content
-     * @param contentTask - contentTask
-     * @return 是否延迟结束
-     */
-    private boolean delayOverall(List<String> contentList, ContentTask contentTask){
-
-        long delay = Integer.parseInt(contentList.get(1));
-
-        if (contentTask.getDelayStatus().equals(DelayStatus.NONE)) {
-            contentTask.setDelayStatus(DelayStatus.DELAYING);
-
-            Bukkit.getScheduler().runTaskLaterAsynchronously(NarratorSpigot.getPluginInstance(), () -> {
-                contentTask.setDelayStatus(DelayStatus.DELAYED);
-            }, delay);
-        }
-
-        return contentTask.getDelayStatus().equals(DelayStatus.DELAYED);
-    }
-
-    /**
-     * 单条延迟
-     * fixme 存在延迟计算的问题，需要优化
-     * fixme 重开后仍然存在此次delay
-     *
-     * @param contentList - 总content
-     * @param player - 玩家
-     * @param chapterData - 章节数据
-     * @param contentTask - contentTask
-     */
-    private void delaySingle(List<String> contentList, Player player, ChapterData chapterData, ContentTask contentTask){
-        long delay = Integer.parseInt(contentList.get(1));
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 2; i <= contentList.size() - 1; i++){
-            sb.append(contentList.get(i));
-            if (i != contentList.size() - 1) {
-                sb.append("|");
-            }
-        }
-
-        Bukkit.getScheduler().runTaskLaterAsynchronously(NarratorSpigot.getPluginInstance(), () -> {
-            execute(player, chapterData, sb.toString(), contentTask);
-        }, delay);
     }
 
     /**

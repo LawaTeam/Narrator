@@ -26,8 +26,6 @@ public class TitleEvent extends NarratorEvent implements Cancellable {
         this.fadeIn = Integer.parseInt(contentList.get(1));
         this.keep = Integer.parseInt(contentList.get(2));
         this.fadeOut = Integer.parseInt(contentList.get(3));
-
-
     }
 
     /**

@@ -5,9 +5,6 @@ import lombok.Setter;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.data.Player.PlayerData;
 import me.sakuratao.narrator.spigot.enums.DelayStatus;
-import me.sakuratao.narrator.spigot.enums.OptionStatus;
-import me.sakuratao.narrator.spigot.enums.PrintStatus;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
 
@@ -30,12 +27,7 @@ public class ContentTask implements Runnable{
 
         if (!data.getPlayer().isOnline()) return;
 
-        if (narrator.getHandlerManager().getContentHandler().execute(
-                data.getPlayer(),
-                data.getPlayingChapter(),
-                data.getPlayingTask().getContent().get(data.getContentIndex()),
-                this
-        )){
+        if (execute()){
 
             delayStatus = DelayStatus.NONE;
 
@@ -49,6 +41,15 @@ public class ContentTask implements Runnable{
 
         }
 
+    }
+
+    private boolean execute(){
+        return narrator.getHandlerManager().getContentHandler().execute(
+                data.getPlayer(),
+                data.getPlayingChapter(),
+                data.getPlayingTask().getContent().get(data.getContentIndex()),
+                this
+        );
     }
 
 }

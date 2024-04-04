@@ -9,6 +9,7 @@ import me.sakuratao.narrator.spigot.enums.OptionStatus;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import me.sakuratao.narrator.spigot.utils.CCUtil;
+import me.sakuratao.narrator.spigot.utils.TaskUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -44,7 +45,7 @@ public class ActionBarAnswerEvent extends NarratorEvent {
             optionIndex = 0;
             optionStatus = OptionStatus.DECIDING;
 
-            optionTask = Bukkit.getScheduler().runTaskTimerAsynchronously(NarratorSpigot.getPluginInstance(), () -> {
+            optionTask = TaskUtil.taskTimerAsync(() -> {
                 if (optionStatus.equals(OptionStatus.DECIDED)) {
                     playerData.setMessageOption(options.get(optionIndex));
                     return;

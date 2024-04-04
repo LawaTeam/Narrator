@@ -1,5 +1,8 @@
 package me.sakuratao.narrator.spigot.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum Weather {
 
     SUNSHINE("SUNSHINE"),
@@ -14,7 +17,4 @@ public enum Weather {
         this.weather = weather;
     }
 
-    public String getWeather() {
-        return weather;
-    }
 }

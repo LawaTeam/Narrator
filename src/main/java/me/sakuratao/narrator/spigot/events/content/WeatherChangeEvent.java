@@ -23,10 +23,8 @@ public class WeatherChangeEvent extends NarratorEvent implements Cancellable {
     private BukkitTask fade;
 
     public WeatherChangeEvent(Player player, Weather weather){
-
         this.player = player;
         this.weather = weather;
-
     }
 
     public void changeWeather(){
