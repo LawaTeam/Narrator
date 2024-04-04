@@ -127,7 +127,7 @@ public class ChapterHandler {
      * 输出 数字格式 冲突日志
      * @param chapterFile - 文件
      */
-    public void logNumberFormat(File chapterFile){
+    private void logNumberFormat(File chapterFile){
         LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
         LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
         LogUtil.log(Level.SEVERE, "        chapterFile: " + chapterFile.getName());
@@ -140,7 +140,7 @@ public class ChapterHandler {
      * @param data - 章节数据
      * @param ordinal - 序数
      */
-    public void logOrdinalConflicted(String name, ChapterData data, int ordinal){
+    private void logOrdinalConflicted(String name, ChapterData data, int ordinal){
         LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_ORDINAL_CONFLICT);
         LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
         LogUtil.log(Level.SEVERE, "        chapterName: " + name);
@@ -154,7 +154,7 @@ public class ChapterHandler {
      * @param higherVersion - 更高的版本号
      * @param lowerVersion - 更低的版本号
      */
-    public void logVersionHigher(String name, double higherVersion, double lowerVersion){
+    private void logVersionHigher(String name, double higherVersion, double lowerVersion){
         LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_VERSION_HIGHER);
         LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
         LogUtil.log(Level.SEVERE, "        chapterName: " + name);
@@ -168,7 +168,7 @@ public class ChapterHandler {
      * @param higherVersion - 更高的版本号
      * @param lowerVersion - 更低的版本号
      */
-    public void logVersionLower(String name, double higherVersion, double lowerVersion){
+    private void logVersionLower(String name, double higherVersion, double lowerVersion){
         LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_VERSION_LOWER);
         LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
         LogUtil.log(Level.SEVERE, "        chapterName: " + name);
@@ -184,7 +184,7 @@ public class ChapterHandler {
      * @param version1 - 冲突版本1
      * @param version2 - 冲突版本2
      */
-    public void logVersionEqual(String name, int ordinal1, int ordinal2, double version1, double version2){
+    private void logVersionEqual(String name, int ordinal1, int ordinal2, double version1, double version2){
         LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NAME_EQUAL);
         LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
         LogUtil.log(Level.SEVERE, "        equalName: " + name);
