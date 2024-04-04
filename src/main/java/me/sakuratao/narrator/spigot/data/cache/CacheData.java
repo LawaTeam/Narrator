@@ -147,12 +147,9 @@ public class CacheData {
      * @param player - 玩家
      */
     public void clear(Player player){
-        if (isCurrentActionBarEventExist(player)) {
-            currentActionbarEvent.remove(player.getName().toLowerCase());
-        }
-        if (isCurrentActionBarAnswerEventExist(player)){
-            currentActionBarAnswerEvent.remove(player.getName().toLowerCase());
-        }
+        currentActionbarEvent.remove(player.getName().toLowerCase());
+        currentActionBarAnswerEvent.remove(player.getName().toLowerCase());
+        currentDelayEvent.remove(player.getName().toLowerCase());
     }
 
 }
