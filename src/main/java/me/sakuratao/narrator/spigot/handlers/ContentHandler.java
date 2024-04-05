@@ -1,28 +1,26 @@
 package me.sakuratao.narrator.spigot.handlers;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
-import com.sun.java.accessibility.util.EventID;
-import jdk.jfr.Event;
 import me.sakuratao.narrator.common.Narrator;
-import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.configuration.Lang;
-import me.sakuratao.narrator.spigot.data.Player.PlayerData;
-import me.sakuratao.narrator.spigot.enums.DelayStatus;
+import me.sakuratao.narrator.spigot.data.player.PlayerData;
+import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.enums.Weather;
 import me.sakuratao.narrator.spigot.events.content.*;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
 import me.sakuratao.narrator.spigot.task.ContentTask;
-import me.sakuratao.narrator.spigot.utils.*;
-import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
+import me.sakuratao.narrator.spigot.utils.CCUtil;
+import me.sakuratao.narrator.spigot.utils.EventUtil;
+import me.sakuratao.narrator.spigot.utils.LogUtil;
+import me.sakuratao.narrator.spigot.utils.ToastUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 
 @PieComponent
@@ -89,7 +87,7 @@ public class ContentHandler {
                     return true;
                 }
                 /*
-                    ACTIONABR
+                    ACTIONBAR
                  */
                 case "AB":
                 case "ACTIONBAR": {
@@ -184,7 +182,9 @@ public class ContentHandler {
                     return jumpTask(contentList, playerData, chapterData, content);
                 }
                 case "TOAST":{
-                    showToast(contentList, player);
+                    ToastEvent toastEvent = new ToastEvent(player, Material.valueOf(contentList.get(2)), ToastUtil.handleTitle(contentList.get(3)), contentList.get(1));
+                    EventUtil.callEvent(toastEvent);
+                    toastEvent.showToast();
                     return true;
                 }
                 case "WEATHER": {
@@ -215,51 +215,8 @@ public class ContentHandler {
             narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
             narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + chapterData.getName());
             narrator.getLogger().log(Level.SEVERE, "        Content: " + content);
-            e.printStackTrace();
             return false;
         }
-    }
-
-    /**
-     * 向玩家发送 toast 形式的信息
-     * @param contentList - 切割的content
-     * @param player - 玩家
-     */
-    private void showToast(List<String> contentList, Player player){
-
-        String[] t = contentList.get(3).split("<br>");
-        StringBuilder sb = new StringBuilder();
-
-        /*
-            这段屎山，没事别碰，因为实在是太乱了
-            主要是让单句文字不串行
-         */
-        for (int i = 0; i < t.length; i ++) {
-            String t1 = t[i];
-            if (i > 2 && i == t.length - 1) {
-                if (t[i-1].getBytes().length >= 21) {
-                    sb.append(" ").append(t1);
-                } else {
-                    sb.append(t1);
-                }
-                break;
-            }
-            for (int k = 0; k < t1.length(); k++) {
-                if (i > 2) {
-                    char ch = t1.charAt(k);
-                    if (ch == ' ') {
-                        sb.append(" ");
-                    }
-                }
-            }
-            sb.append(t1);
-            if (t1.getBytes().length <= 26) {
-                sb.append(" ".repeat((26 - t1.getBytes().length)));
-            }
-        }
-
-        ToastUtil.showToast(player, Material.valueOf(contentList.get(2)), sb.toString(), contentList.get(1));
-
     }
 
     /**

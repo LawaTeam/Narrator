@@ -3,7 +3,7 @@ package me.sakuratao.narrator.spigot.task;
 import lombok.Getter;
 import lombok.Setter;
 import me.sakuratao.narrator.common.Narrator;
-import me.sakuratao.narrator.spigot.data.Player.PlayerData;
+import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.enums.DelayStatus;
 
 import java.util.List;
@@ -36,7 +36,6 @@ public class ContentTask implements Runnable{
 
             if (data.getContentIndex() >= content.size()) {
                 narrator.getManagerHandler().getTaskManager().killTask(data.getPlayerName());
-                return;
             }
 
         }

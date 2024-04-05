@@ -1,8 +1,8 @@
 package me.sakuratao.narrator.spigot.handlers;
 
 import me.sakuratao.narrator.common.Narrator;
-import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
+import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.utils.LogUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -411,7 +411,7 @@ public class ChapterHandler {
      * 通过 ordinal 获取章节
      * @param ordinal - 指定的 ordinal
      * @param lang - 指定的语言
-     * @return
+     * @return 与该 ordinal 匹配的章节
      */
     public ChapterData getDataByOrdinal(int ordinal, String lang) {
         for (ChapterData data : getLangChapterData(lang.toLowerCase())){

@@ -3,20 +3,16 @@ package me.sakuratao.narrator.spigot.events.content.actionbar;
 import lombok.Getter;
 import lombok.Setter;
 import me.sakuratao.narrator.common.Narrator;
-import me.sakuratao.narrator.spigot.NarratorSpigot;
-import me.sakuratao.narrator.spigot.data.Player.PlayerData;
+import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.enums.OptionStatus;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
-import me.sakuratao.narrator.spigot.task.ContentTask;
 import me.sakuratao.narrator.spigot.utils.CCUtil;
 import me.sakuratao.narrator.spigot.utils.TaskUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ActionBarAnswerEvent extends NarratorEvent {

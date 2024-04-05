@@ -2,7 +2,7 @@ package me.sakuratao.narrator.spigot.handlers;
 
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.configuration.Lang;
-import me.sakuratao.narrator.spigot.data.Player.PlayerData;
+import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.data.chapter.TaskData;
 import me.sakuratao.narrator.spigot.utils.LogUtil;
@@ -130,7 +130,7 @@ public class TaskHandler {
      * @param contentConfig - 相关的 yml
      * @param section - section
      * @param data - 章节数据
-     * @return
+     * @return 是否为 null
      */
     private boolean isNumberNull(YamlConfiguration contentConfig, String section, ChapterData data){
         if (

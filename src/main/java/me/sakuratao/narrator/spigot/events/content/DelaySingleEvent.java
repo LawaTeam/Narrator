@@ -32,9 +32,7 @@ public class DelaySingleEvent extends NarratorEvent implements Cancellable {
     }
 
     public void delay(){
-        TaskUtil.taskLaterAsync(() -> {
-            narrator.getHandlerManager().getContentHandler().execute(player, chapterData, content, contentTask);
-        }, delayTime);
+        TaskUtil.taskLaterAsync(() -> narrator.getHandlerManager().getContentHandler().execute(player, chapterData, content, contentTask), delayTime);
     }
 
     private String generateContent(List<String> contentList) {

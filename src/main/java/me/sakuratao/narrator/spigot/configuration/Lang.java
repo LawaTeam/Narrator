@@ -24,9 +24,6 @@ public class Lang {
             "确认无误后，使用 /nr 进行重载操作."
     );
 
-    // @Configuration("chapter_folder_check")
-    // public static String CHAPTERS_FOLDER_CHECK = "请检查你的章节文件 ";
-
     @Configuration("chapter_folder_check_null")
     public static String CHAPTERS_FOLDER_CHECK_NULL = "留意查看 chapterInfo 中的 Name, Author, Lang, Version, Ordinal是否填写，这些不能留空.";
 

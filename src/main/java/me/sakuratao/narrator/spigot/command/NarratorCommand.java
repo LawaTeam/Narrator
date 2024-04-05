@@ -2,21 +2,15 @@ package me.sakuratao.narrator.spigot.command;
 
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.configuration.Lang;
-import me.sakuratao.narrator.spigot.data.Player.PlayerData;
-import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
-import me.sakuratao.narrator.spigot.utils.CCUtil;
+import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.command.CommandItem;
 import top.jingwenmc.spigotpie.common.command.CommandSender;
-import top.jingwenmc.spigotpie.common.command.NotRequiredCommandParam;
 import top.jingwenmc.spigotpie.common.command.PieCommand;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Platform;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
-import java.util.Map;
 import java.util.logging.Level;
 
 @PieComponent(platform = Platform.SPIGOT)

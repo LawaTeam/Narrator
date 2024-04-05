@@ -21,9 +21,7 @@ public class DelayEvent extends NarratorEvent implements Cancellable {
     }
 
     public void delay(){
-        TaskUtil.taskLaterAsync(() -> {
-            delayed = true;
-        }, delayTime);
+        TaskUtil.taskLaterAsync(() -> delayed = true, delayTime);
     }
 
     private boolean isCancelled = false;

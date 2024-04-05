@@ -2,7 +2,6 @@ package me.sakuratao.narrator.spigot.data.cache;
 
 import lombok.Getter;
 import me.sakuratao.narrator.spigot.events.content.DelayEvent;
-import me.sakuratao.narrator.spigot.events.content.DelaySingleEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
 import org.bukkit.entity.Player;
@@ -14,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @PieComponent
 public class CacheData {
 
-    private final ConcurrentHashMap<String, ActionBarEvent> currentActionbarEvent = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ActionBarEvent> currentActionBarEvent = new ConcurrentHashMap<>();
 
     private final ConcurrentHashMap<String, ActionBarAnswerEvent> currentActionBarAnswerEvent = new ConcurrentHashMap<>();
 
@@ -107,7 +106,7 @@ public class CacheData {
      * @return ActionBarEvent
      */
     public ActionBarEvent getCurrentActionBarEvent(Player player){
-        return currentActionbarEvent.get(player.getName().toLowerCase());
+        return currentActionBarEvent.get(player.getName().toLowerCase());
     }
 
     /**
@@ -116,7 +115,7 @@ public class CacheData {
      * @param actionBarEvent - 事件
      */
     public void putCurrentActionBarEvent(Player player, ActionBarEvent actionBarEvent){
-        currentActionbarEvent.put(player.getName().toLowerCase(), actionBarEvent);
+        currentActionBarEvent.put(player.getName().toLowerCase(), actionBarEvent);
     }
 
     /**
@@ -126,9 +125,9 @@ public class CacheData {
      * @return true - 已结束，false - 未结束
      */
     public boolean isCurrentActionbarEnded(Player player){
-        ActionBarEvent actionBarEvent = currentActionbarEvent.get(player.getName().toLowerCase());
+        ActionBarEvent actionBarEvent = currentActionBarEvent.get(player.getName().toLowerCase());
         if (actionBarEvent.isEnded()) {
-            currentActionbarEvent.remove(player.getName().toLowerCase());
+            currentActionBarEvent.remove(player.getName().toLowerCase());
         }
         return actionBarEvent.isEnded();
     }
@@ -139,7 +138,7 @@ public class CacheData {
      * @return true - 存在，false - 不存在
      */
     public boolean isCurrentActionBarEventExist(Player player){
-        return currentActionbarEvent.containsKey(player.getName().toLowerCase());
+        return currentActionBarEvent.containsKey(player.getName().toLowerCase());
     }
 
     /**
@@ -147,7 +146,7 @@ public class CacheData {
      * @param player - 玩家
      */
     public void clear(Player player){
-        currentActionbarEvent.remove(player.getName().toLowerCase());
+        currentActionBarEvent.remove(player.getName().toLowerCase());
         currentActionBarAnswerEvent.remove(player.getName().toLowerCase());
         currentDelayEvent.remove(player.getName().toLowerCase());
     }

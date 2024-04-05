@@ -3,7 +3,7 @@ package me.sakuratao.narrator.spigot.manager;
 import lombok.Getter;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
-import me.sakuratao.narrator.spigot.data.Player.PlayerData;
+import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.handlers.ChapterHandler;
 import me.sakuratao.narrator.spigot.handlers.TaskHandler;

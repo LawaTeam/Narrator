@@ -1,4 +1,4 @@
-package me.sakuratao.narrator.spigot.data.Player;
+package me.sakuratao.narrator.spigot.data.player;
 
 import lombok.Data;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;

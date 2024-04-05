@@ -1,7 +1,7 @@
 package me.sakuratao.narrator.spigot.listener;
 
 import me.sakuratao.narrator.common.Narrator;
-import me.sakuratao.narrator.spigot.data.Player.PlayerData;
+import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

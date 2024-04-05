@@ -1,19 +1,24 @@
 package me.sakuratao.narrator.spigot.manager;
 
 import lombok.Getter;
-import me.sakuratao.narrator.spigot.data.Player.PlayerData;
-import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
+import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+@Getter
 @PieComponent
 public class PlayerManager {
 
-    /*
-        所有玩家名都应该是 小写 (lowercase)
+    /**
+     * -- GETTER --
+     *  获取所有玩家数据
+     *
      */
+    /*
+           所有玩家名都应该是 小写 (lowercase)
+        */
     private final ConcurrentHashMap<String, PlayerData> playerDataMap = new ConcurrentHashMap<>();
 
     /**
@@ -72,14 +77,6 @@ public class PlayerManager {
      */
     public PlayerData getByName(String name){
         return  playerDataMap.get(name.toLowerCase());
-    }
-
-    /**
-     * 获取所有玩家数据
-     * @return playerDataMap
-     */
-    public ConcurrentHashMap<String, PlayerData> getPlayerDataMap() {
-        return playerDataMap;
     }
 
 }
