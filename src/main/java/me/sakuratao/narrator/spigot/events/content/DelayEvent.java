@@ -1,10 +1,7 @@
 package me.sakuratao.narrator.spigot.events.content;
 
 import lombok.Getter;
-import me.sakuratao.narrator.spigot.NarratorSpigot;
-import me.sakuratao.narrator.spigot.enums.DelayStatus;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
-import me.sakuratao.narrator.spigot.task.ContentTask;
 import me.sakuratao.narrator.spigot.utils.TaskUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;

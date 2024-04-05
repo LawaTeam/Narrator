@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
-import me.sakuratao.narrator.spigot.enums.DelayStatus;
 
 import java.util.List;
 
@@ -20,16 +19,12 @@ public class ContentTask implements Runnable{
         this.data = data;
     }
 
-    private DelayStatus delayStatus = DelayStatus.NONE;
-
     @Override
     public void run() {
 
         if (!data.getPlayer().isOnline()) return;
 
         if (execute()){
-
-            delayStatus = DelayStatus.NONE;
 
             List<String> content = data.getPlayingTask().getContent();
             data.setContentIndex(data.getContentIndex() + 1);
