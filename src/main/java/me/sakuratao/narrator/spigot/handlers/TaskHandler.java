@@ -165,9 +165,15 @@ public class TaskHandler {
      * @param contentIndex - content索引
      */
     public void jump(PlayerData playerData, ChapterData chapterData, int taskOrdinal, int contentIndex){
-        playerData.setPlayingTaskOrdinal(taskOrdinal);
-        playerData.setContentIndex(contentIndex - 1); // 此处 -1 是为了抵消 ContentTask 的+1
-        playerData.setPlayingTask(getTaskByOrdinal(chapterData, taskOrdinal));
+        if (chapterData.getTasks().stream().anyMatch(taskData -> taskData.getOrdinal() == taskOrdinal)) {
+            playerData.setPlayingTaskOrdinal(taskOrdinal);
+            playerData.setContentIndex(contentIndex - 1); // 此处 -1 是为了抵消 ContentTask 的 +1，因为执行 jump 后 contentTask 会进行 +1
+        } else {
+            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_EXECUTE_JT_NOT_EXIST);
+            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+            LogUtil.log(Level.SEVERE, "        chapterName: " + chapterData.getName());
+            LogUtil.log(Level.SEVERE, "        content: " + playerData.getCurrentContent());
+        }
     }
 
 }

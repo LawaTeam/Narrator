@@ -67,10 +67,16 @@ public class Lang {
             "任务名字存在冲突，请确保所有任务名字唯一."
     );
 
-    @Configuration("chapter_execute_number_format")
-    public static List<String> CHAPTERS_EXECUTE_NUMBER_FORMAT = Arrays.asList(
+    @Configuration("chapter_execute_jt_number_format")
+    public static List<String> CHAPTERS_EXECUTE_JT_NUMBER_FORMAT = Arrays.asList(
             "请检查你的内容 'JT/JUMPTASK', 其中存在格式问题.",
             "所填写的 Ordinal 必须大于 1, Content 索引必须大于 0"
+    );
+
+    @Configuration("chapter_execute_jt_not_exist")
+    public static List<String> CHAPTERS_EXECUTE_JT_NOT_EXIST = Arrays.asList(
+            "请检查你的内容 'JT/JUMPTASK', 其中存在内容问题.",
+            "所填写的 Ordinal 指定的任务不存在"
     );
 
     @Configuration("chapter_folder_check_load_stop")

@@ -1,9 +1,11 @@
 package me.sakuratao.narrator.spigot.manager;
 
 import lombok.Getter;
+import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
+import top.jingwenmc.spigotpie.common.instance.Wire;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -11,11 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @PieComponent
 public class PlayerManager {
 
-    /**
-     * -- GETTER --
-     *  获取所有玩家数据
-     *
-     */
+    @Wire private Narrator narrator;
+
     /*
            所有玩家名都应该是 小写 (lowercase)
         */
@@ -26,7 +25,7 @@ public class PlayerManager {
      * @param player - 玩家
      */
     public void create(Player player) {
-        playerDataMap.putIfAbsent(player.getName().toLowerCase(), new PlayerData(player));
+        playerDataMap.putIfAbsent(player.getName().toLowerCase(), new PlayerData(narrator, player));
     }
 
     /**

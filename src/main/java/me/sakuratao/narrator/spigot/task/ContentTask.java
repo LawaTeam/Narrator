@@ -26,7 +26,7 @@ public class ContentTask implements Runnable{
 
         if (execute()){
 
-            List<String> content = data.getPlayingTask().getContent();
+            List<String> content = data.getPlayingTaskData().getContent();
             data.setContentIndex(data.getContentIndex() + 1);
 
             if (data.getContentIndex() >= content.size()) {
@@ -40,8 +40,8 @@ public class ContentTask implements Runnable{
     private boolean execute(){
         return narrator.getHandlerManager().getContentHandler().execute(
                 data.getPlayer(),
-                data.getPlayingChapter(),
-                data.getPlayingTask().getContent().get(data.getContentIndex()),
+                data.getPlayingChapterData(),
+                data.getCurrentContent(),
                 this
         );
     }

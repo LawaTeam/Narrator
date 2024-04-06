@@ -4,8 +4,10 @@ import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
+import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.utils.LogUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
@@ -384,6 +386,15 @@ public class ChapterHandler {
     }
 
     /**
+     * 通过 playerData 获取章节数据
+     * @param data - 玩家数据
+     * @return chapterData
+     */
+    public ChapterData getDataByPlayerData(PlayerData data){
+        return getDataByOrdinal(data.getPlayingChapterOrdinal(), data.getLang());
+    }
+
+    /**
      * 通过 Map 转换得到 Data
      * @param map - 需要转换的 map
      * @return 转换得到的 Data
@@ -460,8 +471,14 @@ public class ChapterHandler {
         langChapters.clear();
     }
 
-    public ChapterData jump(int ordinal){
-        return null;
+    /**
+     * 转跳章节 (玩家现有语言)
+     * @param ordinal - 章节序数
+     */
+    public void jump(PlayerData playerData, int ordinal){
+        playerData.setPlayingChapterOrdinal(ordinal);
+        playerData.setPlayingTaskOrdinal(0);
+        playerData.setContentIndex(0);
     }
 
 }

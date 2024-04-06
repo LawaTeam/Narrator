@@ -22,8 +22,7 @@ public class TaskManager {
     @Getter
     private final ConcurrentHashMap<String, BukkitTask> tasks = new ConcurrentHashMap<>();
 
-    @Wire
-    private Narrator narrator;
+    @Wire private Narrator narrator;
 
     /**
      *
@@ -38,16 +37,7 @@ public class TaskManager {
             tasks.get(data.getPlayerName()).cancel();
         }
 
-        ChapterHandler ch = narrator.getHandlerManager().getChapterHandler();
-        TaskHandler th = narrator.getHandlerManager().getTaskHandler();
-
-        ChapterData playingChapter = ch.getDataByOrdinal(data.getPlayingChapterOrdinal(), data.getLang());
-
-        data.setPlayingChapter(playingChapter);
-        data.setPlayingTask(th.getTaskByOrdinal(playingChapter, data.getPlayingTaskOrdinal()));
-
         data.setContentTask(new ContentTask(narrator, data));
-
         tasks.put(
                 data.getPlayerName().toLowerCase(),
                 Bukkit.getScheduler().runTaskTimerAsynchronously(NarratorSpigot.getPluginInstance(),

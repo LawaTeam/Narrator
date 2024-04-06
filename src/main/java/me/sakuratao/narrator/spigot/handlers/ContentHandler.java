@@ -50,7 +50,7 @@ public class ContentHandler {
         /*
             TODO: 物品栏文字调用，生成剧情对话背包，
 
-            TODO: MESSAGE_CLICK、MESSAGE_DROP、INV_ANSWER、CONDITION、SOUND(播放声音)、BOOM_AROUND、SPAWN_ENTITY
+            TODO: MESSAGE_CLICK、MESSAGE_DROP、INV_ANSWER、CONDITION、SOUND(播放声音)、BOOM_AROUND、SPAWN_ENTITY、NPC
 
             TODO: 玩家自定义字幕速度以及停留时间，并提供 " 上一条 " 的功能
 
@@ -65,7 +65,7 @@ public class ContentHandler {
         try {
             switch (contentList.get(0)) {
                 /*
-                  Title
+                  send title to player
                  */
                 case "T":
                 case "TITLE": {
@@ -73,7 +73,7 @@ public class ContentHandler {
                     return true;
                 }
                 /*
-                    MESSAGE
+                    send message to player
                  */
                 case "M":
                 case "MESSAGE": {
@@ -81,44 +81,51 @@ public class ContentHandler {
                     return true;
                 }
                 /*
-                    ACTIONBAR
+                    send actionbar to player
                  */
                 case "AB":
                 case "ACTIONBAR": {
                     return sendActionBar(contentList, player);
                 }
                 /*
-                    ACTIONBAR_ANSWER
+                    let player use actionbar to answer
                  */
                 case "AB_ANSWER":
                 case "ACTIONBAR_ANSWER": {
                     return sendActionBarAnswer(contentList, player, playerData);
                 }
                 /*
-                    DELAY
+                    execute delay
                  */
                 case "D":
                 case "DELAY": {
                     return executeDelay(contentList, player, chapterData, contentTask);
                 }
+                /*
+                    execute command
+                 */
                 case "COMMAND": {
                     executeCommand(player, contentList, chapterData);
                     return true;
                 }
+                /*
+
+                 */
                 case "MC":
                 case "MESSAGE_CLICK": {
                     // todo
                     return true;
                 }
-                case "JT":
-                case "JUMP_TASK": {
-                    return jumpTask(player, playerData, chapterData, Integer.parseInt(contentList.get(1)),
-                            Integer.parseInt(contentList.get(2)), contentList.get(3));
-                }
+                /*
+                    send toast to player
+                 */
                 case "TOAST":{
                     sendToast(player, contentList.get(2), contentList.get(3), contentList.get(1));
                     return true;
                 }
+                /*
+                    change weather for player privately
+                 */
                 case "WEATHER": {
                     changeWeather(player, Weather.valueOf(contentList.get(1)));
                     return true;
@@ -127,6 +134,14 @@ public class ContentHandler {
                 case "CONDITION": {
                     // todo
                     return true;
+                }
+                /*
+                    Jump Task
+                 */
+                case "JT":
+                case "JUMP_TASK": {
+                    return jumpTask(player, playerData, chapterData, Integer.parseInt(contentList.get(1)),
+                            Integer.parseInt(contentList.get(2)), content);
                 }
                 case "JC":
                 case "JUMP_CHAPTER": {
@@ -143,6 +158,7 @@ public class ContentHandler {
             narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
             narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + chapterData.getName());
             narrator.getLogger().log(Level.SEVERE, "        Content: " + content);
+            e.printStackTrace();
             return false;
         }
     }

@@ -43,7 +43,6 @@ public class ActionBarAnswerEvent extends NarratorEvent {
 
             optionTask = TaskUtil.taskTimerAsync(() -> {
                 if (optionStatus.equals(OptionStatus.DECIDED)) {
-                    playerData.setMessageOption(options.get(optionIndex));
                     return;
                 }
                 StringBuilder message = new StringBuilder();

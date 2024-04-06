@@ -23,7 +23,15 @@ public class JumpTaskEvent extends NarratorEvent {
     @Getter private final int contentIndex;
     @Getter private final String jumpContent;
 
-    public JumpTaskEvent(Narrator narrator, Player player, PlayerData playerData, ChapterData currentData, int taskOrdinal, int contentIndex, String jumpContent) {
+    public JumpTaskEvent(
+            Narrator narrator,
+            Player player,
+            PlayerData playerData,
+            ChapterData currentData,
+            int taskOrdinal,
+            int contentIndex,
+            String jumpContent
+    ) {
         this.narrator = narrator;
         this.player = player;
         this.playerData = playerData;
@@ -35,7 +43,7 @@ public class JumpTaskEvent extends NarratorEvent {
 
     public boolean jumpTask() {
         if (taskOrdinal < 1 || contentIndex < 0) {
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_EXECUTE_NUMBER_FORMAT);
+            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_EXECUTE_JT_NUMBER_FORMAT);
             LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
             narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + currentData.getName());
             narrator.getLogger().log(Level.SEVERE, "        Content: " + jumpContent);

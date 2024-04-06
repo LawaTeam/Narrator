@@ -30,7 +30,14 @@ public class ActionBarEvent extends NarratorEvent{
 
 
 
-    public ActionBarEvent(Narrator narrator, Player player, boolean isPrint, long printInterval, long keep, String text){
+    public ActionBarEvent(
+            Narrator narrator,
+            Player player,
+            boolean isPrint,
+            long printInterval,
+            long keep,
+            String text
+    ){
         this.narrator = narrator;
         this.player = player;
         this.isPrint = isPrint;
