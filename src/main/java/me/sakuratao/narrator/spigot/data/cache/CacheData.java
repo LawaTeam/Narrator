@@ -1,7 +1,7 @@
 package me.sakuratao.narrator.spigot.data.cache;
 
 import lombok.Getter;
-import me.sakuratao.narrator.spigot.events.content.DelayEvent;
+import me.sakuratao.narrator.spigot.events.content.delay.DelayEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
 import org.bukkit.entity.Player;

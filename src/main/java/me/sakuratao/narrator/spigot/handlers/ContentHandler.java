@@ -8,12 +8,14 @@ import me.sakuratao.narrator.spigot.enums.Weather;
 import me.sakuratao.narrator.spigot.events.content.*;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
+import me.sakuratao.narrator.spigot.events.content.delay.DelayEvent;
+import me.sakuratao.narrator.spigot.events.content.delay.DelaySingleEvent;
+import me.sakuratao.narrator.spigot.events.content.jump.JumpTaskEvent;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import me.sakuratao.narrator.spigot.utils.CCUtil;
 import me.sakuratao.narrator.spigot.utils.EventUtil;
 import me.sakuratao.narrator.spigot.utils.LogUtil;
 import me.sakuratao.narrator.spigot.utils.ToastUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
@@ -67,11 +69,7 @@ public class ContentHandler {
                  */
                 case "T":
                 case "TITLE": {
-                    TitleEvent titleEvent = new TitleEvent(contentList, player);
-                    EventUtil.callEvent(titleEvent);
-                    if (!titleEvent.isCancelled()) {
-                        titleEvent.showTitle();
-                    }
+                    sendTitle(contentList, player);
                     return true;
                 }
                 /*
@@ -79,11 +77,7 @@ public class ContentHandler {
                  */
                 case "M":
                 case "MESSAGE": {
-                    MessageEvent messageEvent = new MessageEvent(player, CCUtil.translate(contentList.get(1)));
-                    EventUtil.callEvent(messageEvent);
-                    if (!messageEvent.isCancelled()) {
-                        messageEvent.sendMessage();
-                    }
+                    sendMessage(contentList, player);
                     return true;
                 }
                 /*
@@ -91,85 +85,24 @@ public class ContentHandler {
                  */
                 case "AB":
                 case "ACTIONBAR": {
-                    boolean isPrint = Boolean.parseBoolean(contentList.get(1));
-
-                    ActionBarEvent actionBarEvent;
-                    if (isPrint) {
-                        if (narrator.getCacheData().isCurrentActionBarEventExist(player)) {
-                            narrator.getCacheData().getCurrentActionBarEvent(player).showActionbar();
-                            return narrator.getCacheData().isCurrentActionbarEnded(player);
-                        }
-                        actionBarEvent = new ActionBarEvent(
-                                narrator,
-                                player,
-                                true,
-                                Long.parseLong(contentList.get(2)),
-                                Long.parseLong(contentList.get(3)),
-                                CCUtil.translate(contentList.get(4))
-                        );
-                        narrator.getCacheData().putCurrentActionBarEvent(player, actionBarEvent);
-                    } else {
-                        actionBarEvent = new ActionBarEvent(
-                                narrator,
-                                player,
-                                false,
-                                0,
-                                0,
-                                CCUtil.translate(contentList.get(2))
-                        );
-                    }
-
-                    EventUtil.callEvent(actionBarEvent);
-                    actionBarEvent.showActionbar();
-                    return actionBarEvent.isEnded();
+                    return sendActionBar(contentList, player);
                 }
                 /*
                     ACTIONBAR_ANSWER
                  */
                 case "AB_ANSWER":
                 case "ACTIONBAR_ANSWER": {
-
-                    if (narrator.getCacheData().isCurrentActionBarAnswerEventExist(player)) {
-                        narrator.getCacheData().getCurrentActionBarAnswerEvent(player).checkAnswer();
-                        return narrator.getCacheData().isCurrentActionBarAnswerEventDecided(player);
-                    }
-                    ActionBarAnswerEvent actionBarAnswerEvent = new ActionBarAnswerEvent(
-                            narrator,
-                            player,
-                            playerData,
-                            contentList.subList(1, contentList.size())
-                    );
-                    narrator.getCacheData().putCurrentActionBarAnswerEvent(player, actionBarAnswerEvent);
-                    return false;
+                    return sendActionBarAnswer(contentList, player, playerData);
                 }
                 /*
                     DELAY
                  */
                 case "D":
                 case "DELAY": {
-                    if (contentList.size() > 2){
-                        DelaySingleEvent delaySingleEvent = new DelaySingleEvent(narrator, player, chapterData, contentTask, contentList);
-                        EventUtil.callEvent(delaySingleEvent);
-                        if (!delaySingleEvent.isCancelled()) {
-                            delaySingleEvent.delay();
-                        }
-                        return true;
-                    }
-
-                    if (narrator.getCacheData().isCurrentDelayEventExist(player)) {
-                        return narrator.getCacheData().isCurrentDelayEventDelayed(player);
-                    }
-                    DelayEvent delayEvent = new DelayEvent(Long.parseLong(contentList.get(1)));
-                    EventUtil.callEvent(delayEvent);
-                    if (!delayEvent.isCancelled()) {
-                        delayEvent.delay();
-                        narrator.getCacheData().putCurrentDelayEvent(player, delayEvent);
-                    }
-                    return delayEvent.isDelayed();
+                    return executeDelay(contentList, player, chapterData, contentTask);
                 }
                 case "COMMAND": {
-                    narrator.getLogger().log(Level.WARNING, "Executed command: " + contentList.get(1) + " | Chapter: " + chapterData.getName());
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), contentList.get(1));
+                    executeCommand(player, contentList, chapterData);
                     return true;
                 }
                 case "MC":
@@ -179,20 +112,15 @@ public class ContentHandler {
                 }
                 case "JT":
                 case "JUMP_TASK": {
-                    return jumpTask(contentList, playerData, chapterData, content);
+                    return jumpTask(player, playerData, chapterData, Integer.parseInt(contentList.get(1)),
+                            Integer.parseInt(contentList.get(2)), contentList.get(3));
                 }
                 case "TOAST":{
-                    ToastEvent toastEvent = new ToastEvent(player, Material.valueOf(contentList.get(2)), ToastUtil.handleTitle(contentList.get(3)), contentList.get(1));
-                    EventUtil.callEvent(toastEvent);
-                    toastEvent.showToast();
+                    sendToast(player, contentList.get(2), contentList.get(3), contentList.get(1));
                     return true;
                 }
                 case "WEATHER": {
-                    WeatherChangeEvent weatherChangeEvent = new WeatherChangeEvent(player, Weather.valueOf(contentList.get(1)));
-                    EventUtil.callEvent(weatherChangeEvent);
-                    if (!weatherChangeEvent.isCancelled()) {
-                        weatherChangeEvent.changeWeather();
-                    }
+                    changeWeather(player, Weather.valueOf(contentList.get(1)));
                     return true;
                 }
                 case "C":
@@ -220,31 +148,178 @@ public class ContentHandler {
     }
 
     /**
-     * 进行任务转跳
-     * @param contentList - 总content
+     *
+     * 切换 Weather
+     * @param player - 玩家
+     * @param weather - 天气
+     */
+    private void changeWeather(Player player, Weather weather){
+        WeatherChangeEvent weatherChangeEvent = new WeatherChangeEvent(player, weather);
+        EventUtil.callEvent(weatherChangeEvent);
+        if (!weatherChangeEvent.isCancelled()) {
+            weatherChangeEvent.changeWeather();
+        }
+    }
+
+    /**
+     * 发送 toast
+     * @param player - 玩家
+     * @param material - 材质
+     * @param title - 显示内容
+     * @param frame - 显示形式
+     */
+    private void sendToast(Player player, String material, String title, String frame){
+        ToastEvent toastEvent = new ToastEvent(player, Material.valueOf(material), ToastUtil.handleTitle(title), frame);
+        EventUtil.callEvent(toastEvent);
+        toastEvent.showToast();
+    }
+
+    /**
+     * 执行命令
+     * @param player - 玩家
+     * @param contentList - 内容列表
+     * @param chapterData - 章节数据
+     */
+    private void executeCommand(Player player, List<String> contentList, ChapterData chapterData){
+        CommandExecuteEvent commandExecuteEvent = new CommandExecuteEvent(narrator, player, chapterData, contentList.get(1));
+        EventUtil.callEvent(commandExecuteEvent);
+        if (!commandExecuteEvent.isCancelled()){
+            commandExecuteEvent.executeCommand();
+        }
+    }
+
+    /**
+     * 执行 delay
+     * @param contentList - 内容列表
+     * @param player - 玩家
+     * @param chapterData - 章节数据
+     * @param contentTask - contentTask
+     * @return true - 执行完毕
+     */
+    private boolean executeDelay(List<String> contentList, Player player, ChapterData chapterData, ContentTask contentTask){
+        if (contentList.size() > 2){
+            DelaySingleEvent delaySingleEvent = new DelaySingleEvent(narrator, player, chapterData, contentTask, contentList);
+            EventUtil.callEvent(delaySingleEvent);
+            if (!delaySingleEvent.isCancelled()) {
+                delaySingleEvent.delay();
+            }
+            return true;
+        }
+
+        if (narrator.getCacheData().isCurrentDelayEventExist(player)) {
+            return narrator.getCacheData().isCurrentDelayEventDelayed(player);
+        }
+        DelayEvent delayEvent = new DelayEvent(Long.parseLong(contentList.get(1)));
+        EventUtil.callEvent(delayEvent);
+        if (!delayEvent.isCancelled()) {
+            delayEvent.delay();
+            narrator.getCacheData().putCurrentDelayEvent(player, delayEvent);
+        }
+        return delayEvent.isDelayed();
+    }
+
+    /**
+     * 给玩家发送 actionbar Answer
+     * @param contentList - 内容列表
+     * @param player - 玩家
+     * @param playerData - 玩家数据
+     * @return true - 已作出决定， 否则反之
+     */
+    private boolean sendActionBarAnswer(List<String> contentList, Player player, PlayerData playerData){
+        if (narrator.getCacheData().isCurrentActionBarAnswerEventExist(player)) {
+            narrator.getCacheData().getCurrentActionBarAnswerEvent(player).checkAnswer();
+            return narrator.getCacheData().isCurrentActionBarAnswerEventDecided(player);
+        }
+        ActionBarAnswerEvent actionBarAnswerEvent = new ActionBarAnswerEvent(
+                narrator,
+                player,
+                playerData,
+                contentList.subList(1, contentList.size())
+        );
+        narrator.getCacheData().putCurrentActionBarAnswerEvent(player, actionBarAnswerEvent);
+        return false;
+    }
+
+    /**
+     * 给玩家发 actionbar
+     * @param contentList - 内容列表
+     * @param player - 玩家
+     * @return true 表示成功完毕 false 表示发送失败/未完毕
+     */
+    private boolean sendActionBar(List<String> contentList, Player player){
+        boolean isPrint = Boolean.parseBoolean(contentList.get(1));
+
+        ActionBarEvent actionBarEvent;
+        if (isPrint) {
+            if (narrator.getCacheData().isCurrentActionBarEventExist(player)) {
+                narrator.getCacheData().getCurrentActionBarEvent(player).showActionbar();
+                return narrator.getCacheData().isCurrentActionbarEnded(player);
+            }
+            actionBarEvent = new ActionBarEvent(
+                    narrator,
+                    player,
+                    true,
+                    Long.parseLong(contentList.get(2)),
+                    Long.parseLong(contentList.get(3)),
+                    CCUtil.translate(contentList.get(4))
+            );
+            narrator.getCacheData().putCurrentActionBarEvent(player, actionBarEvent);
+        } else {
+            actionBarEvent = new ActionBarEvent(
+                    narrator,
+                    player,
+                    false,
+                    0,
+                    0,
+                    CCUtil.translate(contentList.get(2))
+            );
+        }
+
+        EventUtil.callEvent(actionBarEvent);
+        actionBarEvent.showActionbar();
+        return actionBarEvent.isEnded();
+    }
+
+    /**
+     * 给玩家发 title
+     * @param contentList - 内容列表
+     * @param player - 玩家
+     */
+    private void sendTitle(List<String> contentList, Player player){
+        TitleEvent titleEvent = new TitleEvent(contentList, player);
+        EventUtil.callEvent(titleEvent);
+        if (!titleEvent.isCancelled()) {
+            titleEvent.showTitle();
+        }
+    }
+
+    /**
+     * 给玩家发 message
+     * @param contentList - 内容列表
+     * @param player - 玩家
+     */
+    private void sendMessage(List<String> contentList, Player player){
+        MessageEvent messageEvent = new MessageEvent(player, CCUtil.translate(contentList.get(1)));
+        EventUtil.callEvent(messageEvent);
+        if (!messageEvent.isCancelled()) {
+            messageEvent.sendMessage();
+        }
+    }
+
+    /**
+     * 转跳章节
+     * @param player - 玩家
      * @param playerData - 玩家数据
      * @param chapterData - 章节数据
-     * @param content - 当前content
-     * @return 是否转跳完毕
+     * @param taskOrdinal - 任务序数
+     * @param contentIndex - 内容索引数
+     * @param jumpContent - 关于转跳的content
+     * @return 转跳完成
      */
-    private boolean jumpTask(List<String> contentList, PlayerData playerData, ChapterData chapterData, String content) {
-        int taskOrdinal = Integer.parseInt(contentList.get(1));
-        int contentIndex = Integer.parseInt(contentList.get(2));
-
-        if (taskOrdinal < 1 || contentIndex < 0) {
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_EXECUTE_NUMBER_FORMAT);
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
-            narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + chapterData.getName());
-            narrator.getLogger().log(Level.SEVERE, "        Content: " + content);
-            return false;
-        }
-        narrator.getHandlerManager().getTaskHandler().jump(
-                playerData,
-                chapterData,
-                taskOrdinal,
-                contentIndex
-        );
-        return true;
+    private boolean jumpTask(Player player, PlayerData playerData, ChapterData chapterData, int taskOrdinal, int contentIndex, String jumpContent) {
+        JumpTaskEvent jumpTaskEvent = new JumpTaskEvent(narrator, player, playerData, chapterData, taskOrdinal, contentIndex, jumpContent);
+        EventUtil.callEvent(jumpTaskEvent);
+        return jumpTaskEvent.jumpTask();
     }
 
 }
