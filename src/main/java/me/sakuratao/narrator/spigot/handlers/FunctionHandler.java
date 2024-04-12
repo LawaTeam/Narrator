@@ -1,6 +1,6 @@
 package me.sakuratao.narrator.spigot.handlers;
 
-import me.sakuratao.narrator.spigot.enums.FunctionType;
+import me.sakuratao.narrator.spigot.enums.FunctionTag;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -18,14 +18,14 @@ public class FunctionHandler {
      * @param function - function
      * @return type
      */
-    public FunctionType identifyType(String function) {
+    public FunctionTag identifyType(String function) {
 
         String tag = getTag(function);
 
-        if (Bukkit.getWorld(tag) != null) return FunctionType.LOC;
-        if (tag.equalsIgnoreCase("Player")) return FunctionType.PLAYER;
+        if (Bukkit.getWorld(tag) != null) return FunctionTag.LOC;
+        if (tag.equalsIgnoreCase("Player")) return FunctionTag.PLAYER;
 
-        return FunctionType.valueOf(function);
+        return FunctionTag.valueOf(function);
     }
 
     /**
@@ -34,7 +34,9 @@ public class FunctionHandler {
      * @return location
      */
     public Location decodeLoc(String function){
-        List<Double> coordinate = Arrays.stream(getInBrackets(function).split(",")).map(Double::parseDouble).toList();
+        List<Double> coordinate = Arrays.stream(getInBrackets(function).split(","))
+                .map(Double::parseDouble)
+                .toList();
 
         World world = Bukkit.getWorld(getTag(function));
         if (world != null) {
