@@ -10,6 +10,9 @@ import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelayEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelaySingleEvent;
 import me.sakuratao.narrator.spigot.events.content.jump.JumpTaskEvent;
+import me.sakuratao.narrator.spigot.events.content.world.TeleportEvent;
+import me.sakuratao.narrator.spigot.events.content.world.TimeChangeEvent;
+import me.sakuratao.narrator.spigot.events.content.world.WeatherChangeEvent;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import me.sakuratao.narrator.spigot.utils.CCUtil;
 import me.sakuratao.narrator.spigot.utils.EventUtil;
@@ -64,6 +67,16 @@ public class ContentHandler {
          */
         try {
             return switch (contentList.get(0)) {
+                /*
+                    更改时间
+                 */
+                case "TIME" -> {
+                    changeTime(player, Long.parseLong(contentList.get(1)), Boolean.getBoolean(contentList.get(2)), Long.parseLong(contentList.get(3)));
+                    yield true;
+                }
+                /*
+                    传送作用
+                 */
                 case "TP" -> {
                     teleport(contentList.get(1), contentList.get(2), player);
                     yield true;
@@ -144,6 +157,16 @@ public class ContentHandler {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private void changeTime(Player player, long toTimeTicks, boolean fade, long increase){
+
+        TimeChangeEvent timeChangeEvent = new TimeChangeEvent(player, toTimeTicks, fade, increase);
+        EventUtil.callEvent(timeChangeEvent);
+        if (!timeChangeEvent.isCancelled()) {
+            timeChangeEvent.changeTime();
+        }
+
     }
 
     /**

@@ -1,4 +1,4 @@
-package me.sakuratao.narrator.spigot.events.content;
+package me.sakuratao.narrator.spigot.events.content.world;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
