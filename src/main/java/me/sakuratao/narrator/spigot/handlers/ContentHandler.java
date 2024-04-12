@@ -154,7 +154,7 @@ public class ContentHandler {
      */
     private void teleport(String typeName, String target, Player player){
 
-        TeleportEvent teleportEvent = new TeleportEvent(typeName, target, player);
+        TeleportEvent teleportEvent = new TeleportEvent(narrator, typeName, target, player);
         EventUtil.callEvent(teleportEvent);
         if (!teleportEvent.isCancelled()){
             teleportEvent.teleport();

@@ -1,44 +1,40 @@
 package me.sakuratao.narrator.spigot.events.content;
 
+import lombok.Getter;
+import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.enums.TeleportType;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
-import org.bukkit.Bukkit;
+import me.sakuratao.narrator.spigot.handlers.FunctionHandler;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class TeleportEvent extends NarratorEvent implements Cancellable {
 
-    private final TeleportType tpType;
-    private final String target;
-    private  final Player player;
+    private final Narrator narrator;
 
-    public TeleportEvent(String typeName, String target, Player player) {
+    @Getter private final TeleportType tpType;
+    @Getter private final String target;
+    @Getter private final Player player;
+
+    public TeleportEvent(Narrator narrator, String typeName, String target, Player player) {
+        this.narrator = narrator;
         this.tpType = TeleportType.valueOf(typeName.toUpperCase());
         this.target = target;
         this.player = player;
     }
 
     public void teleport() {
-        String[] split = target.split("<");
+        FunctionHandler fh = narrator.getHandlerManager().getFunctionHandler();
         switch (tpType) {
             case LOC -> {
-
-                String worldName = split[0];
-                List<Double> coordinate = Arrays.stream(split[1].split(",")).map(s -> Double.parseDouble(s.replace(">", ""))).toList();
-
-                World world = Bukkit.getWorld(worldName);
-                if (world != null) {
-                    Location location = new Location(world, coordinate.get(0), coordinate.get(1), coordinate.get(2));
+                Location location = fh.decodeLoc(target);
+                if (location.getWorld() != null) {
                     player.teleport(location);
                 }
             }
             case PLAYER -> {
-                Player targetPlayer = Bukkit.getPlayer(split[0]);
+                Player targetPlayer = fh.decodePlayer(target);
                 if (targetPlayer != null) {
                     player.teleport(targetPlayer);
                 }

@@ -1,16 +1,12 @@
 package me.sakuratao.narrator.spigot.enums;
 
-public enum TeleportType {
-
-    ENTITY("ENTITY"),
+public enum FunctionType {
+    LOC("LOC"),
     PLAYER("PLAYER"),
-    NPC("NPC"), // todo
-    LOC("LOC")
     ;
 
     private final String type;
-
-    TeleportType(String type) {
+    FunctionType(String type) {
         this.type = type;
     }
 

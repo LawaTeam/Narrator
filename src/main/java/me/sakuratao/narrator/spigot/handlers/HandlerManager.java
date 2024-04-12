@@ -17,6 +17,6 @@ public class HandlerManager {
     @Wire
     private TaskHandler taskHandler;
     @Wire
-    private HologramHandler hologramHandler;
+    private FunctionHandler functionHandler;
 
 }
