@@ -157,31 +157,11 @@ public class ContentHandler {
      */
     private void teleport(String typeName, String target, Player player){
 
-        TeleportType tpType = TeleportType.valueOf(typeName.toUpperCase());
-        String[] split = target.split("<");
-        switch (tpType) {
-            case LOC -> {
-
-                String worldName = split[0];
-                List<Double> coordinate = Arrays.stream(split[1].split(",")).map(s -> Double.parseDouble(s.replace(">", ""))).toList();
-
-                World world = Bukkit.getWorld(worldName);
-                if (world != null) {
-                    Location location = new Location(world, coordinate.get(0), coordinate.get(1), coordinate.get(2));
-                    player.teleport(location);
-                }
-            }
-            case PLAYER -> {
-                Player targetPlayer = Bukkit.getPlayer(split[0]);
-                if (targetPlayer != null) {
-                    player.teleport(targetPlayer);
-                }
-            }
-            case ENTITY -> {
-                // todo
-            }
+        TeleportEvent teleportEvent = new TeleportEvent(typeName, target, player);
+        EventUtil.callEvent(teleportEvent);
+        if (!teleportEvent.isCancelled()){
+            teleportEvent.teleport();
         }
-
 
     }
 
