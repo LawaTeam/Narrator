@@ -12,18 +12,17 @@ import me.sakuratao.narrator.spigot.events.content.delay.DelayEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelaySingleEvent;
 import me.sakuratao.narrator.spigot.events.content.jump.JumpTaskEvent;
 import me.sakuratao.narrator.spigot.task.ContentTask;
-import me.sakuratao.narrator.spigot.utils.CCUtil;
-import me.sakuratao.narrator.spigot.utils.EventUtil;
-import me.sakuratao.narrator.spigot.utils.LogUtil;
-import me.sakuratao.narrator.spigot.utils.ToastUtil;
+import me.sakuratao.narrator.spigot.utils.*;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 @PieComponent
 public class ContentHandler {
@@ -41,7 +40,7 @@ public class ContentHandler {
      */
     public boolean execute(Player player, ChapterData chapterData, String content, ContentTask contentTask) {
 
-        List<String> contentList = Arrays.asList(content.split("\\|"));
+        List<String> contentList = Arrays.stream(content.split("\\|")).map(m -> PapiUtil.getString(player, m)).collect(Collectors.toList());
 
         PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(player);
 
@@ -63,95 +62,74 @@ public class ContentHandler {
          * 其余的则是所对应功能的参数，详细请翻阅 ChapterExample.yml
          */
         try {
-            switch (contentList.get(0)) {
+            return switch (contentList.get(0)) {
                 /*
                   send title to player
                  */
-                case "T":
-                case "TITLE": {
+                case "T", "TITLE" -> {
                     sendTitle(contentList, player);
-                    return true;
+                    yield true;
                 }
                 /*
                     send message to player
                  */
-                case "M":
-                case "MESSAGE": {
+                case "M", "MESSAGE" -> {
                     sendMessage(contentList, player);
-                    return true;
+                    yield true;
                 }
                 /*
                     send actionbar to player
                  */
-                case "AB":
-                case "ACTIONBAR": {
-                    return sendActionBar(contentList, player);
-                }
+                case "AB", "ACTIONBAR" -> sendActionBar(contentList, player);
                 /*
                     let player use actionbar to answer
                  */
-                case "AB_ANSWER":
-                case "ACTIONBAR_ANSWER": {
-                    return sendActionBarAnswer(contentList, player, playerData);
-                }
+                case "AB_ANSWER", "ACTIONBAR_ANSWER" -> sendActionBarAnswer(contentList, player, playerData);
                 /*
                     execute delay
                  */
-                case "D":
-                case "DELAY": {
-                    return executeDelay(contentList, player, chapterData, contentTask);
-                }
+                case "D", "DELAY" -> executeDelay(contentList, player, chapterData, contentTask);
                 /*
                     execute command
                  */
-                case "COMMAND": {
+                case "COMMAND" -> {
                     executeCommand(player, contentList, chapterData);
-                    return true;
+                    yield true;
                 }
                 /*
 
                  */
-                case "MC":
-                case "MESSAGE_CLICK": {
+                case "MC", "MESSAGE_CLICK" ->
                     // todo
-                    return true;
-                }
+                        true;
                 /*
                     send toast to player
                  */
-                case "TOAST":{
+                case "TOAST" -> {
                     sendToast(player, contentList.get(2), contentList.get(3), contentList.get(1));
-                    return true;
+                    yield true;
                 }
                 /*
                     change weather for player privately
                  */
-                case "WEATHER": {
+                case "WEATHER" -> {
                     changeWeather(player, Weather.valueOf(contentList.get(1)));
-                    return true;
+                    yield true;
                 }
-                case "C":
-                case "CONDITION": {
+                case "C", "CONDITION" ->
                     // todo
-                    return true;
-                }
+                        true;
                 /*
                     Jump Task
                  */
-                case "JT":
-                case "JUMP_TASK": {
-                    return jumpTask(player, playerData, chapterData, Integer.parseInt(contentList.get(1)),
-                            Integer.parseInt(contentList.get(2)), content);
-                }
-                case "JC":
-                case "JUMP_CHAPTER": {
+                case "JT", "JUMP_TASK" ->
+                        jumpTask(player, playerData, chapterData, Integer.parseInt(contentList.get(1)),
+                                Integer.parseInt(contentList.get(2)), content);
+                case "JC", "JUMP_CHAPTER" ->
                     // todo
-                    return true;
-                }
-                default: {
-                    return true;
-                }
-            }
+                        true;
+                default -> true;
+            };
         } catch (IndexOutOfBoundsException e) {
             narrator.getLogger().log(Level.SEVERE, "Throw IndexOutOfBoundsException!");
             narrator.getLogger().log(Level.SEVERE, "Please check your contents!");

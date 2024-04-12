@@ -34,11 +34,11 @@ public class NarratorCommand {
         if (!item.isSingle()) {
             if (item.getArgs()[0].equals("force")) {
                 narrator.getLogger().log(Level.WARNING, Lang.CHAPTERS_LOAD_FORCE);
-                narrator.reloadChapter(true, true);
+                narrator.reloadChapter(true);
                 return;
             }
         }
-        narrator.reloadChapter(true, false);
+        narrator.reloadChapter(false);
 
     }
 

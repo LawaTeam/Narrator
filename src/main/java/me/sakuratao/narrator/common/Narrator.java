@@ -3,6 +3,7 @@ package me.sakuratao.narrator.common;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import lombok.Getter;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.handlers.HandlerManager;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
@@ -32,7 +33,8 @@ public class Narrator {
     private BukkitAudiences adventure;
     @Getter
     private ProtocolManager protocolManager;
-
+    @Wire
+    private PlaceholderExpansion papiExpansion;
 
     @Wire
     private HandlerManager handlerManager;
@@ -42,6 +44,9 @@ public class Narrator {
     private CacheData cacheData;
     @Wire
     private PacketsHandler packetsHandler;
+
+
+
 
     /**
      * 初始化
@@ -53,6 +58,7 @@ public class Narrator {
             adventure = BukkitAudiences.create(NarratorSpigot.getPluginInstance());
             protocolManager = ProtocolLibrary.getProtocolManager();
             packetsHandler.register(protocolManager);
+            papiExpansion.register();
         } else {
             isBungee = true;
         }
@@ -69,21 +75,19 @@ public class Narrator {
         logger.info("                                              ");
         logger.info("Platform: " + (isSpigot ? "Spigot" : "Bungee") + " | " + "Ver: " + version);
 
-        reloadChapter(false, false);
+        reloadChapter(false);
 
     }
 
     public void close() {
     }
 
-    public void reloadChapter(boolean reload, boolean force){
+    public void reloadChapter(boolean force){
 
         managerHandler.getTaskManager().getTasks().values().forEach(BukkitTask::cancel);
 
         handlerManager.getChapterHandler().load(force);
         handlerManager.getTaskHandler().load();
-
-
 
         getLogger().info(Lang.CHAPTERS_LOADED);
     }
