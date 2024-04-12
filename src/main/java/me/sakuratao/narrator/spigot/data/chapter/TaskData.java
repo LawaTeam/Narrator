@@ -1,6 +1,6 @@
 package me.sakuratao.narrator.spigot.data.chapter;
 
-import lombok.*;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;

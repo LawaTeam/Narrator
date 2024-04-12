@@ -1,9 +1,9 @@
 package me.sakuratao.narrator.spigot.data.cache;
 
 import lombok.Getter;
-import me.sakuratao.narrator.spigot.events.content.delay.DelayEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
+import me.sakuratao.narrator.spigot.events.content.delay.DelayEvent;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 

@@ -9,7 +9,6 @@ import me.sakuratao.narrator.spigot.events.NarratorEvent;
 import me.sakuratao.narrator.spigot.utils.LogUtil;
 import org.bukkit.entity.Player;
 
-import java.util.List;
 import java.util.logging.Level;
 
 public class JumpTaskEvent extends NarratorEvent {

@@ -1,9 +1,6 @@
 package me.sakuratao.narrator.spigot.data.chapter;
 
-import lombok.*;
-import org.bukkit.configuration.file.YamlConfiguration;
-import top.jingwenmc.spigotpie.common.instance.PieComponent;
-import top.jingwenmc.spigotpie.common.instance.Wire;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;

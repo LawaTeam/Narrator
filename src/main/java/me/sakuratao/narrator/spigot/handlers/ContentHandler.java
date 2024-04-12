@@ -1,10 +1,8 @@
 package me.sakuratao.narrator.spigot.handlers;
 
 import me.sakuratao.narrator.common.Narrator;
-import me.sakuratao.narrator.spigot.configuration.Lang;
-import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
-import me.sakuratao.narrator.spigot.enums.TeleportType;
+import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.enums.Weather;
 import me.sakuratao.narrator.spigot.events.content.*;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEvent;
@@ -13,17 +11,16 @@ import me.sakuratao.narrator.spigot.events.content.delay.DelayEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelaySingleEvent;
 import me.sakuratao.narrator.spigot.events.content.jump.JumpTaskEvent;
 import me.sakuratao.narrator.spigot.task.ContentTask;
-import me.sakuratao.narrator.spigot.utils.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import me.sakuratao.narrator.spigot.utils.CCUtil;
+import me.sakuratao.narrator.spigot.utils.EventUtil;
+import me.sakuratao.narrator.spigot.utils.PapiUtil;
+import me.sakuratao.narrator.spigot.utils.ToastUtil;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;

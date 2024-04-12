@@ -3,10 +3,7 @@ package me.sakuratao.narrator.spigot.events.content.delay;
 import lombok.Getter;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
 import me.sakuratao.narrator.spigot.utils.TaskUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
-
-import java.util.List;
 
 public class DelayEvent extends NarratorEvent implements Cancellable {
 

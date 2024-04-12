@@ -1,6 +1,5 @@
 package me.sakuratao.narrator.spigot.configuration;
 
-import top.jingwenmc.spigotpie.common.configuration.Configuration;
 import top.jingwenmc.spigotpie.common.configuration.ConfigurationFile;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 

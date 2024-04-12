@@ -9,8 +9,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
 @UtilityClass
 public class ToastUtil {
 

@@ -1,10 +1,6 @@
 package me.sakuratao.narrator.spigot.handlers;
 
 import lombok.Getter;
-import me.sakuratao.narrator.spigot.handlers.ChapterHandler;
-import me.sakuratao.narrator.spigot.handlers.ConditionHandler;
-import me.sakuratao.narrator.spigot.handlers.ContentHandler;
-import me.sakuratao.narrator.spigot.handlers.TaskHandler;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
