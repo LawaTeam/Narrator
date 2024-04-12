@@ -28,7 +28,6 @@ public class DelayEvent extends NarratorEvent implements Cancellable {
     @Override
     public void setCancelled(boolean isCancelled) {
         this.isCancelled = isCancelled;
-        delayed = true; // 如果出问题留意一下这里
     }
 
 }

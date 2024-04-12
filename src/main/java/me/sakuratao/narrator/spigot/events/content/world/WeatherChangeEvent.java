@@ -67,7 +67,6 @@ public class WeatherChangeEvent extends NarratorEvent implements Cancellable {
     @Override
     public void setCancelled(boolean isCancelled) {
         this.isCancelled = isCancelled;
-        if (fade != null) fade.cancel();
     }
 
 }
