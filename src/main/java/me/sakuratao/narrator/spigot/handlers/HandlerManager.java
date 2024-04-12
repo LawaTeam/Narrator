@@ -20,5 +20,7 @@ public class HandlerManager {
     private ContentHandler contentHandler;
     @Wire
     private TaskHandler taskHandler;
+    @Wire
+    private HologramHandler hologramHandler;
 
 }

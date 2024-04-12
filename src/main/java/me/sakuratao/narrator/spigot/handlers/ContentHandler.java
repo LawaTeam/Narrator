@@ -4,6 +4,7 @@ import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
+import me.sakuratao.narrator.spigot.enums.TeleportType;
 import me.sakuratao.narrator.spigot.enums.Weather;
 import me.sakuratao.narrator.spigot.events.content.*;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEvent;
@@ -13,7 +14,10 @@ import me.sakuratao.narrator.spigot.events.content.delay.DelaySingleEvent;
 import me.sakuratao.narrator.spigot.events.content.jump.JumpTaskEvent;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import me.sakuratao.narrator.spigot.utils.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -63,6 +67,10 @@ public class ContentHandler {
          */
         try {
             return switch (contentList.get(0)) {
+                case "TP" -> {
+                    teleport(contentList.get(1), contentList.get(2), player);
+                    yield true;
+                }
                 /*
                   send title to player
                  */
@@ -139,6 +147,42 @@ public class ContentHandler {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * 执行 tp
+     * @param typeName - tp 类型
+     * @param target 目标
+     * @param player 被 tp 玩家
+     */
+    private void teleport(String typeName, String target, Player player){
+
+        TeleportType tpType = TeleportType.valueOf(typeName.toUpperCase());
+        String[] split = target.split("<");
+        switch (tpType) {
+            case LOC -> {
+
+                String worldName = split[0];
+                List<Double> coordinate = Arrays.stream(split[1].split(",")).map(s -> Double.parseDouble(s.replace(">", ""))).toList();
+
+                World world = Bukkit.getWorld(worldName);
+                if (world != null) {
+                    Location location = new Location(world, coordinate.get(0), coordinate.get(1), coordinate.get(2));
+                    player.teleport(location);
+                }
+            }
+            case PLAYER -> {
+                Player targetPlayer = Bukkit.getPlayer(split[0]);
+                if (targetPlayer != null) {
+                    player.teleport(targetPlayer);
+                }
+            }
+            case ENTITY -> {
+                // todo
+            }
+        }
+
+
     }
 
     /**
