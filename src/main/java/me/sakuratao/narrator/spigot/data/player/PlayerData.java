@@ -5,6 +5,7 @@ import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.data.chapter.TaskData;
 import me.sakuratao.narrator.spigot.task.ContentTask;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -21,11 +22,12 @@ public class PlayerData {
     /*
         these decided what will be set in TaskManager
      */
+    private World playingWorld; // TODO: 独立于主世界
     private int playingChapterOrdinal = 1; // TODO: 这俩playing到时候要存库
     private int playingTaskOrdinal = 1;
     private int contentIndex = 0;
 
-    private ContentTask contentTask;
+    private ContentTask contentTask = null;
 
     private Inventory chatHandle; // TODO 提供过剧情时 聊天框的控制
 

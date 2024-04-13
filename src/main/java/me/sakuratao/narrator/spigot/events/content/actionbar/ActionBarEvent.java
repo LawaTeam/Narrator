@@ -36,6 +36,7 @@ public class ActionBarEvent extends NarratorEvent{
             long keep,
             String text
     ){
+        super(true);
         this.narrator = narrator;
         this.player = player;
         this.isPrint = isPrint;

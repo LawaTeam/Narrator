@@ -39,7 +39,7 @@ public class TaskManager {
                 data.getPlayerName().toLowerCase(),
                 Bukkit.getScheduler().runTaskTimerAsynchronously(NarratorSpigot.getPluginInstance(),
                         data.getContentTask(),
-                        0, 10
+                        0, 5
                 )
         );
     }

@@ -19,6 +19,7 @@ public class CommandExecuteEvent extends NarratorEvent implements Cancellable {
     @Getter private final String command;
 
     public CommandExecuteEvent(Narrator narrator, Player player, ChapterData data, String command) {
+        super(true);
         this.narrator = narrator;
         this.player = player;
         this.chapterData = data;

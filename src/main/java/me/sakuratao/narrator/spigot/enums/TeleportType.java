@@ -8,7 +8,7 @@ public enum TeleportType {
     LOC("LOC")
     ;
 
-    private String type;
+    private final String type;
 
     TeleportType(String type) {
         this.type = type;

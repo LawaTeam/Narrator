@@ -1,4 +1,4 @@
-package me.sakuratao.narrator.spigot.events.content;
+package me.sakuratao.narrator.spigot.events.content.world;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
@@ -21,6 +21,7 @@ public class WeatherChangeEvent extends NarratorEvent implements Cancellable {
     private BukkitTask fade;
 
     public WeatherChangeEvent(Player player, Weather weather){
+        super(true);
         this.player = player;
         this.weather = weather;
     }

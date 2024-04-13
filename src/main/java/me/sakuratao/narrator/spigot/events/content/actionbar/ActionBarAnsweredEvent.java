@@ -11,6 +11,7 @@ public class ActionBarAnsweredEvent extends NarratorEvent implements Cancellable
     @Getter private final String option;
 
     public ActionBarAnsweredEvent(Player player, String option) {
+        super(true);
         this.player = player;
         this.option = option;
     }

@@ -10,11 +10,11 @@ import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelayEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelaySingleEvent;
 import me.sakuratao.narrator.spigot.events.content.jump.JumpTaskEvent;
+import me.sakuratao.narrator.spigot.events.content.world.TeleportEvent;
+import me.sakuratao.narrator.spigot.events.content.world.TimeChangeEvent;
+import me.sakuratao.narrator.spigot.events.content.world.WeatherChangeEvent;
 import me.sakuratao.narrator.spigot.task.ContentTask;
-import me.sakuratao.narrator.spigot.utils.CCUtil;
-import me.sakuratao.narrator.spigot.utils.EventUtil;
-import me.sakuratao.narrator.spigot.utils.PapiUtil;
-import me.sakuratao.narrator.spigot.utils.ToastUtil;
+import me.sakuratao.narrator.spigot.utils.*;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
@@ -64,8 +64,31 @@ public class ContentHandler {
          */
         try {
             return switch (contentList.get(0)) {
+                /*
+                    更改时间
+                 */
+                case "TIME" -> {
+                    TaskUtil.task(() -> {
+                        if (contentList.size() == 2) {
+                            changeTime(player, Long.parseLong(contentList.get(1)), false, 0);
+                        } else {
+                            changeTime(
+                                    player,
+                                    Long.parseLong(contentList.get(1)),
+                                    Boolean.parseBoolean(contentList.get(2)),
+                                    Long.parseLong(contentList.get(3))
+                            );
+                        }
+                    });
+                    yield true;
+                }
+                /*
+                    传送作用
+                 */
                 case "TP" -> {
-                    teleport(contentList.get(1), contentList.get(2), player);
+                    TaskUtil.task(() -> {
+                        teleport(contentList.get(1), contentList.get(2), player);
+                    });
                     yield true;
                 }
                 /*
@@ -147,6 +170,23 @@ public class ContentHandler {
     }
 
     /**
+     * 为玩家更改时间
+     * @param player - 玩家 id
+     * @param toTimeTicks - 改到的时间
+     * @param fade - 是否淡入
+     * @param increase - 增长率
+     */
+    private void changeTime(Player player, long toTimeTicks, boolean fade, long increase){
+
+        TimeChangeEvent timeChangeEvent = new TimeChangeEvent(narrator, player, toTimeTicks, fade, increase);
+        EventUtil.callEvent(timeChangeEvent);
+        if (!timeChangeEvent.isCancelled()) {
+            timeChangeEvent.changeTime();
+        }
+
+    }
+
+    /**
      * 执行 tp
      * @param typeName - tp 类型
      * @param target 目标
@@ -154,7 +194,7 @@ public class ContentHandler {
      */
     private void teleport(String typeName, String target, Player player){
 
-        TeleportEvent teleportEvent = new TeleportEvent(typeName, target, player);
+        TeleportEvent teleportEvent = new TeleportEvent(narrator, typeName, target, player);
         EventUtil.callEvent(teleportEvent);
         if (!teleportEvent.isCancelled()){
             teleportEvent.teleport();
@@ -217,6 +257,7 @@ public class ContentHandler {
             EventUtil.callEvent(delaySingleEvent);
             if (!delaySingleEvent.isCancelled()) {
                 delaySingleEvent.delay();
+                narrator.getCacheData().putDelaySingleEvent(delaySingleEvent);
             }
             return true;
         }

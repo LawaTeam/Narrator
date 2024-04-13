@@ -16,7 +16,6 @@ public class PacketUtil {
         return pm.createPacket(type);
     }
 
-
     public void sendPacket(Player player, PacketContainer packet){
         pm.sendServerPacket(player, packet);
     }
