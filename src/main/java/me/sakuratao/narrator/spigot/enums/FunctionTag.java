@@ -6,6 +6,7 @@ public enum FunctionTag {
     ;
 
     private final String tag;
+
     FunctionTag(String tag) {
         this.tag = tag;
     }

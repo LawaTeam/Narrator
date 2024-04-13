@@ -31,6 +31,7 @@ public class JumpTaskEvent extends NarratorEvent {
             int contentIndex,
             String jumpContent
     ) {
+        super(true);
         this.narrator = narrator;
         this.player = player;
         this.playerData = playerData;

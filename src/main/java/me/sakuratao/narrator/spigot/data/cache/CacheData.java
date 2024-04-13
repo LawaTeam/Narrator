@@ -4,9 +4,13 @@ import lombok.Getter;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelayEvent;
+import me.sakuratao.narrator.spigot.events.content.delay.DelaySingleEvent;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
@@ -18,6 +22,23 @@ public class CacheData {
     private final ConcurrentHashMap<String, ActionBarAnswerEvent> currentActionBarAnswerEvent = new ConcurrentHashMap<>();
 
     private final ConcurrentHashMap<String, DelayEvent> currentDelayEvent = new ConcurrentHashMap<>();
+    private final List<DelaySingleEvent> delaySingleEventList = new ArrayList<>();
+
+    /**
+     * 添加 delaySingle
+     * @param e - DelaySingleEvent
+     */
+    public void putDelaySingleEvent(DelaySingleEvent e){
+        delaySingleEventList.add(e);
+    }
+
+    /**
+     * 暂停所有 delaySingle 并清空缓存
+     */
+    public void cancelAllDelaySingleEvent(){
+        delaySingleEventList.forEach(e -> e.setCancelled(true));
+        delaySingleEventList.clear();
+    }
 
     /**
      * 获取当前的 delay 事件

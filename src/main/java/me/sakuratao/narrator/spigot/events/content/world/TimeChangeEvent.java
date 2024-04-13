@@ -3,9 +3,11 @@ package me.sakuratao.narrator.spigot.events.content.world;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import lombok.Getter;
+import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
 import me.sakuratao.narrator.spigot.utils.PacketUtil;
 import me.sakuratao.narrator.spigot.utils.TaskUtil;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.scheduler.BukkitTask;
@@ -13,6 +15,8 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TimeChangeEvent extends NarratorEvent implements Cancellable {
+
+    private final Narrator narrator;
 
     @Getter private final Player player;
     @Getter private final long fromTimeTicks;
@@ -31,9 +35,11 @@ public class TimeChangeEvent extends NarratorEvent implements Cancellable {
      * @param fade - 是否渐渐切换
      * @param increase - 每 1 ticks 增长的时间 ticks
      */
-    public TimeChangeEvent(Player player, long toTimeTicks, boolean fade, long increase) {
+    public TimeChangeEvent(Narrator narrator, Player player, long toTimeTicks, boolean fade,  long increase) {
+        super(false);
+        this.narrator = narrator;
         this.player = player;
-        this.fromTimeTicks = player.getPlayerTime();
+        this.fromTimeTicks = player.getWorld().getTime();
         this.toTimeTicks = toTimeTicks;
         this.fade = fade;
         this.increase = increase;
@@ -42,10 +48,9 @@ public class TimeChangeEvent extends NarratorEvent implements Cancellable {
 
     public void changeTime(){
 
-        PacketContainer timePacket = PacketUtil.createPacket(PacketType.Play.Server.UPDATE_TIME);
+        World world = player.getWorld();
         if (!fade) {
-            timePacket.getModifier().write(1, toTimeTicks);
-            PacketUtil.sendPacket(player, timePacket);
+            world.setTime(toTimeTicks);
             return;
         }
 
@@ -54,17 +59,16 @@ public class TimeChangeEvent extends NarratorEvent implements Cancellable {
             AtomicReference<Long> fade = new AtomicReference<>(fromTimeTicks);
             targetTicks = 24000L;
 
-            this.fadeTask = TaskUtil.taskTimerAsync(() -> {
+            this.fadeTask = TaskUtil.taskTimer(() -> {
                 if (fade.get() < targetTicks) {
                     fade.set(fade.get() + increase);
 
                     if (fade.get() >= 24000L) {
                         fade.set(0L);
-                        targetTicks = fromTimeTicks;
+                        targetTicks = toTimeTicks;
                     }
 
-                    timePacket.getModifier().write(1, fade.get());
-                    PacketUtil.sendPacket(player, timePacket);
+                    world.setTime(fade.get());
                 } else {
                     fadeTask.cancel();
                 }
@@ -76,17 +80,15 @@ public class TimeChangeEvent extends NarratorEvent implements Cancellable {
         if (fromTimeTicks < toTimeTicks) {
             AtomicReference<Long> fade = new AtomicReference<>(fromTimeTicks);
 
-            this.fadeTask = TaskUtil.taskTimerAsync(() -> {
+            this.fadeTask = TaskUtil.taskTimer(() -> {
                 if (fade.get() < toTimeTicks) {
-
                     fade.set(fade.get() + increase);
 
                     if (fade.get() > toTimeTicks) {
                         fade.set(toTimeTicks);
                     }
 
-                    timePacket.getModifier().write(1, fade.get());
-                    PacketUtil.sendPacket(player, timePacket);
+                    world.setTime(fade.get());
                 } else {
                     fadeTask.cancel();
                 }

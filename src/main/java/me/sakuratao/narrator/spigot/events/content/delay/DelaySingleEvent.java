@@ -8,6 +8,7 @@ import me.sakuratao.narrator.spigot.task.ContentTask;
 import me.sakuratao.narrator.spigot.utils.TaskUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
 
@@ -22,7 +23,10 @@ public class DelaySingleEvent extends NarratorEvent implements Cancellable {
     @Getter private final String content;
     @Getter private boolean delayed = false;
 
+    private BukkitTask task;
+
     public DelaySingleEvent(Narrator narrator, Player player, ChapterData chapterData, ContentTask contentTask, List<String> contentList){
+        super(true);
         this.narrator = narrator;
         this.player = player;
         this.chapterData = chapterData;
@@ -32,7 +36,7 @@ public class DelaySingleEvent extends NarratorEvent implements Cancellable {
     }
 
     public void delay(){
-        TaskUtil.taskLaterAsync(() ->
+        task = TaskUtil.taskLaterAsync(() ->
                 narrator.getHandlerManager().getContentHandler().execute(player, chapterData, content, contentTask), delayTime);
     }
 
@@ -57,6 +61,10 @@ public class DelaySingleEvent extends NarratorEvent implements Cancellable {
     @Override
     public void setCancelled(boolean isCancelled) {
         this.isCancelled = isCancelled;
+        delayed = true;
+        if (task != null) {
+            task.cancel();
+        }
     }
 
 }

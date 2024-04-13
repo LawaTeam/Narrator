@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ContentTask implements Runnable{
+public class ContentTask implements Runnable {
 
     private final Narrator narrator;
     private final PlayerData data;

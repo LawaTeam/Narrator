@@ -11,6 +11,7 @@ public class DelayEvent extends NarratorEvent implements Cancellable {
     @Getter private boolean delayed = false;
 
     public DelayEvent(long delayTime){
+        super(true);
         this.delayTime = delayTime;
     }
 

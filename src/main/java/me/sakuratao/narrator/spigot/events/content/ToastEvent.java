@@ -14,6 +14,7 @@ public class ToastEvent extends NarratorEvent {
     @Getter private final String frame;
 
     public ToastEvent(Player player, Material material, String title, String frame){
+        super(true);
         this.player = player;
         this.material = material;
         this.title = title;

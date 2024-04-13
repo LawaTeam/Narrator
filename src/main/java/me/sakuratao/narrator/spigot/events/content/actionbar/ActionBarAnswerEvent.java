@@ -28,6 +28,7 @@ public class ActionBarAnswerEvent extends NarratorEvent {
     @Getter private BukkitTask optionTask = null;
 
     public ActionBarAnswerEvent(Narrator narrator, Player player, PlayerData playerData, List<String> options){
+        super(true);
         this.narrator = narrator;
         this.player = player;
         this.playerData = playerData;

@@ -20,6 +20,7 @@ public class TitleEvent extends NarratorEvent implements Cancellable {
     @Getter private final Player player;
 
     public TitleEvent(List<String> contentList, Player player) {
+        super(true);
         this.player = player;
         this.title = CCUtil.translate(contentList.get(4));
         this.subTitle = CCUtil.translate(contentList.get(5));

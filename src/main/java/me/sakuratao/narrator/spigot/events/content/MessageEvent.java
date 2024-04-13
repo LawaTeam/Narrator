@@ -14,6 +14,7 @@ public class MessageEvent extends NarratorEvent implements Cancellable {
     @Getter private final String message;
 
     public MessageEvent(Player player, String message){
+        super(true);
         this.player = player;
         this.message = message;
     }
