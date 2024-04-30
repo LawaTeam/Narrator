@@ -161,9 +161,24 @@ public class ContentHandler {
                     stopSound(contentList, player);
                     yield true;
                 }
-                case "C", "CONDITION" ->
+                /*
+                    Effect
+                 */
+                case "EFFECT" -> {
                     // todo
-                        true;
+                    yield true;
+                }
+                /*
+                    Summon
+                 */
+                case "SUMMON" -> {
+                    // todo
+                    yield true;
+                }
+                case "C", "CONDITION" -> {
+                    // todo
+                    yield true;
+                }
                 /*
                     Jump Task
                  */

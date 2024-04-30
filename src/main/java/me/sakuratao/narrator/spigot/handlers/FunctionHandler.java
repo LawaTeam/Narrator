@@ -4,6 +4,7 @@ import me.sakuratao.narrator.spigot.enums.FunctionType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
@@ -13,6 +14,26 @@ import java.util.List;
 
 @PieComponent
 public class FunctionHandler {
+
+    /**
+     * 解码函数，根据传入的函数参数获取指定位置的方块。
+     *
+     * @param function 一个包含方块坐标信息的字符串，坐标信息应该在括号内，以逗号分隔.
+     * @return 返回在指定坐标处找到的方块对象。
+     */
+    public Block decodeBlock(String function) {
+
+        // 从函数参数中提取坐标信息，并转换为列表形式
+        List<String> coordinate = Arrays.stream(getInBrackets(function).split(",")).toList();
+
+        // 使用提取的坐标信息获取对应的方块
+        return Bukkit.getWorld(coordinate.get(0)).getBlockAt(
+                        Integer.parseInt(coordinate.get(1)),
+                        Integer.parseInt(coordinate.get(2)),
+                        Integer.parseInt(coordinate.get(3))
+                );
+
+    }
 
     /**
      * 解析 位置信息
