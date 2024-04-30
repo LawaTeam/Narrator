@@ -41,7 +41,9 @@ public class ContentHandler {
      */
     public boolean execute(Player player, ChapterData chapterData, String content, ContentTask contentTask) {
 
-        List<String> contentList = Arrays.stream(content.split("\\|")).map(m -> PapiUtil.getString(player, m)).collect(Collectors.toList());
+        List<String> contentList = Arrays.stream(content.split("\\|"))
+                .map(m -> PapiUtil.getString(player, m))
+                .collect(Collectors.toList());
 
         PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(player);
 
