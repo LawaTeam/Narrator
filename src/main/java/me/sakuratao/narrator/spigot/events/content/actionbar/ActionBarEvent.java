@@ -24,7 +24,7 @@ public class ActionBarEvent extends NarratorEvent{
     @Getter private final String text;
     @Getter private PrintStatus printStatus = PrintStatus.NONE;
 
-    @Getter private BukkitTask printTask = null;
+    @Getter private BukkitTask printTask;
 
 
 
