@@ -1,6 +1,6 @@
 package me.sakuratao.narrator.spigot.enums;
 
-public enum TeleportType {
+public enum FunctionType {
 
     ENTITY("ENTITY"),
     PLAYER("PLAYER"),
@@ -10,7 +10,7 @@ public enum TeleportType {
 
     private final String type;
 
-    TeleportType(String type) {
+    FunctionType(String type) {
         this.type = type;
     }
 

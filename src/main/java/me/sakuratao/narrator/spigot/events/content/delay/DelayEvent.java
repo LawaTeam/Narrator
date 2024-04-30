@@ -4,11 +4,14 @@ import lombok.Getter;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
 import me.sakuratao.narrator.spigot.utils.TaskUtil;
 import org.bukkit.event.Cancellable;
+import org.bukkit.scheduler.BukkitTask;
 
 public class DelayEvent extends NarratorEvent implements Cancellable {
 
     @Getter private final long delayTime;
     @Getter private boolean delayed = false;
+
+    private BukkitTask delayTask;
 
     public DelayEvent(long delayTime){
         super(true);
@@ -16,7 +19,7 @@ public class DelayEvent extends NarratorEvent implements Cancellable {
     }
 
     public void delay(){
-        TaskUtil.taskLaterAsync(() -> delayed = true, delayTime);
+        delayTask = TaskUtil.taskLaterAsync(() -> delayed = true, delayTime);
     }
 
     private boolean isCancelled = false;
@@ -29,6 +32,10 @@ public class DelayEvent extends NarratorEvent implements Cancellable {
     @Override
     public void setCancelled(boolean isCancelled) {
         this.isCancelled = isCancelled;
+        delayed = isCancelled;
+        if (delayed && delayTask != null) {
+            delayTask.cancel();
+        }
     }
 
 }

@@ -16,6 +16,7 @@ import me.sakuratao.narrator.spigot.events.content.world.WeatherChangeEvent;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import me.sakuratao.narrator.spigot.utils.*;
 import org.bukkit.Material;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -41,7 +42,9 @@ public class ContentHandler {
      */
     public boolean execute(Player player, ChapterData chapterData, String content, ContentTask contentTask) {
 
-        List<String> contentList = Arrays.stream(content.split("\\|")).map(m -> PapiUtil.getString(player, m)).collect(Collectors.toList());
+        List<String> contentList = Arrays.stream(content.split("\\|"))
+                .map(m -> PapiUtil.getString(player, m))
+                .collect(Collectors.toList());
 
         PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(player);
 
@@ -87,7 +90,7 @@ public class ContentHandler {
                  */
                 case "TP" -> {
                     TaskUtil.task(() -> {
-                        teleport(contentList.get(1), contentList.get(2), player);
+                        teleport(contentList.get(1), player);
                     });
                     yield true;
                 }
@@ -144,9 +147,38 @@ public class ContentHandler {
                     changeWeather(player, Weather.valueOf(contentList.get(1)));
                     yield true;
                 }
-                case "C", "CONDITION" ->
+                /*
+                    Play Sound
+                 */
+                case "PLAYSOUND" -> {
+                    playSound(contentList, player);
+                    yield true;
+                }
+                /*
+                    Stop Sound
+                 */
+                case "STOPSOUND" -> {
+                    stopSound(contentList, player);
+                    yield true;
+                }
+                /*
+                    Effect
+                 */
+                case "EFFECT" -> {
                     // todo
-                        true;
+                    yield true;
+                }
+                /*
+                    Summon
+                 */
+                case "SUMMON" -> {
+                    // todo
+                    yield true;
+                }
+                case "C", "CONDITION" -> {
+                    // todo
+                    yield true;
+                }
                 /*
                     Jump Task
                  */
@@ -170,6 +202,36 @@ public class ContentHandler {
     }
 
     /**
+     * 停止指定玩家播放的声音。
+     * @param contentList 包含声音相关信息的列表，至少包含声音 ID 和 声音分类 的字符串。
+     * @param player 需要停止声音的玩家。
+     */
+    private void stopSound(List<String> contentList, Player player){
+        StopSoundEvent stopSoundEvent = new StopSoundEvent(narrator, player, contentList.get(1), SoundCategory.valueOf(contentList.get(2).toUpperCase()));
+        EventUtil.callEvent(stopSoundEvent);
+        stopSoundEvent.stopSound();
+    }
+
+    /**
+     * 播放声音
+     * @param contentList - contentList
+     * @param player - 玩家
+     */
+    private void playSound(List<String> contentList, Player player) {
+        PlaySoundEvent playSoundEvent = new PlaySoundEvent(
+                narrator,
+                player,
+                contentList.get(1), // target
+                contentList.get(2), // sound
+                SoundCategory.valueOf(contentList.get(3).toUpperCase()), // category
+                Float.parseFloat(contentList.get(4)), // volume
+                Float.parseFloat(contentList.get(5))  // pitch
+        );
+        EventUtil.callEvent(playSoundEvent);
+        playSoundEvent.playSound();
+    }
+
+    /**
      * 为玩家更改时间
      * @param player - 玩家 id
      * @param toTimeTicks - 改到的时间
@@ -188,13 +250,12 @@ public class ContentHandler {
 
     /**
      * 执行 tp
-     * @param typeName - tp 类型
-     * @param target 目标
+     * @param target 目标(支持 function)
      * @param player 被 tp 玩家
      */
-    private void teleport(String typeName, String target, Player player){
+    private void teleport(String target, Player player) {
 
-        TeleportEvent teleportEvent = new TeleportEvent(narrator, typeName, target, player);
+        TeleportEvent teleportEvent = new TeleportEvent(narrator, target, player);
         EventUtil.callEvent(teleportEvent);
         if (!teleportEvent.isCancelled()){
             teleportEvent.teleport();
@@ -329,6 +390,9 @@ public class ContentHandler {
                     0,
                     CCUtil.translate(contentList.get(2))
             );
+            EventUtil.callEvent(actionBarEvent);
+            actionBarEvent.showActionbar();
+            return true;
         }
 
         EventUtil.callEvent(actionBarEvent);

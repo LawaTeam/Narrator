@@ -12,6 +12,7 @@ import me.sakuratao.narrator.spigot.listener.packets.PacketsHandler;
 import me.sakuratao.narrator.spigot.manager.ManagerHandler;
 import me.sakuratao.narrator.spigot.papi.PapiExpansion;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -85,8 +86,8 @@ public class Narrator {
 
     public void reloadChapter(boolean force){
 
+        Bukkit.getOnlinePlayers().forEach(p -> cacheData.clear(p));
         managerHandler.getTaskManager().getTasks().values().forEach(BukkitTask::cancel);
-        cacheData.cancelAllDelaySingleEvent();
 
         handlerManager.getChapterHandler().load(force);
         handlerManager.getTaskHandler().load();

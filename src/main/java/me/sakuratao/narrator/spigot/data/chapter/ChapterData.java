@@ -13,7 +13,7 @@ public class ChapterData {
     private double version;
     private int ordinal = 1;
 
-    private String lang; // todo
+    private String lang;
 
     private List<TaskData> tasks = new ArrayList<>();
 

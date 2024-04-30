@@ -167,9 +167,18 @@ public class CacheData {
      * @param player - 玩家
      */
     public void clear(Player player){
-        currentActionBarEvent.remove(player.getName().toLowerCase());
-        currentActionBarAnswerEvent.remove(player.getName().toLowerCase());
-        currentDelayEvent.remove(player.getName().toLowerCase());
+        if (currentActionBarEvent.containsKey(player.getName().toLowerCase())) {
+            currentActionBarEvent.get(player.getName().toLowerCase()).getPrintTask().cancel();
+            currentActionBarEvent.remove(player.getName().toLowerCase());
+        }
+        if (currentActionBarAnswerEvent.containsKey(player.getName().toLowerCase())) {
+            currentActionBarAnswerEvent.get(player.getName().toLowerCase()).getOptionTask().cancel();
+            currentActionBarAnswerEvent.remove(player.getName().toLowerCase());
+        }
+        if (currentDelayEvent.containsKey(player.getName().toLowerCase())) {
+            currentDelayEvent.get(player.getName().toLowerCase()).setCancelled(true);
+            currentDelayEvent.remove(player.getName().toLowerCase());
+        }
     }
 
 }
