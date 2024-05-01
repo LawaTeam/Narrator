@@ -1,4 +1,4 @@
-package me.sakuratao.narrator.spigot.events.content;
+package me.sakuratao.narrator.spigot.events.content.world.sound;
 
 import lombok.Getter;
 import me.sakuratao.narrator.common.Narrator;
