@@ -277,7 +277,7 @@ public class ChapterHandler {
     }
 
     /**
-     * 检查ordinal是否小于 1
+     * 检查 ordinal 是否小于 1
      * @param ordinal - 序数
      * @param name - 章节名
      * @return 是否小于 1

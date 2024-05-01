@@ -58,7 +58,7 @@ public class ContentHandler {
         /*
             TODO: 物品栏文字调用，生成剧情对话背包，
 
-            TODO: MESSAGE_CLICK、MESSAGE_DROP、INV_ANSWER、CONDITION、SOUND(播放声音)、BOOM_AROUND、SPAWN_ENTITY、NPC
+            TODO: MESSAGE_CLICK、MESSAGE_DROP、INV_ANSWER、CONDITION、BOOM_AROUND、SPAWN_ENTITY、NPC
 
             TODO: 玩家自定义字幕速度以及停留时间，并提供 " 上一条 " 的功能
 
@@ -230,13 +230,15 @@ public class ContentHandler {
         int duration = Integer.parseInt(contentList.get(1));
         int amplifier = Integer.parseInt(contentList.get(2));
         boolean hideParticles = Boolean.parseBoolean(contentList.get(3));
+        boolean icon = Boolean.parseBoolean(contentList.get(4));
         PotionEffectGiveEvent potionEffectGiveEvent = new PotionEffectGiveEvent(
                 narrator,
                 player,
                 effect,
                 duration,
                 amplifier,
-                hideParticles
+                hideParticles,
+                icon
         );
 
         EventUtil.callEvent(potionEffectGiveEvent); // 触发药水效果给予事件
