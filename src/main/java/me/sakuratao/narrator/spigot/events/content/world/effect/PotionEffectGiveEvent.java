@@ -17,6 +17,7 @@ public class PotionEffectGiveEvent extends NarratorEvent implements Cancellable 
     @Getter private final int duration;
     @Getter private final int amplifier;
     @Getter private final boolean hideParticles;
+    @Getter private final boolean icon;
 
 
     public PotionEffectGiveEvent(
@@ -25,7 +26,8 @@ public class PotionEffectGiveEvent extends NarratorEvent implements Cancellable 
             String effect,
             int duration,
             int amplifier,
-            boolean hideParticles
+            boolean hideParticles,
+            boolean icon
     ) {
         super(true);
         this.narrator = narrator;
@@ -34,12 +36,13 @@ public class PotionEffectGiveEvent extends NarratorEvent implements Cancellable 
         this.duration = duration;
         this.amplifier = amplifier;
         this.hideParticles = hideParticles;
+        this.icon = icon;
     }
 
     public void givePotionEffect(){
         PotionEffectType type = PotionEffectType.getByName(effect);
         if (type != null) {
-            PotionEffect pe = new PotionEffect(type, duration, amplifier, hideParticles);
+            PotionEffect pe = new PotionEffect(type, duration, amplifier, hideParticles, icon);
             player.addPotionEffect(pe);
         }
     }
