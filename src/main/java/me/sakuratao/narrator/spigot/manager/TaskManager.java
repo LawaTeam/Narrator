@@ -6,6 +6,8 @@ import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
@@ -34,6 +36,10 @@ public class TaskManager {
             tasks.get(data.getPlayerName()).cancel();
         }
 
+        World cloneWorld = WorldCreator
+                .name(data.getPlayingTaskData().getWorld().getName() + "_clone_" + data.getPlayer().getName())
+                .copy(data.getPlayingTaskData().getWorld()).createWorld();
+        data.setPlayingWorld(cloneWorld);
         data.setContentTask(new ContentTask(narrator, data));
         tasks.put(
                 data.getPlayerName().toLowerCase(),

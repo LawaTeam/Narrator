@@ -6,6 +6,8 @@ import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.data.chapter.TaskData;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.utils.LogUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -35,18 +37,22 @@ public class TaskHandler {
                         ChapterData data = handlerManager.getChapterHandler().getDataByMap(chapterDataMap);
                         for (String section : contentConfig.getConfigurationSection("chapterTasks").getKeys(false)) {
 
-                            if (isNumberNull(contentConfig, section, data)) return;
+                            if (isOptionsNull(contentConfig, section, data)) return;
 
                             String name = contentConfig.getString("chapterTasks." + section + ".name");
-                            int ordinal = Integer.parseInt(contentConfig.getString("chapterTasks." + section + ".ordinal")); // throw NumberFormatException
+                            String worldName = contentConfig.getString( "chapterTasks." + section + ".world");
+                            World world = Bukkit.getWorld(worldName);
+                            int ordinal = Integer.parseInt(contentConfig.getString("chapterTasks." + section + ".ordinal"));
                             List<String> content = contentConfig.getStringList("chapterTasks." + section + ".content");
 
+                            if (isWorldNull(data, name, world, worldName)) return;
                             if (isOrdinalLowerThanOne(ordinal, data, section)) return;
                             if (isNameOrOrdinalEquals(data, section, name, ordinal)) return;
 
                             TaskData taskData = new TaskData();
                             taskData.setSection(section);
                             taskData.setName(name);
+                            taskData.setWorld(world);
                             taskData.setOrdinal(ordinal);
                             taskData.setContent(content);
                             data.getTasks().add(taskData);
@@ -64,6 +70,18 @@ public class TaskHandler {
             }
         }
 
+    }
+
+    private boolean isWorldNull(ChapterData data, String taskName, World world, String worldName) {
+        if (world == null) {
+            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_TASK_WORLD_NULL);
+            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+            LogUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
+            LogUtil.log(Level.SEVERE, "        taskName: " + taskName);
+            LogUtil.log(Level.SEVERE, "        worldName: " + worldName);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -126,18 +144,19 @@ public class TaskHandler {
     }
 
     /**
-     * 检查 name 以及 ordinal 是否为 null
+     * 检查 name 、world 以及 ordinal 是否为 null
      * @param contentConfig - 相关的 yml
      * @param section - section
      * @param data - 章节数据
      * @return 是否为 null
      */
-    private boolean isNumberNull(YamlConfiguration contentConfig, String section, ChapterData data){
+    private boolean isOptionsNull(YamlConfiguration contentConfig, String section, ChapterData data){
         if (
                 contentConfig.getString("chapterTasks." + section + ".name") == null ||
+                        contentConfig.getString( "chapterTasks." + section + ".world") == null ||
                         contentConfig.getString("chapterTasks." + section + ".ordinal") == null
         ) {
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
+            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_TASK_NULL);
             LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
             LogUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
             LogUtil.log(Level.SEVERE, "        taskName: " + section);

@@ -22,7 +22,7 @@ public class PlayerData {
     /*
         these decided what will be set in TaskManager
      */
-    private World playingWorld; // TODO: 独立于主世界
+    private World playingWorld; // TODO: 游玩时独立于世界文件, 做到各个玩家游玩时效果互不干扰
     private int playingChapterOrdinal = 1; // TODO: 这俩playing到时候要存库
     private int playingTaskOrdinal = 1;
     private int contentIndex = 0;
