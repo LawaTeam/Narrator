@@ -1,6 +1,7 @@
 package me.sakuratao.narrator.spigot.data.chapter;
 
 import lombok.Data;
+import org.bukkit.World;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ public class TaskData {
 
     private String name;
     private int ordinal = 1;
+    private World world;
     private List<String> content = new ArrayList<>();
 
 }

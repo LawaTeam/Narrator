@@ -3,6 +3,12 @@ version: '${project.version}'
 main: me.sakuratao.narrator.spigot.NarratorSpigot
 author: SakuraTao
 api-version: '1.19'
+commands:
+  narrator:
+    description: main command
+    aliases:
+      - n
+      - narr
 depend:
   - ProtocolLib
   - CrazyAdvancementsAPI

@@ -11,6 +11,38 @@ import java.util.List;
 @ConfigurationFile("lang.yml")
 public class Lang {
 
+    @Configuration("no_permission")
+    public static String NO_PERMISSION = "你没有权限执行此命令!";
+
+    @Configuration("use_help_please")
+    public static String USE_HELP_PLEASE = "请使用 /narrator help 查询帮助";
+
+    @Configuration("command_player_only")
+    public static String COMMAND_PLAYER_ONLY = "这个指令只有玩家能执行";
+
+    @Configuration("command_console_only")
+    public static String COMMAND_CONSOLE_ONLY = "这个指令只有控制台能执行";
+
+    @Configuration("command_help")
+    public static List<String> COMMAND_HELP = Arrays.asList(
+            "&8&m---»--*---------------&7/ &f页数: %pages%/%maxPages% &7/&8&m--------------*--«---",
+            "%commands%",
+            "&8&m---»--*---------------&7/ &f页数: %pages%/%maxPages% &7/&8&m--------------*--«---"
+    );
+
+    @Configuration("command_help_page")
+    public static String COMMAND_HELP_PAGE = "请使用: /neko help <Pages>";
+
+
+    @Configuration("command_not_number")
+    public static String COMMAND_NOT_NUMBER = "你输入的不是数字";
+
+    @Configuration("command_more_than_max_pages")
+    public static String COMMAND_MORE_THAN_MAX_PAGES = "超出最大页数";
+
+    @Configuration("command_less_than_max_pages")
+    public static String COMMAND_LESS_THAN_MAX_PAGES = "小于最小页数";
+
     @Configuration("chapters_loaded")
     public static String CHAPTERS_LOADED = "所有章节已完成加载!";
 
@@ -33,7 +65,6 @@ public class Lang {
     @Configuration("chapter_folder_check_number_format")
     public static List<String> CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT = Arrays.asList(
             "请检查你的章节文件中的内容, 其中存在格式问题.",
-            "Ordinal 与 Version 都不能为空.",
             "所有的 Ordinal 必须为 整数 且大于 1!",
             "所有的 Version 必须为 整数 或 小数!"
     );
@@ -65,6 +96,15 @@ public class Lang {
     public static List<String> CHAPTERS_FOLDER_CHECK_TASK_NAME_SAME = Arrays.asList(
             "请检查你的章节文件，",
             "任务名字存在冲突，请确保所有任务名字唯一."
+    );
+
+    @Configuration("chapter_folder_check_task_null")
+    public static String CHAPTERS_FOLDER_CHECK_TASK_NULL = "留意查看 chapterTasks 中各个 task 的 Name, World, Ordinal 是否填写，这些不能留空.";
+
+    @Configuration("chapter_folder_check_task_world_null")
+    public static List<String> CHAPTERS_FOLDER_CHECK_TASK_WORLD_NULL = Arrays.asList(
+            "未找到 Task 中填写的指定 World ",
+            "World 必须与文件夹名称相同"
     );
 
     @Configuration("chapter_execute_jt_number_format")

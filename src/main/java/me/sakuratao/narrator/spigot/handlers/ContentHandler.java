@@ -10,9 +10,14 @@ import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelayEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelaySingleEvent;
 import me.sakuratao.narrator.spigot.events.content.jump.JumpTaskEvent;
-import me.sakuratao.narrator.spigot.events.content.world.TeleportEvent;
-import me.sakuratao.narrator.spigot.events.content.world.TimeChangeEvent;
-import me.sakuratao.narrator.spigot.events.content.world.WeatherChangeEvent;
+import me.sakuratao.narrator.spigot.events.content.player.MessageEvent;
+import me.sakuratao.narrator.spigot.events.content.player.TitleEvent;
+import me.sakuratao.narrator.spigot.events.content.player.ToastEvent;
+import me.sakuratao.narrator.spigot.events.content.world.*;
+import me.sakuratao.narrator.spigot.events.content.world.effect.PotionEffectGiveEvent;
+import me.sakuratao.narrator.spigot.events.content.world.effect.PotionEffectRemoveEvent;
+import me.sakuratao.narrator.spigot.events.content.world.sound.PlaySoundEvent;
+import me.sakuratao.narrator.spigot.events.content.world.sound.StopSoundEvent;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import me.sakuratao.narrator.spigot.utils.*;
 import org.bukkit.Material;
@@ -53,7 +58,7 @@ public class ContentHandler {
         /*
             TODO: 物品栏文字调用，生成剧情对话背包，
 
-            TODO: MESSAGE_CLICK、MESSAGE_DROP、INV_ANSWER、CONDITION、SOUND(播放声音)、BOOM_AROUND、SPAWN_ENTITY、NPC
+            TODO: MESSAGE_CLICK、MESSAGE_DROP、INV_ANSWER、CONDITION、BOOM_AROUND、SPAWN_ENTITY、NPC
 
             TODO: 玩家自定义字幕速度以及停留时间，并提供 " 上一条 " 的功能
 
@@ -165,7 +170,7 @@ public class ContentHandler {
                     Effect
                  */
                 case "EFFECT" -> {
-                    // todo
+                    effect(contentList, player);
                     yield true;
                 }
                 /*
@@ -200,6 +205,49 @@ public class ContentHandler {
             return false;
         }
     }
+
+    /**
+     * 处理给定玩家的药水效果。根据输入列表的内容，要么清除玩家的某个药水效果，要么给予玩家一个新的药水效果。
+     *
+     * @param contentList 包含指令内容的列表。如果是清除操作，第一个元素是"clear"，接下来是效果名称；
+     *                    如果是给予操作，第一个元素是效果名称，接下来是持续时间、放大器等级、是否隐藏粒子效果。
+     * @param player 要应用药水效果的玩家。
+     */
+    private void effect(List<String> contentList, Player player) {
+
+        // 检查是否要清除玩家的药水效果
+        if (contentList.get(0).equalsIgnoreCase("clear")) {
+            String effect = contentList.get(1);
+            PotionEffectRemoveEvent potionEffectRemoveEvent = new PotionEffectRemoveEvent(narrator, player, effect);
+            EventUtil.callEvent(potionEffectRemoveEvent); // 触发药水效果移除事件
+            if (!potionEffectRemoveEvent.isCancelled()) { // 如果事件未被取消，则移除药水效果
+                potionEffectRemoveEvent.removePotionEffect();
+            }
+            return; // 结束方法
+        }
+
+        String effect = contentList.get(0);
+        int duration = Integer.parseInt(contentList.get(1));
+        int amplifier = Integer.parseInt(contentList.get(2));
+        boolean hideParticles = Boolean.parseBoolean(contentList.get(3));
+        boolean icon = Boolean.parseBoolean(contentList.get(4));
+        PotionEffectGiveEvent potionEffectGiveEvent = new PotionEffectGiveEvent(
+                narrator,
+                player,
+                effect,
+                duration,
+                amplifier,
+                hideParticles,
+                icon
+        );
+
+        EventUtil.callEvent(potionEffectGiveEvent); // 触发药水效果给予事件
+        if (!potionEffectGiveEvent.isCancelled()) { // 如果事件未被取消，则给予玩家药水效果
+            potionEffectGiveEvent.givePotionEffect();
+        }
+        return;
+    }
+
 
     /**
      * 停止指定玩家播放的声音。

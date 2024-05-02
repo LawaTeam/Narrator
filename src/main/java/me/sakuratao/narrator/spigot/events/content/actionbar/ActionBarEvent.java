@@ -20,7 +20,7 @@ public class ActionBarEvent extends NarratorEvent{
     @Getter private final Player player;
     @Getter private final boolean isPrint;
     @Getter private final long printInterval;
-    @Getter private final long keep;
+    @Getter private final long duration;
     @Getter private final String text;
     @Getter private PrintStatus printStatus = PrintStatus.NONE;
 
@@ -33,7 +33,7 @@ public class ActionBarEvent extends NarratorEvent{
             Player player,
             boolean isPrint,
             long printInterval,
-            long keep,
+            long duration,
             String text
     ){
         super(true);
@@ -41,7 +41,7 @@ public class ActionBarEvent extends NarratorEvent{
         this.player = player;
         this.isPrint = isPrint;
         this.printInterval = printInterval;
-        this.keep = keep;
+        this.duration = duration;
         this.text = text;
     }
 
@@ -66,7 +66,7 @@ public class ActionBarEvent extends NarratorEvent{
             printStatus = PrintStatus.KEPT;
             printTask.cancel();
 
-            long keepTime = (keep/20 * 1000) + System.currentTimeMillis();
+            long keepTime = (duration /20 * 1000) + System.currentTimeMillis();
             printTask = runActionBarKeep(audience, keepTime);
         }
 
@@ -83,7 +83,7 @@ public class ActionBarEvent extends NarratorEvent{
     }
 
     private BukkitTask runActionBarPrint(Audience audience, AtomicInteger textLength){
-        return TaskUtil.taskTimerAsync(() -> {
+        return TaskUtil.taskTimerAsync(() -> { // fixme 改成毫秒制打印
             if (textLength.get() >= text.length()) {
                 printStatus = (PrintStatus.KEEPING);
                 return;

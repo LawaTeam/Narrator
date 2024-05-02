@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolManager;
 import lombok.Getter;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
+import me.sakuratao.narrator.spigot.command.base.CommandManager;
 import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
 import me.sakuratao.narrator.spigot.handlers.HandlerManager;
@@ -46,7 +47,8 @@ public class Narrator {
     private CacheData cacheData;
     @Wire
     private PacketsHandler packetsHandler;
-
+    @Wire
+    private CommandManager commandManager;
 
 
 
@@ -61,6 +63,7 @@ public class Narrator {
             protocolManager = ProtocolLibrary.getProtocolManager();
             packetsHandler.register(protocolManager);
             papiExpansion.register();
+            Bukkit.getPluginCommand("narrator").setExecutor(commandManager);
         } else {
             isBungee = true;
         }
