@@ -12,7 +12,7 @@
 [![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
 <br />
 <div align="center">
-  <a href="https://github.com/SakuraTao/Narrator">
+  <a href="https://github.com/SakuraTao2007/Narrator">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
@@ -21,12 +21,12 @@
   <p align="center">
     一个易用、高效的剧情部署工具
     <br />
-    <a href="https://github.com/SakuraTao/Narrator"><strong>帮助文档 »</strong></a>
+    <a href="https://github.com/SakuraTao2007/Narrator"><strong>帮助文档 »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/SakuraTao/Narrator/issues/new?labels=bug&template=bug-report---.md">报告问题</a>
+    <a href="https://github.com/SakuraTao2007/Narrator/issues/new?labels=bug&template=bug-report---.md">报告问题</a>
     ·
-    <a href="https://github.com/SakuraTao/Narrator/issues/new?labels=enhancement&template=feature-request---.md">功能请求</a>
+    <a href="https://github.com/SakuraTao2007/Narrator/issues/new?labels=enhancement&template=feature-request---.md">功能请求</a>
   </p>
 </div>
 
@@ -116,6 +116,6 @@ _你可以在这里找到完整的语法帮助文档： [帮助文档](https://s
 - [ ] 函数式套娃识别
 
 
-在 [此处](https://github.com/SakuraTao/Narrator/issues) 查看预计的新功能和已知问题的完整列表.
+在 [此处](https://github.com/SakuraTao2007/Narrator/issues) 查看预计的新功能和已知问题的完整列表.
 
 <p align="right">(<a href="#readme-top">回到顶部</a>)</p>
