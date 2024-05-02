@@ -23,6 +23,7 @@ import me.sakuratao.narrator.spigot.utils.*;
 import org.bukkit.Material;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
@@ -226,12 +227,28 @@ public class ContentHandler {
             return; // 结束方法
         }
 
+        PotionEffectGiveEvent potionEffectGiveEvent = getPotionEffectGiveEvent(contentList, player);
+        EventUtil.callEvent(potionEffectGiveEvent); // 触发药水效果给予事件
+        if (!potionEffectGiveEvent.isCancelled()) { // 如果事件未被取消，则给予玩家药水效果
+            potionEffectGiveEvent.givePotionEffect();
+        }
+        return;
+    }
+
+    /**
+     * 获取一个 PotionEffectGiveEvent 对象，用于触发药水效果给予事件。
+     *
+     * @param contentList 包含指令内容的列表。第一个元素是效果名称，接下来是持续时间、放大器等级、是否隐藏粒子效果。
+     * @param player 要应用药水效果的玩家。
+     * @return 一个 PotionEffectGiveEvent 对象。
+     */
+    private @NotNull PotionEffectGiveEvent getPotionEffectGiveEvent(List<String> contentList, Player player) {
         String effect = contentList.get(0);
         int duration = Integer.parseInt(contentList.get(1));
         int amplifier = Integer.parseInt(contentList.get(2));
         boolean hideParticles = Boolean.parseBoolean(contentList.get(3));
         boolean icon = Boolean.parseBoolean(contentList.get(4));
-        PotionEffectGiveEvent potionEffectGiveEvent = new PotionEffectGiveEvent(
+        return new PotionEffectGiveEvent(
                 narrator,
                 player,
                 effect,
@@ -240,12 +257,6 @@ public class ContentHandler {
                 hideParticles,
                 icon
         );
-
-        EventUtil.callEvent(potionEffectGiveEvent); // 触发药水效果给予事件
-        if (!potionEffectGiveEvent.isCancelled()) { // 如果事件未被取消，则给予玩家药水效果
-            potionEffectGiveEvent.givePotionEffect();
-        }
-        return;
     }
 
 
