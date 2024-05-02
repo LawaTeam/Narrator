@@ -35,14 +35,14 @@
   <summary>目录</summary>
   <ol>
     <li>
-      <a href="#about-the-project">关于 Narrator</a>
+      <a href="#关于 Narrator">关于 Narrator</a>
       <ul>
-        <li><a href="#built-with">构建环境</a></li>
+        <li><a href="#构建环境">构建环境</a></li>
       </ul>
     </li>
-    <li><a href="#getting-started">快速开始</a></li>
-    <li><a href="#usage">使用</a></li>
-    <li><a href="#roadmap">开发路线</a></li>
+    <li><a href="#快速开始">快速开始</a></li>
+    <li><a href="#使用">使用</a></li>
+    <li><a href="#开发路线">开发路线</a></li>
   </ol>
 </details>
 
