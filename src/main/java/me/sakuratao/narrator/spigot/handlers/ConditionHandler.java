@@ -39,12 +39,12 @@ public class ConditionHandler {
         for (int i = 0; i < THE_LAST_ELEMENT; i++) {
             String[] splitByLogic = splitLogic(tempParts[i]);
             if (splitByLogic != null) {
-                boolean a = handle(splitByLogic[0]);
-                boolean b = handle(splitByLogic[1]);
+                boolean a = handleCondition(splitByLogic[0]);
+                boolean b = handleCondition(splitByLogic[1]);
                 results.add(handleLogic(parseLogic(tempParts[i]), a, b));
                 continue;
             }
-            results.add(handle(tempParts[i]));
+            results.add(handleCondition(tempParts[i]));
         }
 
         if (results.isEmpty()) return;
@@ -57,7 +57,7 @@ public class ConditionHandler {
         }
     }
 
-    private boolean handle(String condition){
+    private boolean handleCondition(String condition){
         // 解析条件
         String[] splitByCondition = splitCondition(condition);
         if (splitByCondition == null) return false;
