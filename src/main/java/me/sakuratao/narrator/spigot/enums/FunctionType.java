@@ -5,7 +5,8 @@ public enum FunctionType {
     ENTITY("ENTITY"),
     PLAYER("PLAYER"),
     NPC("NPC"), // todo
-    LOC("LOC")
+    LOC("LOC"),
+    BLOCK("BLOCK"),
     ;
 
     private final String type;
