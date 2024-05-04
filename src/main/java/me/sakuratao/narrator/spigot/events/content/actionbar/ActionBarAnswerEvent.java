@@ -44,6 +44,7 @@ public class ActionBarAnswerEvent extends NarratorEvent {
 
             optionTask = TaskUtil.taskTimerAsync(() -> {
                 if (optionStatus.equals(OptionStatus.DECIDED)) {
+                    playerData.setLastOption(options.get(optionIndex));
                     return;
                 }
                 StringBuilder message = new StringBuilder();
@@ -58,7 +59,6 @@ public class ActionBarAnswerEvent extends NarratorEvent {
                     }
                 }
                 audience.sendActionBar(Component.text(CCUtil.translate(message.toString())));
-
             }, 0, 5);
         }
 

@@ -2,6 +2,7 @@ package me.sakuratao.narrator.spigot.papi;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.sakuratao.narrator.common.Narrator;
+import me.sakuratao.narrator.spigot.data.cache.CacheData;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -12,8 +13,8 @@ import top.jingwenmc.spigotpie.common.instance.Wire;
 @PieComponent
 public class PapiExpansion extends PlaceholderExpansion {
 
-    @Wire
-    private Narrator narrator;
+    @Wire private Narrator narrator;
+    @Wire private CacheData cacheData;
 
     @Override
     public @NotNull String getIdentifier() {
@@ -40,6 +41,7 @@ public class PapiExpansion extends PlaceholderExpansion {
             case "task_name" -> playerData.getPlayingTaskData().getName();
             case "task_ordinal" -> String.valueOf(playerData.getPlayingTaskOrdinal());
             case "content_index" -> String.valueOf(playerData.getContentIndex());
+            case "last_option" -> playerData.getLastOption();
             case "content" -> playerData.getCurrentContent();
             case "lang" -> playerData.getLang();
             default -> "";
