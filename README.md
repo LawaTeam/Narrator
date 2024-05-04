@@ -59,7 +59,6 @@ Narrator 基于 Java 17 进行开发并且在 Minecraft 1.19.4 上进行了测�
 * Java 17
 * Minecraft 1.19.4
 > [!CAUTION]
-> 请注意！
 > Narrator 尚未验证在低于 1.19.4 版本的服务端运行 以及 使用低于 1.19.4 版本的客户端执行 Narrator 内容的可行性。
 
 
