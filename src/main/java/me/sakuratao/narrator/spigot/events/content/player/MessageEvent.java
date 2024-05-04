@@ -2,7 +2,7 @@ package me.sakuratao.narrator.spigot.events.content.player;
 
 import lombok.Getter;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
-import me.sakuratao.narrator.spigot.utils.CCUtil;
+import me.sakuratao.narrator.spigot.utils.server.CCUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 

@@ -1,4 +1,4 @@
-package me.sakuratao.narrator.spigot.utils;
+package me.sakuratao.narrator.spigot.utils.server;
 
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;

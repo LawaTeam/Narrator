@@ -2,7 +2,7 @@ package me.sakuratao.narrator.spigot.events.content.delay;
 
 import lombok.Getter;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
-import me.sakuratao.narrator.spigot.utils.TaskUtil;
+import me.sakuratao.narrator.spigot.utils.server.TaskUtil;
 import org.bukkit.event.Cancellable;
 import org.bukkit.scheduler.BukkitTask;
 

@@ -3,7 +3,7 @@ package me.sakuratao.narrator.spigot.command.base;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.configuration.Permission;
-import me.sakuratao.narrator.spigot.utils.CCUtil;
+import me.sakuratao.narrator.spigot.utils.server.CCUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -59,7 +59,11 @@ public class HelpCommand implements SubCommand {
                     }
                 }
             }
-            sender.sendMessage(s.replace("%pages%", String.valueOf(pageNumber)).replace("%maxPages%", String.valueOf(commandPages.size())));
+            sender.sendMessage(CCUtil.translate(
+                    s.replace("%pages%", String.valueOf(pageNumber)
+                            .replace("%maxPages%", String.valueOf(commandPages.size()))
+                            .replace("%commands%", "")))
+            );
         }
     }
 

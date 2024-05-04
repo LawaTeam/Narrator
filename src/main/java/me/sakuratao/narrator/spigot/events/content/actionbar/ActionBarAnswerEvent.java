@@ -6,8 +6,8 @@ import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.enums.OptionStatus;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
-import me.sakuratao.narrator.spigot.utils.CCUtil;
-import me.sakuratao.narrator.spigot.utils.TaskUtil;
+import me.sakuratao.narrator.spigot.utils.server.CCUtil;
+import me.sakuratao.narrator.spigot.utils.server.TaskUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
@@ -44,6 +44,7 @@ public class ActionBarAnswerEvent extends NarratorEvent {
 
             optionTask = TaskUtil.taskTimerAsync(() -> {
                 if (optionStatus.equals(OptionStatus.DECIDED)) {
+                    playerData.setLastOption(options.get(optionIndex));
                     return;
                 }
                 StringBuilder message = new StringBuilder();
@@ -58,7 +59,6 @@ public class ActionBarAnswerEvent extends NarratorEvent {
                     }
                 }
                 audience.sendActionBar(Component.text(CCUtil.translate(message.toString())));
-
             }, 0, 5);
         }
 

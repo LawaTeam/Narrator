@@ -7,7 +7,7 @@ import me.sakuratao.narrator.spigot.command.sub.Reload;
 import me.sakuratao.narrator.spigot.command.sub.Test;
 import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.configuration.Permission;
-import me.sakuratao.narrator.spigot.utils.CCUtil;
+import me.sakuratao.narrator.spigot.utils.server.CCUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

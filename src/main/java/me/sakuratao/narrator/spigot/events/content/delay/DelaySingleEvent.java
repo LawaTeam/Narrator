@@ -5,7 +5,7 @@ import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
 import me.sakuratao.narrator.spigot.task.ContentTask;
-import me.sakuratao.narrator.spigot.utils.TaskUtil;
+import me.sakuratao.narrator.spigot.utils.server.TaskUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.scheduler.BukkitTask;

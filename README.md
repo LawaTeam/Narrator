@@ -112,13 +112,16 @@ _你可以在这里找到完整的语法帮助文档： [帮助文档](https://s
   - [ ] Entity
   - [ ] Effect(EntityEffect)
   - [ ] Lightning这些
-- [ ] NBT
+- [ ] NBT (可能不要)
 - [ ] AI 助手 (游戏功能)
 - [ ] 剧情演绎
     - [ ] 自动/手动
     - [ ] 剧情暂停开关
     - [ ] 一定程度的流速调节
 - [ ] 函数式套娃识别
+- [ ] 实时天气
+- [ ] 实时时间
+- [X] IP 地址获取
 
 
 在 [此处](https://github.com/SakuraTao2007/Narrator/issues) 查看预计的新功能和已知问题的完整列表.

@@ -18,11 +18,14 @@ import me.sakuratao.narrator.spigot.events.content.world.effect.PotionEffectGive
 import me.sakuratao.narrator.spigot.events.content.world.effect.PotionEffectRemoveEvent;
 import me.sakuratao.narrator.spigot.events.content.world.sound.PlaySoundEvent;
 import me.sakuratao.narrator.spigot.events.content.world.sound.StopSoundEvent;
+import me.sakuratao.narrator.spigot.manager.ManagerHandler;
 import me.sakuratao.narrator.spigot.task.ContentTask;
-import me.sakuratao.narrator.spigot.utils.*;
+import me.sakuratao.narrator.spigot.utils.LogUtil;
+import me.sakuratao.narrator.spigot.utils.server.*;
 import org.bukkit.Material;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
@@ -34,9 +37,9 @@ import java.util.stream.Collectors;
 @PieComponent
 public class ContentHandler {
 
-    @Wire
-    private Narrator narrator;
-
+    @Wire private Narrator narrator;
+    @Wire private ManagerHandler managerHandler;
+    @Wire private ConditionHandler conditionHandler;
     /**
      * 执行对 content 的解析
      * @param player - 玩家
@@ -51,7 +54,7 @@ public class ContentHandler {
                 .map(m -> PapiUtil.getString(player, m))
                 .collect(Collectors.toList());
 
-        PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(player);
+        PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
 
 
 
@@ -94,37 +97,35 @@ public class ContentHandler {
                     传送作用
                  */
                 case "TP" -> {
-                    TaskUtil.task(() -> {
-                        teleport(contentList.get(1), player);
-                    });
+                    handleTeleport(contentList.get(1), player);
                     yield true;
                 }
                 /*
                   send title to player
                  */
                 case "T", "TITLE" -> {
-                    sendTitle(contentList, player);
+                    handleTitleAction(contentList, player);
                     yield true;
                 }
                 /*
                     send message to player
                  */
                 case "M", "MESSAGE" -> {
-                    sendMessage(contentList, player);
+                    handleMessageAction(contentList, player);
                     yield true;
                 }
                 /*
                     send actionbar to player
                  */
-                case "AB", "ACTIONBAR" -> sendActionBar(contentList, player);
+                case "AB", "ACTIONBAR" -> handleActionBarAction(contentList, player);
                 /*
                     let player use actionbar to answer
                  */
-                case "AB_ANSWER", "ACTIONBAR_ANSWER" -> sendActionBarAnswer(contentList, player, playerData);
+                case "AB_ANSWER", "ACTIONBAR_ANSWER" -> handleActionBarAnswerAction(contentList, player, playerData);
                 /*
                     execute delay
                  */
-                case "D", "DELAY" -> executeDelay(contentList, player, chapterData, contentTask);
+                case "D", "DELAY" -> handleDelay(contentList, player, chapterData, contentTask);
                 /*
                     execute command
                  */
@@ -142,14 +143,14 @@ public class ContentHandler {
                     send toast to player
                  */
                 case "TOAST" -> {
-                    sendToast(player, contentList.get(2), contentList.get(3), contentList.get(1));
+                    handleToastAction(player, contentList.get(2), contentList.get(3), contentList.get(1));
                     yield true;
                 }
                 /*
                     change weather for player privately
                  */
                 case "WEATHER" -> {
-                    changeWeather(player, Weather.valueOf(contentList.get(1)));
+                    handleChangeWeather(player, Weather.valueOf(contentList.get(1)));
                     yield true;
                 }
                 /*
@@ -170,7 +171,7 @@ public class ContentHandler {
                     Effect
                  */
                 case "EFFECT" -> {
-                    effect(contentList, player);
+                    handleEffectAction(contentList, player);
                     yield true;
                 }
                 /*
@@ -181,14 +182,23 @@ public class ContentHandler {
                     yield true;
                 }
                 case "C", "CONDITION" -> {
-                    // todo
+                    if (content.substring(0, 3).toUpperCase().startsWith("C|")){
+                        conditionHandler.handle(player, PapiUtil.getString(player, content
+                                .replace("C|", ""))
+                                .replace(" ", ""));
+                    }
+                    if (content.substring(0, 3).toUpperCase().startsWith("CONDITION|")){
+                        conditionHandler.handle(player, PapiUtil.getString(player, content.
+                                replace("CONDITION|", ""))
+                                .replace(" ", ""));
+                    }
                     yield true;
                 }
                 /*
                     Jump Task
                  */
                 case "JT", "JUMP_TASK" ->
-                        jumpTask(player, playerData, chapterData, Integer.parseInt(contentList.get(1)),
+                        handleJumpTask(player, playerData, chapterData, Integer.parseInt(contentList.get(1)),
                                 Integer.parseInt(contentList.get(2)), content);
                 case "JC", "JUMP_CHAPTER" ->
                     // todo
@@ -196,11 +206,11 @@ public class ContentHandler {
                 default -> true;
             };
         } catch (IndexOutOfBoundsException e) {
-            narrator.getLogger().log(Level.SEVERE, "Throw IndexOutOfBoundsException!");
-            narrator.getLogger().log(Level.SEVERE, "Please check your contents!");
-            narrator.getLogger().log(Level.SEVERE, "Here are some information may help you:");
-            narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + chapterData.getName());
-            narrator.getLogger().log(Level.SEVERE, "        Content: " + content);
+            LogUtil.log(Level.SEVERE, "Throw IndexOutOfBoundsException!");
+            LogUtil.log(Level.SEVERE, "Please check your contents!");
+            LogUtil.log(Level.SEVERE, "Here are some information may help you:");
+            LogUtil.log(Level.SEVERE, "        Chapter Name: " + chapterData.getName());
+            LogUtil.log(Level.SEVERE, "        Content: " + content);
             e.printStackTrace();
             return false;
         }
@@ -213,7 +223,7 @@ public class ContentHandler {
      *                    如果是给予操作，第一个元素是效果名称，接下来是持续时间、放大器等级、是否隐藏粒子效果。
      * @param player 要应用药水效果的玩家。
      */
-    private void effect(List<String> contentList, Player player) {
+    private void handleEffectAction(List<String> contentList, Player player) {
 
         // 检查是否要清除玩家的药水效果
         if (contentList.get(0).equalsIgnoreCase("clear")) {
@@ -226,12 +236,28 @@ public class ContentHandler {
             return; // 结束方法
         }
 
+        PotionEffectGiveEvent potionEffectGiveEvent = getPotionEffectGiveEvent(contentList, player);
+        EventUtil.callEvent(potionEffectGiveEvent); // 触发药水效果给予事件
+        if (!potionEffectGiveEvent.isCancelled()) { // 如果事件未被取消，则给予玩家药水效果
+            potionEffectGiveEvent.givePotionEffect();
+        }
+        return;
+    }
+
+    /**
+     * 获取一个 PotionEffectGiveEvent 对象，用于触发药水效果给予事件。
+     *
+     * @param contentList 包含指令内容的列表。第一个元素是效果名称，接下来是持续时间、放大器等级、是否隐藏粒子效果。
+     * @param player 要应用药水效果的玩家。
+     * @return 一个 PotionEffectGiveEvent 对象。
+     */
+    private @NotNull PotionEffectGiveEvent getPotionEffectGiveEvent(List<String> contentList, Player player) {
         String effect = contentList.get(0);
         int duration = Integer.parseInt(contentList.get(1));
         int amplifier = Integer.parseInt(contentList.get(2));
         boolean hideParticles = Boolean.parseBoolean(contentList.get(3));
         boolean icon = Boolean.parseBoolean(contentList.get(4));
-        PotionEffectGiveEvent potionEffectGiveEvent = new PotionEffectGiveEvent(
+        return new PotionEffectGiveEvent(
                 narrator,
                 player,
                 effect,
@@ -240,12 +266,6 @@ public class ContentHandler {
                 hideParticles,
                 icon
         );
-
-        EventUtil.callEvent(potionEffectGiveEvent); // 触发药水效果给予事件
-        if (!potionEffectGiveEvent.isCancelled()) { // 如果事件未被取消，则给予玩家药水效果
-            potionEffectGiveEvent.givePotionEffect();
-        }
-        return;
     }
 
 
@@ -301,13 +321,15 @@ public class ContentHandler {
      * @param target 目标(支持 function)
      * @param player 被 tp 玩家
      */
-    private void teleport(String target, Player player) {
+    private void handleTeleport(String target, Player player) {
 
-        TeleportEvent teleportEvent = new TeleportEvent(narrator, target, player);
-        EventUtil.callEvent(teleportEvent);
-        if (!teleportEvent.isCancelled()){
-            teleportEvent.teleport();
-        }
+        TaskUtil.task(() -> {
+            TeleportEvent teleportEvent = new TeleportEvent(narrator, target, player);
+            EventUtil.callEvent(teleportEvent);
+            if (!teleportEvent.isCancelled()){
+                teleportEvent.teleport();
+            }
+        });
 
     }
 
@@ -317,7 +339,7 @@ public class ContentHandler {
      * @param player - 玩家
      * @param weather - 天气
      */
-    private void changeWeather(Player player, Weather weather){
+    private void handleChangeWeather(Player player, Weather weather){
         WeatherChangeEvent weatherChangeEvent = new WeatherChangeEvent(player, weather);
         EventUtil.callEvent(weatherChangeEvent);
         if (!weatherChangeEvent.isCancelled()) {
@@ -332,7 +354,7 @@ public class ContentHandler {
      * @param title - 显示内容
      * @param frame - 显示形式
      */
-    private void sendToast(Player player, String material, String title, String frame){
+    private void handleToastAction(Player player, String material, String title, String frame){
         ToastEvent toastEvent = new ToastEvent(player, Material.valueOf(material), ToastUtil.handleTitle(title), frame);
         EventUtil.callEvent(toastEvent);
         toastEvent.showToast();
@@ -360,7 +382,7 @@ public class ContentHandler {
      * @param contentTask - contentTask
      * @return true - 执行完毕
      */
-    private boolean executeDelay(List<String> contentList, Player player, ChapterData chapterData, ContentTask contentTask){
+    private boolean handleDelay(List<String> contentList, Player player, ChapterData chapterData, ContentTask contentTask){
         if (contentList.size() > 2){
             DelaySingleEvent delaySingleEvent = new DelaySingleEvent(narrator, player, chapterData, contentTask, contentList);
             EventUtil.callEvent(delaySingleEvent);
@@ -390,7 +412,7 @@ public class ContentHandler {
      * @param playerData - 玩家数据
      * @return true - 已作出决定， 否则反之
      */
-    private boolean sendActionBarAnswer(List<String> contentList, Player player, PlayerData playerData){
+    private boolean handleActionBarAnswerAction(List<String> contentList, Player player, PlayerData playerData){
         if (narrator.getCacheData().isCurrentActionBarAnswerEventExist(player)) {
             narrator.getCacheData().getCurrentActionBarAnswerEvent(player).checkAnswer();
             return narrator.getCacheData().isCurrentActionBarAnswerEventDecided(player);
@@ -411,7 +433,7 @@ public class ContentHandler {
      * @param player - 玩家
      * @return true 表示成功完毕 false 表示发送失败/未完毕
      */
-    private boolean sendActionBar(List<String> contentList, Player player){
+    private boolean handleActionBarAction(List<String> contentList, Player player){
         boolean isPrint = Boolean.parseBoolean(contentList.get(1));
 
         ActionBarEvent actionBarEvent;
@@ -453,7 +475,7 @@ public class ContentHandler {
      * @param contentList - 内容列表
      * @param player - 玩家
      */
-    private void sendTitle(List<String> contentList, Player player){
+    private void handleTitleAction(List<String> contentList, Player player){
         TitleEvent titleEvent = new TitleEvent(contentList, player);
         EventUtil.callEvent(titleEvent);
         if (!titleEvent.isCancelled()) {
@@ -466,7 +488,7 @@ public class ContentHandler {
      * @param contentList - 内容列表
      * @param player - 玩家
      */
-    private void sendMessage(List<String> contentList, Player player){
+    private void handleMessageAction(List<String> contentList, Player player){
         MessageEvent messageEvent = new MessageEvent(player, CCUtil.translate(contentList.get(1)));
         EventUtil.callEvent(messageEvent);
         if (!messageEvent.isCancelled()) {
@@ -484,7 +506,7 @@ public class ContentHandler {
      * @param jumpContent - 关于转跳的content
      * @return 转跳完成
      */
-    private boolean jumpTask(Player player, PlayerData playerData, ChapterData chapterData, int taskOrdinal, int contentIndex, String jumpContent) {
+    private boolean handleJumpTask(Player player, PlayerData playerData, ChapterData chapterData, int taskOrdinal, int contentIndex, String jumpContent) {
         JumpTaskEvent jumpTaskEvent = new JumpTaskEvent(narrator, player, playerData, chapterData, taskOrdinal, contentIndex, jumpContent);
         EventUtil.callEvent(jumpTaskEvent);
         return jumpTaskEvent.jumpTask();

@@ -3,6 +3,8 @@ package me.sakuratao.narrator.spigot.listener;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
+import me.sakuratao.narrator.spigot.utils.server.PlayerUtil;
+import me.sakuratao.narrator.spigot.utils.server.TaskUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,8 +31,10 @@ public class PlayerListener implements Listener {
 
         narrator.getManagerHandler().getPlayerManager().create(p);
 
-        PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(p);
-        playerData.setLang(e.getPlayer().getLocale().toLowerCase()); // fixme 可能有问题
+        TaskUtil.taskLaterAsync(() -> {
+            PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(p);
+            playerData.setLang(PlayerUtil.getLang(p));
+        }, 40);
 
     }
 

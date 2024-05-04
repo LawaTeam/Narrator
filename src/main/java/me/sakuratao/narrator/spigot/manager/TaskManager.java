@@ -33,11 +33,13 @@ public class TaskManager {
             narrator.getCacheData().clear(data.getPlayer());
             tasks.get(data.getPlayerName()).cancel();
         }
+        /*      fixme 报错
+                World cloneWorld = WorldCreator
+                        .name(data.getPlayingTaskData().getWorld().getName() + "_clone_" + data.getPlayer().getName()) // worldName_clone_playerName
+                        .copy(data.getPlayingTaskData().getWorld()).createWorld();
 
-        World cloneWorld = WorldCreator
-                .name(data.getPlayingTaskData().getWorld().getName() + "_clone_" + data.getPlayer().getName())
-                .copy(data.getPlayingTaskData().getWorld()).createWorld();
-        data.setPlayingWorld(cloneWorld);
+                data.setPlayingWorld(cloneWorld);
+         */
         data.setContentTask(new ContentTask(narrator, data));
         tasks.put(
                 data.getPlayerName().toLowerCase(),
