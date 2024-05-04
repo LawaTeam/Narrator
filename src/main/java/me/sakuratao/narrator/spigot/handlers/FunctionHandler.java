@@ -1,11 +1,11 @@
 package me.sakuratao.narrator.spigot.handlers;
 
 import me.sakuratao.narrator.spigot.enums.FunctionType;
+import me.sakuratao.narrator.spigot.utils.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 
@@ -24,15 +24,19 @@ public class FunctionHandler {
     public Block decodeBlock(String function) {
 
         // 从函数参数中提取坐标信息，并转换为列表形式
-        List<String> coordinate = Arrays.stream(getInBrackets(function).split(",")).toList();
+        List<String> coordinate = Arrays.stream(StringUtil.getInBrackets(function).split(",")).toList();
 
-        // 使用提取的坐标信息获取对应的方块
-        return Bukkit.getWorld(coordinate.get(0)).getBlockAt(
-                        Integer.parseInt(coordinate.get(1)),
-                        Integer.parseInt(coordinate.get(2)),
-                        Integer.parseInt(coordinate.get(3))
-                );
+        World world = Bukkit.getWorld(coordinate.get(0));
+        if (world != null) {
+            // 使用提取的坐标信息获取对应的方块
+            return world.getBlockAt(
+                    Integer.parseInt(coordinate.get(1)),
+                    Integer.parseInt(coordinate.get(2)),
+                    Integer.parseInt(coordinate.get(3))
+            );
+        }
 
+        return null;
     }
 
     /**
@@ -41,7 +45,7 @@ public class FunctionHandler {
      * @return location
      */
     public Location decodeLoc(String function){
-        List<String> coordinate = Arrays.stream(getInBrackets(function).split(",")).toList();
+        List<String> coordinate = Arrays.stream(StringUtil.getInBrackets(function).split(",")).toList();
 
         World world = Bukkit.getWorld(coordinate.get(0));
         if (world != null) {
@@ -59,7 +63,7 @@ public class FunctionHandler {
      * @return - player
      */
     public Player decodePlayer(String function){
-        return Bukkit.getPlayerExact(getInBrackets(function));
+        return Bukkit.getPlayerExact(StringUtil.getInBrackets(function));
     }
 
     /**
@@ -71,14 +75,13 @@ public class FunctionHandler {
         return FunctionType.valueOf(function.split("<")[0].toUpperCase());
     }
 
-    /**
-     * 用于解析 function 语句 < > 内的内容
-     * @param functionWithBracket - 带有 < > 的 function 语段
-     * @return < > 内的内容
-     */
-    private String getInBrackets(String functionWithBracket){
-        String[] split = functionWithBracket.split("<");
-        return split[1].replace(">", "");
+    public Object handleType(String type){
+        return switch (type) {
+            case "BLOCK" -> decodeBlock(type);
+            case "LOC" -> decodeLoc(type);
+            case "PLAYER" -> decodePlayer(type);
+            default -> null;
+        };
     }
 
 }

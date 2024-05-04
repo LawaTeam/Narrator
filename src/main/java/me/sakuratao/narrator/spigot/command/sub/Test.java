@@ -15,13 +15,13 @@ public class Test implements SubCommand {
     @Override
     public void execute(Narrator narrator, CommandSender sender, Command command, String[] args) {
 
-        if (!(args.length == 0)) {
+        if (args.length != 0) {
 
-            int chapterOrdinal = Integer.parseInt(args[1]);
-            int taskOrdinal = Integer.parseInt(args[2]);
-            int contentIndex = Integer.parseInt(args[3]);
+            int chapterOrdinal = Integer.parseInt(args[2]);
+            int taskOrdinal = Integer.parseInt(args[3]);
+            int contentIndex = Integer.parseInt(args[4]);
 
-            String lang = args[4].toLowerCase();
+            String lang = args[5].toLowerCase();
 
             if (chapterOrdinal < 1) {
                 chapterOrdinal = 1;
@@ -37,7 +37,7 @@ public class Test implements SubCommand {
                 lang = "zh_cn";
             }
 
-            PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(Bukkit.getPlayer(sender.getName()));
+            PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(Bukkit.getPlayer(args[1]));
             playerData.setPlayingChapterOrdinal(chapterOrdinal);
             playerData.setPlayingTaskOrdinal(taskOrdinal);
             playerData.setContentIndex(contentIndex);

@@ -2,7 +2,7 @@ package me.sakuratao.narrator.spigot.events.content.player;
 
 import lombok.Getter;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
-import me.sakuratao.narrator.spigot.utils.ToastUtil;
+import me.sakuratao.narrator.spigot.utils.server.ToastUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 

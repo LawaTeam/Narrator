@@ -1,4 +1,4 @@
-package me.sakuratao.narrator.spigot.utils;
+package me.sakuratao.narrator.spigot.utils.server;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;

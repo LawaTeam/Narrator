@@ -17,7 +17,7 @@ public class PlayerData {
     private final String playerName; // lowercase
     private final Player player;
 
-    private String lang; // todo 玩家语言检测
+    private String lang;
 
     /*
         these decided what will be set in TaskManager
@@ -28,8 +28,6 @@ public class PlayerData {
     private int contentIndex = 0;
 
     private ContentTask contentTask = null;
-
-    private Inventory chatHandle; // TODO 提供过剧情时 聊天框的控制
 
     public PlayerData(Narrator narrator, Player player){
         this.narrator = narrator;
