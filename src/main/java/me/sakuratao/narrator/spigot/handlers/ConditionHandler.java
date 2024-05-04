@@ -25,7 +25,7 @@ public class ConditionHandler {
             return;
         }
 
-        String[] tempParts = content.split(",(?=(?:[^<>]*<[^<>]*>)*[^<>]*$)");
+        String[] tempParts = StringUtil.splitRespectingIgnoredDelimiters(content, ",", new String[]{"<", ">"});
         // 确保 tempParts 至少有两个元素
         if (tempParts.length < 2) return;
 
@@ -39,12 +39,12 @@ public class ConditionHandler {
         for (int i = 0; i < THE_LAST_ELEMENT; i++) {
             String[] splitByLogic = splitLogic(tempParts[i]);
             if (splitByLogic != null) {
-                boolean a = handle(player, content, splitByLogic[0]);
-                boolean b = handle(player, content, splitByLogic[1]);
+                boolean a = handle(splitByLogic[0]);
+                boolean b = handle(splitByLogic[1]);
                 results.add(handleLogic(parseLogic(tempParts[i]), a, b));
                 continue;
             }
-            results.add(handle(player, content, tempParts[i]));
+            results.add(handle(tempParts[i]));
         }
 
         if (results.isEmpty()) return;
@@ -57,7 +57,7 @@ public class ConditionHandler {
         }
     }
 
-    private boolean handle(Player player, String content, String condition){
+    private boolean handle(String condition){
         // 解析条件
         String[] splitByCondition = splitCondition(condition);
         if (splitByCondition == null) return false;
