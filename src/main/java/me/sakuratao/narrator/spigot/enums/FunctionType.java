@@ -2,7 +2,7 @@ package me.sakuratao.narrator.spigot.enums;
 
 public enum FunctionType {
 
-    ENTITY("ENTITY"),
+    ENTITY("ENTITY"), // fixme 预计删除
     PLAYER("PLAYER"),
     NPC("NPC"), // todo
     LOC("LOC"),

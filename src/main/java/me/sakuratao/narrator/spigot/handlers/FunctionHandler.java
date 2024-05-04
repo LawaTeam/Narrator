@@ -40,15 +40,26 @@ public class FunctionHandler {
     }
 
     /**
-     * 解析 位置信息
-     * @param function - function
-     * @return location
+     * 解码函数，根据输入的字符串来获取一个Location对象。
+     * 如果输入字符串代表一个在线玩家的名称，则返回该玩家的当前位置。
+     * 如果输入字符串包含坐标信息，则根据这些坐标信息和世界名称创建一个新的Location对象。
+     *
+     * @param function 字符串，可以是玩家名称或包含坐标信息的字符串。
+     * @return Location对象，如果解析成功则返回相应的Location，否则返回null。
      */
     public Location decodeLoc(String function){
-        List<String> coordinate = Arrays.stream(StringUtil.getInBrackets(function).split(",")).toList();
 
+        // 尝试将输入字符串解析为玩家，并获取其位置
+        Player player = Bukkit.getPlayerExact(function);
+        if (player != null) {
+            return player.getLocation();
+        }
+
+        // 解析输入字符串中的坐标信息
+        List<String> coordinate = Arrays.stream(StringUtil.getInBrackets(function).split(",")).toList();
         World world = Bukkit.getWorld(coordinate.get(0));
         if (world != null) {
+            // 根据解析出的坐标和世界对象创建Location
             double x = Double.parseDouble(coordinate.get(1));
             double y = Double.parseDouble(coordinate.get(2));
             double z = Double.parseDouble(coordinate.get(3));
