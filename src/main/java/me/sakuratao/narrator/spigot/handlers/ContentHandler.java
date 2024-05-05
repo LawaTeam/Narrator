@@ -209,7 +209,7 @@ public class ContentHandler {
             LogUtil.log(Level.SEVERE, "Here are some information may help you:");
             LogUtil.log(Level.SEVERE, "        Chapter Name: " + chapterData.getName());
             LogUtil.log(Level.SEVERE, "        Content: " + content);
-            e.printStackTrace();
+            LogUtil.log(Level.SEVERE, "Details(For Developments): " + e.getMessage());
             return false;
         }
     }

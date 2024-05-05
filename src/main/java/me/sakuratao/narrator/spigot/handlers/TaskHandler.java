@@ -63,6 +63,7 @@ public class TaskHandler {
                         LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
                         LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
                         LogUtil.log(Level.SEVERE, "        chapterFile: " + contentConfig.getName());
+                        LogUtil.log(Level.SEVERE, "Details(For Developments): " + e.getMessage());
                         return;
                     }
                 }
