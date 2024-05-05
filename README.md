@@ -30,24 +30,6 @@
   </p>
 </div>
 
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>目录</summary>
-  <ol>
-    <li>
-      <a href="#关于 Narrator">关于 Narrator</a>
-      <ul>
-        <li><a href="#构建环境">构建环境</a></li>
-      </ul>
-    </li>
-    <li><a href="#快速开始">快速开始</a></li>
-    <li><a href="#使用">使用</a></li>
-    <li><a href="#开发路线">开发路线</a></li>
-  </ol>
-</details>
-
-
-
 <!-- ABOUT THE PROJECT -->
 ## 关于 Narrator
 
@@ -76,6 +58,9 @@ Narrator 基于 Java 17 进行开发并且在 Minecraft 1.19.4 上进行了测�
 要想保证 Narrator 能够正常运行，需要满足以下条件：
 * Java 17
 * Minecraft 1.19.4
+> [!CAUTION]
+> Narrator 尚未验证在低于 1.19.4 版本的服务端运行 以及 使用低于 1.19.4 版本的客户端执行 Narrator 内容的可行性。
+
 
 ### 安装
 
