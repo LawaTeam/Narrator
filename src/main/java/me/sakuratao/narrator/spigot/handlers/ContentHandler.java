@@ -184,13 +184,11 @@ public class ContentHandler {
                 case "C", "CONDITION" -> {
                     if (content.substring(0, 3).toUpperCase().startsWith("C|")){
                         conditionHandler.handle(player, PapiUtil.getString(player, content
-                                .replace("C|", ""))
-                                .replace(" ", ""));
+                                .replace("C|", "")));
                     }
                     if (content.substring(0, 3).toUpperCase().startsWith("CONDITION|")){
                         conditionHandler.handle(player, PapiUtil.getString(player, content.
-                                replace("CONDITION|", ""))
-                                .replace(" ", ""));
+                                replace("CONDITION|", "")));
                     }
                     yield true;
                 }

@@ -2,11 +2,16 @@ package me.sakuratao.narrator.spigot.handlers;
 
 import me.sakuratao.narrator.spigot.enums.FunctionType;
 import me.sakuratao.narrator.spigot.utils.StringUtil;
+import me.sakuratao.narrator.spigot.utils.server.ItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 
 import java.util.Arrays;
@@ -14,6 +19,13 @@ import java.util.List;
 
 @PieComponent
 public class FunctionHandler {
+
+    public ItemStack decodeItemStack(String function){
+        List<String> itemInfo = getInBracketsList(function);
+        Material material = Material.valueOf(itemInfo.get(0));
+        int amount = Integer.parseInt(itemInfo.get(1));
+        return ItemUtil.create(material, amount);
+    }
 
     /**
      * 解码函数，根据传入的函数参数获取指定位置的方块。
@@ -24,7 +36,7 @@ public class FunctionHandler {
     public Block decodeBlock(String function) {
 
         // 从函数参数中提取坐标信息，并转换为列表形式
-        List<String> coordinate = Arrays.stream(StringUtil.getInBrackets(function).split(",")).toList();
+        List<String> coordinate = getInBracketsList(function);
 
         World world = Bukkit.getWorld(coordinate.get(0));
         if (world != null) {
@@ -56,7 +68,7 @@ public class FunctionHandler {
         }
 
         // 解析输入字符串中的坐标信息
-        List<String> coordinate = Arrays.stream(StringUtil.getInBrackets(function).split(",")).toList();
+        List<String> coordinate = getInBracketsList(function);
         World world = Bukkit.getWorld(coordinate.get(0));
         if (world != null) {
             // 根据解析出的坐标和世界对象创建Location
@@ -95,4 +107,7 @@ public class FunctionHandler {
         };
     }
 
+    private List<String> getInBracketsList(String function){
+        return Arrays.stream(StringUtil.getInBrackets(function).split(",")).toList();
+    }
 }

@@ -37,7 +37,7 @@ public class ConditionHandler {
 
         List<Boolean> results = new ArrayList<>();
         for (int i = 0; i < THE_LAST_ELEMENT; i++) {
-            String[] splitByLogic = splitLogic(tempParts[i]);
+            String[] splitByLogic = splitLogic(tempParts[i].replace(" ", ""));
             if (splitByLogic != null) {
                 boolean a = handleCondition(splitByLogic[0]);
                 boolean b = handleCondition(splitByLogic[1]);

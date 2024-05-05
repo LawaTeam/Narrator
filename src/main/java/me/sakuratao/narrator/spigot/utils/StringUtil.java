@@ -14,18 +14,20 @@ public class StringUtil {
 
     /**
      * 提取字符串中尖括号<>内的内容。
-     * 注意：此方法只提取第一个匹配项。
      *
-     * @param text 输入的字符串
+     * @param input 输入的字符串
      * @return 尖括号内的内容，如果没有找到则返回null
      */
-    public String getInBrackets(String text) {
-        Pattern pattern = Pattern.compile("<(.*?)>");
-        Matcher matcher = pattern.matcher(text);
-        if (matcher.find()) {
-            return matcher.group(1);  // group(1) 获取第一个括号内匹配的内容
+    public String getInBrackets(String input) {
+        int start = input.indexOf('<');
+        int end = input.lastIndexOf('>');
+
+        if (start != -1 && end != -1 && start < end) {
+            return input.substring(start + 1, end);
+        } else {
+            // 如果没有找到匹配的尖括号，则返回空字符串或抛出异常，根据需求调整
+            return "";
         }
-        return null;
     }
 
     /**
@@ -49,6 +51,7 @@ public class StringUtil {
      * 根据给定的分隔符和忽略的分隔符数组，分割输入字符串，并返回结果数组。
      * 当遇到普通分隔符时，如果没有任何忽略的分隔符处于活动状态（即没有未关闭的忽略分隔符），则进行分割。
      * 活动的忽略分隔符是指已开始但未结束的忽略分隔符对。
+     * 当 ignoredDelimiters 为 null 时，则直接输出 delimiter 分割后的内容
      *
      * @param input 待分割的输入字符串。
      * @param delimiter 作为分隔标准的字符。
@@ -72,15 +75,18 @@ public class StringUtil {
                 currentSegment.append(currentChar); // 将字符添加到当前片段
             }
 
-            // 处理忽略的分隔符
-            for (int j = 0; j < ignoredDelimiters.length; j += 2) {
-                if (ignoredDelimiters[j].charAt(0) == currentChar) {
-                    openDelimiters.push(ignoredDelimiters[j]); // 如果当前字符是开始忽略分隔符，则将其入栈
-                } else if (ignoredDelimiters[j + 1].charAt(0) == currentChar && !openDelimiters.isEmpty()
-                        && openDelimiters.peek().equals(ignoredDelimiters[j])) {
-                    openDelimiters.pop(); // 如果当前字符是结束忽略分隔符且栈非空且与栈顶开始分隔符匹配，则将其出栈
+            if (ignoredDelimiters != null){
+                // 处理忽略的分隔符
+                for (int j = 0; j < ignoredDelimiters.length; j += 2) {
+                    if (ignoredDelimiters[j].charAt(0) == currentChar) {
+                        openDelimiters.push(ignoredDelimiters[j]); // 如果当前字符是开始忽略分隔符，则将其入栈
+                    } else if (ignoredDelimiters[j + 1].charAt(0) == currentChar && !openDelimiters.isEmpty()
+                            && openDelimiters.peek().equals(ignoredDelimiters[j])) {
+                        openDelimiters.pop(); // 如果当前字符是结束忽略分隔符且栈非空且与栈顶开始分隔符匹配，则将其出栈
+                    }
                 }
-            }
+            } else openDelimiters.pop();
+
         }
 
         // 分割完成后，将最后一个片段（如果存在）添加到结果中

@@ -7,6 +7,8 @@ public enum FunctionType {
     NPC("NPC"), // todo
     LOC("LOC"),
     BLOCK("BLOCK"),
+    ITEM_STACK("ITEM_STACK"),
+    ITEM_META("ITEM_META"),
     ;
 
     private final String type;
