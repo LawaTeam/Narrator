@@ -8,6 +8,7 @@ import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.utils.LogUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.configuration.file.YamlConfiguration;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -41,7 +42,7 @@ public class TaskHandler {
 
                             String name = contentConfig.getString("chapterTasks." + section + ".name");
                             String worldName = contentConfig.getString( "chapterTasks." + section + ".world");
-                            World world = Bukkit.getWorld(worldName);
+                            World world = WorldCreator.name(worldName + "_clone").copy(Bukkit.getWorld(worldName)).createWorld();
                             int ordinal = Integer.parseInt(contentConfig.getString("chapterTasks." + section + ".ordinal"));
                             List<String> content = contentConfig.getStringList("chapterTasks." + section + ".content");
 
