@@ -36,7 +36,7 @@ public class ConditionHandler {
         List<String> debugDetails = new ArrayList<>();
 
         // 使用指定的分隔符拆分字符串，忽略特定的 delimiter
-        String[] tempParts = StringUtil.splitRespectingIgnoredDelimiters(content, ",", new String[]{"<", ">"});
+        String[] tempParts = StringUtil.splitRespectingIgnoredDelimiters(content, ",", new String[]{"{", "}"});
         // 如果分割后的内容不包含至少两个元素，则返回
         if (tempParts.length < 2) return false;
 
@@ -55,21 +55,21 @@ public class ConditionHandler {
             String[] splitByLogic = splitLogic(tempParts[i].trim());
             if (splitByLogic != null) {
                 // 分别处理两个条件，并根据逻辑运算符计算结果
-                boolean a = handleCondition(splitByLogic[0]);
-                boolean b = handleCondition(splitByLogic[1]);
-                boolean tempResult = handleLogic(parseLogic(tempParts[i]), a, b);
+                boolean a = handleCondition(splitByLogic[0].trim());
+                boolean b = handleCondition(splitByLogic[1].trim());
+                boolean tempResult = handleLogic(parseLogic(tempParts[i].trim()), a, b);
                 results.add(tempResult);
 
-                debugDetails.add("&7condition&8(" + parseLogic(tempParts[i]) + "&8): &f" + tempParts[i]);
-                debugDetails.add("&7    └-result: " + (tempResult ? "&atrue" : "&cfalse"));
+                debugDetails.add("&7condition&8(&7" + parseLogic(tempParts[i]) + "&8): &f" + tempParts[i]);
+                debugDetails.add("&7    |-result: " + (tempResult ? "&atrue" : "&cfalse"));
 
                 continue;
             }
             // 处理不包含逻辑运算符的简单条件
-            boolean tempResult = handleCondition(tempParts[i]);
+            boolean tempResult = handleCondition(tempParts[i].trim());
             results.add(tempResult);
             debugDetails.add("&7condition: &f" + tempParts[i]);
-            debugDetails.add("&7    └-result: " + (tempResult ? "&atrue" : "&cfalse"));
+            debugDetails.add("&7    |-result: " + (tempResult ? "&atrue" : "&cfalse"));
         }
 
         // 如果没有条件需要处理，则返回
@@ -86,7 +86,7 @@ public class ConditionHandler {
 
         debugDetails.add("&7finalResult: " + (finalResult ? "&atrue" : "&cfalse"));
         for (String executeContent : executeContents) {
-            debugDetails.add("executeContent: " + executeContent);
+            debugDetails.add("&7executeContent: &f" + executeContent);
         }
 
         PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
@@ -121,7 +121,7 @@ public class ConditionHandler {
 
         List<Object> processedObjects = new ArrayList<>();
         for (String part : splitByCondition) {
-            Object processedObject = processPart(part);
+            Object processedObject = processPart(part.trim());
             if (processedObject != null) {
                 processedObjects.add(processedObject);
             }
