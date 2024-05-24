@@ -3,13 +3,18 @@ package me.sakuratao.narrator.spigot.events.content.delay;
 import lombok.Getter;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
+import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
+import me.sakuratao.narrator.spigot.handlers.DebugHandler;
+import me.sakuratao.narrator.spigot.manager.ManagerHandler;
+import me.sakuratao.narrator.spigot.manager.PlayerManager;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import me.sakuratao.narrator.spigot.utils.server.TaskUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class DelaySingleEvent extends NarratorEvent implements Cancellable {
@@ -24,6 +29,8 @@ public class DelaySingleEvent extends NarratorEvent implements Cancellable {
     @Getter private boolean delayed = false;
 
     private BukkitTask delayTask;
+    private final DebugHandler debugHandler;
+    private final PlayerManager playerManager;
 
     public DelaySingleEvent(Narrator narrator, Player player, ChapterData chapterData, ContentTask contentTask, List<String> contentList){
         super(true);
@@ -33,11 +40,28 @@ public class DelaySingleEvent extends NarratorEvent implements Cancellable {
         this.contentTask = contentTask;
         this.delayTime = Long.parseLong(contentList.get(1));
         this.content = generateContent(contentList);
+        this.debugHandler = narrator.getHandlerManager().getDebugHandler();
+        this.playerManager = narrator.getManagerHandler().getPlayerManager();
     }
 
     public void delay(){
-        delayTask = TaskUtil.taskLaterAsync(() ->
-                narrator.getHandlerManager().getContentHandler().execute(player, chapterData, content, contentTask), delayTime);
+        delayTask = TaskUtil.taskLaterAsync(() -> {
+            PlayerData playerData = playerManager.getByPlayer(player);
+            narrator.getHandlerManager().getContentHandler().handleContent(player, chapterData, content, contentTask);
+            debugHandler.debug(
+                    player,
+                    playerData.getPlayingChapterData(),
+                    playerData.getPlayingTaskData(),
+                    "Delay/D",
+                    Arrays.asList(
+                            "&7delayTime: &f" + delayTime,
+                            "&7content: &f" + content,
+                            "&7isSingle: &atrue",
+                            "&7isDelayed: &atrue"
+                    ),
+                    false
+            );
+        }, delayTime);
     }
 
     private String generateContent(List<String> contentList) {

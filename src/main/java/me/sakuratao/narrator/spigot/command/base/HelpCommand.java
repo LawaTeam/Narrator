@@ -58,11 +58,10 @@ public class HelpCommand implements SubCommand {
                         sender.sendMessage(CCUtil.translate(" &f◆ &8| &b" + ci.syntax().replace("%command%", command.getName()) + " &8- &b" + ci.description()));
                     }
                 }
+                continue;
             }
             sender.sendMessage(CCUtil.translate(
-                    s.replace("%pages%", String.valueOf(pageNumber)
-                            .replace("%maxPages%", String.valueOf(commandPages.size()))
-                            .replace("%commands%", "")))
+                    s.replace("%pages%", String.valueOf(pageNumber)).replace("%maxPages%", String.valueOf(commandPages.size())))
             );
         }
     }

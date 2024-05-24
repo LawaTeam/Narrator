@@ -9,5 +9,6 @@ public class Permission {
 
     public final static String COMMAND_ADMIN_RELOAD = "narrator.command.admin.help";
     public final static String COMMAND_ADMIN_TEST = "narrator.command.admin.test";
+    public final static String COMMAND_ADMIN_DEBUG = "narrator.command.admin.debug";
 
 }

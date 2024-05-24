@@ -6,6 +6,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,22 +14,52 @@ import java.util.regex.Pattern;
 public class StringUtil {
 
     /**
-     * 提取字符串中尖括号<>内的内容。
+     * 从输入字符串中提取括号内的内容。
+     * 该方法假设输入字符串包含一对匹配的花括号（{}），并返回括号内的文本。
+     * 如果找不到匹配的括号，或找到的括号不是正确的一对，将返回空字符串。
      *
-     * @param input 输入的字符串
-     * @return 尖括号内的内容，如果没有找到则返回null
+     * @param input 输入字符串，期望包含一对匹配的花括号。
+     * @return 括号内的文本，如果不存在合适的括号则返回空字符串。
      */
     public String getInBrackets(String input) {
-        int start = input.indexOf('<');
-        int end = input.lastIndexOf('>');
+        // 查找输入字符串中第一个花括号的位置
+        int start = input.indexOf("{");
+        // 查找输入字符串中最后一个花括号的位置
+        int end = input.lastIndexOf("}");
 
+        // 确保找到了一对匹配的花括号，并且它们的顺序是正确的
         if (start != -1 && end != -1 && start < end) {
+            // 返回括号内的文本
             return input.substring(start + 1, end);
         } else {
-            // 如果没有找到匹配的尖括号，则返回空字符串或抛出异常，根据需求调整
+            // 如果没有找到合适的一对括号，返回空字符串
             return "";
         }
     }
+
+
+    /**
+     * 从输入字符串中提取括号内的内容。
+     * @param input 输入的字符串
+     * @param startWith 指定的起始括号或标识
+     * @param endWith 指定的结束括号或标识
+     * @return 在输入字符串中找到的，由起始和结束标识括起来的字符串。如果找不到或不匹配，则返回空字符串。
+     */
+    public String getInBrackets(String input, String startWith, String endWith) {
+        // 查找起始和结束标识的位置
+        int start = input.indexOf(startWith);
+        int end = input.lastIndexOf(endWith);
+
+        // 确保找到了匹配的起始和结束标识，并且起始标识在结束标识的前面
+        if (start != -1 && end != -1 && start < end) {
+            // 提取并返回括号内的字符串
+            return input.substring(start + 1, end);
+        } else {
+            // 如果没有找到匹配的标识或匹配不正确，返回空字符串
+            return "";
+        }
+    }
+
 
     /**
      * 判断字符串是否全为数字

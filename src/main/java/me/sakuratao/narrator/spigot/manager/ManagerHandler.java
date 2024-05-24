@@ -8,9 +8,7 @@ import top.jingwenmc.spigotpie.common.instance.Wire;
 @PieComponent
 public class ManagerHandler {
 
-    @Wire
-    private PlayerManager playerManager;
-    @Wire
-    private TaskManager taskManager;
+    @Wire private PlayerManager playerManager;
+    @Wire private TaskManager taskManager;
 
 }

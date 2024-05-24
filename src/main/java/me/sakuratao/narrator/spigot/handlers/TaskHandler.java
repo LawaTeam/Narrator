@@ -42,7 +42,7 @@ public class TaskHandler {
 
                             String name = contentConfig.getString("chapterTasks." + section + ".name");
                             String worldName = contentConfig.getString( "chapterTasks." + section + ".world");
-                            World world = WorldCreator.name(worldName + "_clone").copy(Bukkit.getWorld(worldName)).createWorld();
+                            World world = Bukkit.getWorld(worldName);
                             int ordinal = Integer.parseInt(contentConfig.getString("chapterTasks." + section + ".ordinal"));
                             List<String> content = contentConfig.getStringList("chapterTasks." + section + ".content");
 
