@@ -11,6 +11,9 @@ import java.util.List;
 @ConfigurationFile("lang.yml")
 public class Lang {
 
+    @Configuration("language_code")
+    public static String LANGUAGE_CODE = "zh_CN";
+
     @Configuration("no_permission")
     public static String NO_PERMISSION = "你没有权限执行此命令!";
 
@@ -31,17 +34,45 @@ public class Lang {
     );
 
     @Configuration("command_help_page")
-    public static String COMMAND_HELP_PAGE = "请使用: /neko help <Pages>";
+    public static String COMMAND_HELP_PAGE = "请使用: /narrator help <Pages>";
 
 
     @Configuration("command_not_number")
-    public static String COMMAND_NOT_NUMBER = "你输入的不是数字";
+    public static String COMMAND_NOT_NUMBER = "&c你输入的不是数字";
 
     @Configuration("command_more_than_max_pages")
-    public static String COMMAND_MORE_THAN_MAX_PAGES = "超出最大页数";
+    public static String COMMAND_MORE_THAN_MAX_PAGES = "&c超出最大页数";
 
     @Configuration("command_less_than_max_pages")
-    public static String COMMAND_LESS_THAN_MAX_PAGES = "小于最小页数";
+    public static String COMMAND_LESS_THAN_MAX_PAGES = "&c小于最小页数";
+
+    @Configuration("command_syntax_error")
+    public static String COMMAND_SYNTAX_ERROR = "&c指令语法错误，请参阅帮助文档";
+
+    @Configuration("command_player_null")
+    public static String COMMAND_PLAYER_NULL = "&c目标玩家不在线/不存在";
+
+    @Configuration("command_debug_clear")
+    public static String COMMAND_DEBUG_CLEAR = "&c已清除你所监听的 debug 内容";
+
+    @Configuration("command_debug_detail")
+    public static List<String> COMMAND_DEBUG_DETAIL = Arrays.asList(
+            "&a已为你设置 debug 监听内容:",
+            "  &8|- &7章节: &f%chapter%",
+            "  &8|- &7任务: &f%task%",
+            "  &8|- &7目标玩家: &f%player%",
+            "  &8|- &7content: &f%content%"
+    );
+
+    @Configuration("command_test_detail")
+    public static List<String> COMMAND_TEST_DETAIL = Arrays.asList(
+            "&a已为你开始指定内容的测试:",
+            "  &8|- &7章节: &f%chapter%",
+            "    &8|- &7ordinal: &f%chapterOrdinal%",
+            "    &8|- &7lang: &f%chapterLang%",
+            "  &8|- &7任务: &f%task% &8| &7ordinal: &f%taskOrdinal%",
+            "  &8|- &7contentIndex: &f%contentIndex%"
+    );
 
     @Configuration("chapters_loaded")
     public static String CHAPTERS_LOADED = "所有章节已完成加载!";
