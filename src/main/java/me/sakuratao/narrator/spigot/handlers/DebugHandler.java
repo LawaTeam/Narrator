@@ -210,7 +210,7 @@ public class DebugHandler {
                 Objects.equals(chapter, listenedChapter)
                         && Objects.equals(taskName, listenedTask)
                         && Objects.equals(player.getName(), listenedPlayer)
-                        && contentType.contains(listenedContentType)
+                        && contentType.toUpperCase().contains(listenedContentType.toUpperCase())
         ) {
             listener.sendMessage(CCUtil.translate("&8&o--- &7Narrator &8[Debug] &8| &f" + chapter + "&8-&f" + chapterVersion + "&8-&f" + language));
             listener.sendMessage(CCUtil.translate("  &8|- &7Task: &f" + taskName + " &8| &7contentIndex: &f" + contentIndex + " &8| &7World: &f" + taskWorld));
@@ -225,7 +225,7 @@ public class DebugHandler {
                 }
 
                 for (String listenedContentDetail : listenedContentDetails) {
-                    if (CCUtil.translate(contentDetail).startsWith(listenedContentDetail)) {
+                    if (CCUtil.translate(contentDetail).toUpperCase().contains(listenedContentDetail.toUpperCase())) {
                         listener.sendMessage(CCUtil.translate("  &8    |- &7&f" + contentDetail));
                     }
                 }

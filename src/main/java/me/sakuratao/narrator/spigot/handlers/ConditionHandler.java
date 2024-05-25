@@ -98,7 +98,7 @@ public class ConditionHandler {
                 player,
                 playerData.getPlayingChapterData(),
                 playerData.getPlayingTaskData(),
-                "Condition/C",
+                "Condition",
                 debugDetails,
                 false
         );

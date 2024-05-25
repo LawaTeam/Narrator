@@ -4,7 +4,7 @@ import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.enums.Weather;
-import me.sakuratao.narrator.spigot.events.content.*;
+import me.sakuratao.narrator.spigot.events.content.CommandExecuteEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelayEvent;
@@ -13,7 +13,9 @@ import me.sakuratao.narrator.spigot.events.content.jump.JumpTaskEvent;
 import me.sakuratao.narrator.spigot.events.content.player.MessageEvent;
 import me.sakuratao.narrator.spigot.events.content.player.TitleEvent;
 import me.sakuratao.narrator.spigot.events.content.player.ToastEvent;
-import me.sakuratao.narrator.spigot.events.content.world.*;
+import me.sakuratao.narrator.spigot.events.content.world.TeleportEvent;
+import me.sakuratao.narrator.spigot.events.content.world.TimeChangeEvent;
+import me.sakuratao.narrator.spigot.events.content.world.WeatherChangeEvent;
 import me.sakuratao.narrator.spigot.events.content.world.effect.PotionEffectGiveEvent;
 import me.sakuratao.narrator.spigot.events.content.world.effect.PotionEffectRemoveEvent;
 import me.sakuratao.narrator.spigot.events.content.world.sound.PlaySoundEvent;
@@ -380,7 +382,7 @@ public class ContentHandler {
                     player,
                     playerData.getPlayingChapterData(),
                     playerData.getPlayingTaskData(),
-                    "Teleport/TP",
+                    "Teleport",
                     "&7target: &f" + target,
                     teleportEvent.isCancelled()
             );
@@ -484,7 +486,7 @@ public class ContentHandler {
                     player,
                     playerData.getPlayingChapterData(),
                     playerData.getPlayingTaskData(),
-                    "Delay/D",
+                    "Delay",
                     Arrays.asList(
                             "&7delayTime: &f" + contentList.get(1),
                             "&7content: &f" + contentList.get(2) + "|" + contentList.get(3),
@@ -502,7 +504,7 @@ public class ContentHandler {
                     player,
                     playerData.getPlayingChapterData(),
                     playerData.getPlayingTaskData(),
-                    "Delay/D",
+                    "Delay",
                     Arrays.asList(
                             "&7delayTime: &f" + contentList.get(1),
                             "&7isSingle: &cfalse",
@@ -522,7 +524,7 @@ public class ContentHandler {
                 player,
                 playerData.getPlayingChapterData(),
                 playerData.getPlayingTaskData(),
-                "Delay/D",
+                "Delay",
                 Arrays.asList(
                         "&7delayTime: &f" + contentList.get(1),
                         "&7isSingle: &cfalse",
@@ -548,7 +550,7 @@ public class ContentHandler {
                     player,
                     playerData.getPlayingChapterData(),
                     playerData.getPlayingTaskData(),
-                    "ActionbarAnswer/AB_ANSWER",
+                    "ActionBarAnswer",
                     Arrays.asList(
                             "&7options: &f" + contentList.subList(1, contentList.size()),
                             "&7isDecided: " + (isDecided ? "&atrue" : "&cfalse")
@@ -567,7 +569,7 @@ public class ContentHandler {
                 player,
                 playerData.getPlayingChapterData(),
                 playerData.getPlayingTaskData(),
-                "ActionbarAnswer/AB_ANSWER",
+                "ActionBarAnswer",
                 Arrays.asList(
                         "&7options: &f" + contentList.subList(1, contentList.size()),
                         "&7isDecided: &cfalse"
@@ -618,7 +620,7 @@ public class ContentHandler {
                     player,
                     playerData.getPlayingChapterData(),
                     playerData.getPlayingTaskData(),
-                    "Actionbar/AB",
+                    "ActionBar",
                     Arrays.asList(
                             "&7message: &f" + contentList.get(2),
                             "&7isPrint: &f" + false,
@@ -637,7 +639,7 @@ public class ContentHandler {
                 player,
                 playerData.getPlayingChapterData(),
                 playerData.getPlayingTaskData(),
-                "Actionbar/AB",
+                "ActionBar",
                 Arrays.asList(
                         "&7message: &f" + contentList.get(4),
                         "&7isPrint: &f" + true,
@@ -693,7 +695,7 @@ public class ContentHandler {
                 player,
                 playerData.getPlayingChapterData(),
                 playerData.getPlayingTaskData(),
-                "Message/M",
+                "Message",
                 "&7message: &f" + contentList.get(1),
                 messageEvent.isCancelled()
         );

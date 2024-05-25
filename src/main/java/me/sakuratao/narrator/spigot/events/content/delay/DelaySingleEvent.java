@@ -52,7 +52,7 @@ public class DelaySingleEvent extends NarratorEvent implements Cancellable {
                     player,
                     playerData.getPlayingChapterData(),
                     playerData.getPlayingTaskData(),
-                    "Delay/D",
+                    "Delay",
                     Arrays.asList(
                             "&7delayTime: &f" + delayTime,
                             "&7content: &f" + content,
