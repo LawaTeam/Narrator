@@ -4,7 +4,7 @@ import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.enums.Weather;
-import me.sakuratao.narrator.spigot.events.content.*;
+import me.sakuratao.narrator.spigot.events.content.CommandExecuteEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEvent;
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelayEvent;
@@ -13,7 +13,9 @@ import me.sakuratao.narrator.spigot.events.content.jump.JumpTaskEvent;
 import me.sakuratao.narrator.spigot.events.content.player.MessageEvent;
 import me.sakuratao.narrator.spigot.events.content.player.TitleEvent;
 import me.sakuratao.narrator.spigot.events.content.player.ToastEvent;
-import me.sakuratao.narrator.spigot.events.content.world.*;
+import me.sakuratao.narrator.spigot.events.content.world.TeleportEvent;
+import me.sakuratao.narrator.spigot.events.content.world.TimeChangeEvent;
+import me.sakuratao.narrator.spigot.events.content.world.WeatherChangeEvent;
 import me.sakuratao.narrator.spigot.events.content.world.effect.PotionEffectGiveEvent;
 import me.sakuratao.narrator.spigot.events.content.world.effect.PotionEffectRemoveEvent;
 import me.sakuratao.narrator.spigot.events.content.world.sound.PlaySoundEvent;
@@ -40,177 +42,141 @@ public class ContentHandler {
     @Wire private Narrator narrator;
     @Wire private ManagerHandler managerHandler;
     @Wire private ConditionHandler conditionHandler;
+    @Wire private DebugHandler debugHandler;
+
     /**
      * 执行对 content 的解析
-     * @param player - 玩家
-     * @param chapterData - 章节数据
-     * @param content - 内容
-     * @param contentTask - contentTask
-     * @return 执行完毕
+     *
+     * @param player 当前操作的玩家对象
+     * @param chapterData 当前章节数据
+     * @param content 需要解析的内容
+     * @param contentTask 关联的内容任务
+     * @return 执行结果，成功返回true，失败返回false
      */
-    public boolean execute(Player player, ChapterData chapterData, String content, ContentTask contentTask) {
+    public boolean handleContent(Player player, ChapterData chapterData, String content, ContentTask contentTask) {
 
-        List<String> contentList = Arrays.stream(content.split("\\|"))
+        // 获取玩家数据
+        PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
+
+        // 将内容按"|"分割，并处理 papi
+        List<String> contentList = List.of(content.split("\\|"));
+        contentList = contentList.stream()
                 .map(m -> PapiUtil.getString(player, m))
                 .collect(Collectors.toList());
 
-        PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
+        return executeContent(player, playerData, chapterData, contentList, content, contentTask);
+    }
 
-
-
-        /*
-            TODO: 物品栏文字调用，生成剧情对话背包，
-
-            TODO: MESSAGE_CLICK、MESSAGE_DROP、INV_ANSWER、CONDITION、BOOM_AROUND、SPAWN_ENTITY、NPC
-
-            TODO: 玩家自定义字幕速度以及停留时间，并提供 " 上一条 " 的功能
-
-         */
-
-
-        /*
-         * 这里会解析 content 的内容
-         * contentList.get(0) 即是所对应的功能
-         * 其余的则是所对应功能的参数，详细请翻阅 ChapterExample.yml
-         */
+    public boolean executeContent(
+            Player player,
+            PlayerData playerData,
+            ChapterData chapterData,
+            List<String> contentList,
+            String content,
+            ContentTask contentTask
+    ){
+        // 根据解析出的第一个参数（功能标识）执行相应的操作
+        String contentType = contentList.get(0);
         try {
-            return switch (contentList.get(0)) {
-                /*
-                    更改时间
-                 */
+            return switch (contentType) {
+                // 更改时间功能处理
                 case "TIME" -> {
                     TaskUtil.task(() -> {
+                        // 判断是否开启 fade
+                        long targetTime = Long.parseLong(contentList.get(1));
                         if (contentList.size() == 2) {
-                            changeTime(player, Long.parseLong(contentList.get(1)), false, 0);
+                            changeTime(player, targetTime, false, 0);
                         } else {
-                            changeTime(
-                                    player,
-                                    Long.parseLong(contentList.get(1)),
-                                    Boolean.parseBoolean(contentList.get(2)),
-                                    Long.parseLong(contentList.get(3))
-                            );
+                            boolean isFade = Boolean.parseBoolean(contentList.get(2));
+                            long increase = Long.parseLong(contentList.get(3));
+                            changeTime(player, targetTime, isFade, increase);
                         }
                     });
                     yield true;
                 }
-                /*
-                    传送作用
-                 */
-                case "TP" -> {
-                    handleTeleport(contentList.get(1), player);
+                // 传送功能处理
+                case "TP", "TELEPORT" -> {
+                    String tpTarget = contentList.get(1);
+                    handleTeleport(tpTarget, player);
                     yield true;
                 }
-                /*
-                  send title to player
-                 */
+                // 标题发送功能处理
                 case "T", "TITLE" -> {
                     handleTitleAction(contentList, player);
                     yield true;
                 }
-                /*
-                    send message to player
-                 */
+                // 消息发送功能处理
                 case "M", "MESSAGE" -> {
                     handleMessageAction(contentList, player);
                     yield true;
                 }
-                /*
-                    send actionbar to player
-                 */
+                // 动作栏消息发送功能处理
                 case "AB", "ACTIONBAR" -> handleActionBarAction(contentList, player);
-                /*
-                    let player use actionbar to answer
-                 */
+                // 动作栏回答功能处理
                 case "AB_ANSWER", "ACTIONBAR_ANSWER" -> handleActionBarAnswerAction(contentList, player, playerData);
-                /*
-                    execute delay
-                 */
+                // 延迟执行功能处理
                 case "D", "DELAY" -> handleDelay(contentList, player, chapterData, contentTask);
-                /*
-                    execute command
-                 */
+                // 执行命令功能处理
                 case "COMMAND" -> {
                     executeCommand(player, contentList, chapterData);
                     yield true;
                 }
-                /*
-
-                 */
-                case "MC", "MESSAGE_CLICK" ->
-                    // todo
-                        true;
-                /*
-                    send toast to player
-                 */
+                // todo 消息点击处理（待完成）
+                case "MC", "MESSAGE_CLICK" -> true;
+                // 弹出Toast消息功能处理
                 case "TOAST" -> {
                     handleToastAction(player, contentList.get(2), contentList.get(3), contentList.get(1));
                     yield true;
                 }
-                /*
-                    change weather for player privately
-                 */
+                // 天气变化功能处理
                 case "WEATHER" -> {
                     handleChangeWeather(player, Weather.valueOf(contentList.get(1)));
                     yield true;
                 }
-                /*
-                    Play Sound
-                 */
+                // 播放声音功能处理
                 case "PLAYSOUND" -> {
                     playSound(contentList, player);
                     yield true;
                 }
-                /*
-                    Stop Sound
-                 */
+                // 停止声音功能处理
                 case "STOPSOUND" -> {
                     stopSound(contentList, player);
                     yield true;
                 }
-                /*
-                    Effect
-                 */
+                // 触发特效功能处理
                 case "EFFECT" -> {
                     handleEffectAction(contentList, player);
                     yield true;
                 }
-                /*
-                    Summon
-                 */
-                case "SUMMON" -> {
-                    // todo
-                    yield true;
-                }
+                // todo 召唤实体功能处理（待完成）
+                case "SUMMON" -> true;
+                // 条件判断处理
                 case "C", "CONDITION" -> {
-                    if (content.substring(0, 3).toUpperCase().startsWith("C|")){
-                        conditionHandler.handle(player, PapiUtil.getString(player, content
-                                .replace("C|", ""))
-                                .replace(" ", ""));
+                    String head = content.substring(0, content.indexOf("|"));
+                    if (Boolean.parseBoolean(contentList.get(1))) {
+                        yield conditionHandler.handle(player, true, PapiUtil.getString(player, content.replace(head + "|" + contentList.get(1) + "|", "")));
+                    } else {
+                        conditionHandler.handle(player, false, PapiUtil.getString(player, content.replace(head, "")));
+                        yield true;
                     }
-                    if (content.substring(0, 3).toUpperCase().startsWith("CONDITION|")){
-                        conditionHandler.handle(player, PapiUtil.getString(player, content.
-                                replace("CONDITION|", ""))
-                                .replace(" ", ""));
-                    }
-                    yield true;
                 }
-                /*
-                    Jump Task
-                 */
+                // 任务跳转处理
                 case "JT", "JUMP_TASK" ->
                         handleJumpTask(player, playerData, chapterData, Integer.parseInt(contentList.get(1)),
                                 Integer.parseInt(contentList.get(2)), content);
-                case "JC", "JUMP_CHAPTER" ->
-                    // todo
-                        true;
+                // 章节跳转处理（待完成）
+                case "JC", "JUMP_CHAPTER" -> true;
+                // 默认情况，无对应功能时执行
                 default -> true;
             };
         } catch (IndexOutOfBoundsException e) {
+            // 处理解析过程中可能出现的数组越界异常
             LogUtil.log(Level.SEVERE, "Throw IndexOutOfBoundsException!");
             LogUtil.log(Level.SEVERE, "Please check your contents!");
             LogUtil.log(Level.SEVERE, "Here are some information may help you:");
             LogUtil.log(Level.SEVERE, "        Chapter Name: " + chapterData.getName());
             LogUtil.log(Level.SEVERE, "        Content: " + content);
+            LogUtil.log(Level.SEVERE, "Details(For Developments): " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -233,13 +199,43 @@ public class ContentHandler {
             if (!potionEffectRemoveEvent.isCancelled()) { // 如果事件未被取消，则移除药水效果
                 potionEffectRemoveEvent.removePotionEffect();
             }
+            PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
+            debugHandler.debug(
+                    player,
+                    playerData.getPlayingChapterData(),
+                    playerData.getPlayingTaskData(),
+                    "Effect",
+                    "isClear: &atrue",
+                    potionEffectRemoveEvent.isCancelled()
+            );
             return; // 结束方法
         }
 
-        PotionEffectGiveEvent potionEffectGiveEvent = getPotionEffectGiveEvent(contentList, player);
+        String effect = contentList.get(0);
+        int duration = Integer.parseInt(contentList.get(1));
+        int amplifier = Integer.parseInt(contentList.get(2));
+        boolean hideParticles = Boolean.parseBoolean(contentList.get(3));
+        boolean icon = Boolean.parseBoolean(contentList.get(4));
+
+        PotionEffectGiveEvent potionEffectGiveEvent = getPotionEffectGiveEvent(effect, duration, amplifier, hideParticles, icon, player);
         EventUtil.callEvent(potionEffectGiveEvent); // 触发药水效果给予事件
         if (!potionEffectGiveEvent.isCancelled()) { // 如果事件未被取消，则给予玩家药水效果
             potionEffectGiveEvent.givePotionEffect();
+            PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
+            debugHandler.debug(
+                    player,
+                    playerData.getPlayingChapterData(),
+                    playerData.getPlayingTaskData(),
+                    "Effect",
+                    Arrays.asList(
+                            "effect: &f" + effect,
+                            "duration: &f" + duration,
+                            "amplifier: &f" + amplifier,
+                            "hideParticles: &f" + hideParticles,
+                            "icon: &f" + icon
+                    ),
+                    potionEffectGiveEvent.isCancelled()
+            );
         }
         return;
     }
@@ -247,16 +243,17 @@ public class ContentHandler {
     /**
      * 获取一个 PotionEffectGiveEvent 对象，用于触发药水效果给予事件。
      *
-     * @param contentList 包含指令内容的列表。第一个元素是效果名称，接下来是持续时间、放大器等级、是否隐藏粒子效果。
      * @param player 要应用药水效果的玩家。
      * @return 一个 PotionEffectGiveEvent 对象。
      */
-    private @NotNull PotionEffectGiveEvent getPotionEffectGiveEvent(List<String> contentList, Player player) {
-        String effect = contentList.get(0);
-        int duration = Integer.parseInt(contentList.get(1));
-        int amplifier = Integer.parseInt(contentList.get(2));
-        boolean hideParticles = Boolean.parseBoolean(contentList.get(3));
-        boolean icon = Boolean.parseBoolean(contentList.get(4));
+    private @NotNull PotionEffectGiveEvent getPotionEffectGiveEvent(
+            String effect,
+            int duration,
+            int amplifier,
+            boolean hideParticles,
+            boolean icon,
+            Player player
+    ) {
         return new PotionEffectGiveEvent(
                 narrator,
                 player,
@@ -275,9 +272,27 @@ public class ContentHandler {
      * @param player 需要停止声音的玩家。
      */
     private void stopSound(List<String> contentList, Player player){
-        StopSoundEvent stopSoundEvent = new StopSoundEvent(narrator, player, contentList.get(1), SoundCategory.valueOf(contentList.get(2).toUpperCase()));
+
+        String sound = contentList.get(1);
+        SoundCategory soundCategory = SoundCategory.valueOf(contentList.get(2).toUpperCase());
+
+        StopSoundEvent stopSoundEvent = new StopSoundEvent(narrator, player, sound, soundCategory);
         EventUtil.callEvent(stopSoundEvent);
         stopSoundEvent.stopSound();
+
+        PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
+        debugHandler.debug(
+                player,
+                playerData.getPlayingChapterData(),
+                playerData.getPlayingTaskData(),
+                "playSound",
+                Arrays.asList(
+                        "&7target: &f" + player.getName(),
+                        "&7sound: &f" + sound,
+                        "&7category: &f" + soundCategory
+                ),
+                false
+        );
     }
 
     /**
@@ -286,33 +301,65 @@ public class ContentHandler {
      * @param player - 玩家
      */
     private void playSound(List<String> contentList, Player player) {
+        String target = contentList.get(1);
+        String sound = contentList.get(2);
+        SoundCategory soundCategory = SoundCategory.valueOf(contentList.get(3).toUpperCase());
+        float volume = Float.parseFloat(contentList.get(4));
+        float pitch = Float.parseFloat(contentList.get(5));
+
         PlaySoundEvent playSoundEvent = new PlaySoundEvent(
                 narrator,
                 player,
-                contentList.get(1), // target
-                contentList.get(2), // sound
-                SoundCategory.valueOf(contentList.get(3).toUpperCase()), // category
-                Float.parseFloat(contentList.get(4)), // volume
-                Float.parseFloat(contentList.get(5))  // pitch
+                target,
+                sound,
+                soundCategory,
+                volume,
+                pitch
         );
         EventUtil.callEvent(playSoundEvent);
         playSoundEvent.playSound();
+
+        PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
+        debugHandler.debug(
+                player,
+                playerData.getPlayingChapterData(),
+                playerData.getPlayingTaskData(),
+                "playSound",
+                Arrays.asList(
+                        "&7target: &f" + target,
+                        "&7sound: &f" + sound,
+                        "&7category: &f" + soundCategory,
+                        "&7volume: &f" + volume,
+                        "&7pitch: &f" + pitch
+                ),
+                false
+        );
     }
 
     /**
      * 为玩家更改时间
      * @param player - 玩家 id
-     * @param toTimeTicks - 改到的时间
+     * @param targetTime - 改到的时间
      * @param fade - 是否淡入
      * @param increase - 增长率
      */
-    private void changeTime(Player player, long toTimeTicks, boolean fade, long increase){
+    private void changeTime(Player player, long targetTime, boolean fade, long increase){
 
-        TimeChangeEvent timeChangeEvent = new TimeChangeEvent(narrator, player, toTimeTicks, fade, increase);
+        TimeChangeEvent timeChangeEvent = new TimeChangeEvent(narrator, player, targetTime, fade, increase);
         EventUtil.callEvent(timeChangeEvent);
         if (!timeChangeEvent.isCancelled()) {
             timeChangeEvent.changeTime();
         }
+
+        PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
+        debugHandler.debug(
+                player,
+                playerData.getPlayingChapterData(),
+                playerData.getPlayingTaskData(),
+                "TIME",
+                "&7target: &f" + targetTime + " &7| " + "isFade: &f" + fade + " &7| " + "increase: &f" + increase,
+                timeChangeEvent.isCancelled()
+        );
 
     }
 
@@ -329,6 +376,17 @@ public class ContentHandler {
             if (!teleportEvent.isCancelled()){
                 teleportEvent.teleport();
             }
+
+            PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
+            debugHandler.debug(
+                    player,
+                    playerData.getPlayingChapterData(),
+                    playerData.getPlayingTaskData(),
+                    "Teleport",
+                    "&7target: &f" + target,
+                    teleportEvent.isCancelled()
+            );
+
         });
 
     }
@@ -345,6 +403,15 @@ public class ContentHandler {
         if (!weatherChangeEvent.isCancelled()) {
             weatherChangeEvent.changeWeather();
         }
+        PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
+        debugHandler.debug(
+                player,
+                playerData.getPlayingChapterData(),
+                playerData.getPlayingTaskData(),
+                "Weather",
+                "&7weatherType: " + weather.getWeather(),
+                false
+        );
     }
 
     /**
@@ -358,6 +425,19 @@ public class ContentHandler {
         ToastEvent toastEvent = new ToastEvent(player, Material.valueOf(material), ToastUtil.handleTitle(title), frame);
         EventUtil.callEvent(toastEvent);
         toastEvent.showToast();
+        PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
+        debugHandler.debug(
+                player,
+                playerData.getPlayingChapterData(),
+                playerData.getPlayingTaskData(),
+                "Toast",
+                Arrays.asList(
+                        "&7title: " + title,
+                        "&7frame: &f" + frame,
+                        "&7material: &f" + material
+                ),
+                false
+        );
     }
 
     /**
@@ -372,6 +452,15 @@ public class ContentHandler {
         if (!commandExecuteEvent.isCancelled()){
             commandExecuteEvent.executeCommand();
         }
+        PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
+        debugHandler.debug(
+                player,
+                playerData.getPlayingChapterData(),
+                playerData.getPlayingTaskData(),
+                "Command",
+                "&7Command: &f" + contentList.get(1),
+                false
+        );
     }
 
     /**
@@ -383,6 +472,9 @@ public class ContentHandler {
      * @return true - 执行完毕
      */
     private boolean handleDelay(List<String> contentList, Player player, ChapterData chapterData, ContentTask contentTask){
+
+        PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
+
         if (contentList.size() > 2){
             DelaySingleEvent delaySingleEvent = new DelaySingleEvent(narrator, player, chapterData, contentTask, contentList);
             EventUtil.callEvent(delaySingleEvent);
@@ -390,11 +482,37 @@ public class ContentHandler {
                 delaySingleEvent.delay();
                 narrator.getCacheData().putDelaySingleEvent(delaySingleEvent);
             }
+            debugHandler.debug(
+                    player,
+                    playerData.getPlayingChapterData(),
+                    playerData.getPlayingTaskData(),
+                    "Delay",
+                    Arrays.asList(
+                            "&7delayTime: &f" + contentList.get(1),
+                            "&7content: &f" + contentList.get(2) + "|" + contentList.get(3),
+                            "&7isSingle: &atrue",
+                            "&7isDelayed: &cfalse"
+                    ),
+                    delaySingleEvent.isCancelled()
+            );
             return true;
         }
 
         if (narrator.getCacheData().isCurrentDelayEventExist(player)) {
-            return narrator.getCacheData().isCurrentDelayEventDelayed(player);
+            boolean delayed = narrator.getCacheData().isCurrentDelayEventDelayed(player);
+            debugHandler.debug(
+                    player,
+                    playerData.getPlayingChapterData(),
+                    playerData.getPlayingTaskData(),
+                    "Delay",
+                    Arrays.asList(
+                            "&7delayTime: &f" + contentList.get(1),
+                            "&7isSingle: &cfalse",
+                            "&7isDelayed: " + (delayed ? "&atrue" : "&cfalse")
+                    ),
+                    false
+            );
+            return delayed;
         }
         DelayEvent delayEvent = new DelayEvent(Long.parseLong(contentList.get(1)));
         EventUtil.callEvent(delayEvent);
@@ -402,6 +520,18 @@ public class ContentHandler {
             delayEvent.delay();
             narrator.getCacheData().putCurrentDelayEvent(player, delayEvent);
         }
+        debugHandler.debug(
+                player,
+                playerData.getPlayingChapterData(),
+                playerData.getPlayingTaskData(),
+                "Delay",
+                Arrays.asList(
+                        "&7delayTime: &f" + contentList.get(1),
+                        "&7isSingle: &cfalse",
+                        "&7isDelayed: &cfalse"
+                ),
+                false
+        );
         return delayEvent.isDelayed();
     }
 
@@ -415,13 +545,36 @@ public class ContentHandler {
     private boolean handleActionBarAnswerAction(List<String> contentList, Player player, PlayerData playerData){
         if (narrator.getCacheData().isCurrentActionBarAnswerEventExist(player)) {
             narrator.getCacheData().getCurrentActionBarAnswerEvent(player).checkAnswer();
-            return narrator.getCacheData().isCurrentActionBarAnswerEventDecided(player);
+            boolean isDecided = narrator.getCacheData().isCurrentActionBarAnswerEventDecided(player);
+            debugHandler.debug(
+                    player,
+                    playerData.getPlayingChapterData(),
+                    playerData.getPlayingTaskData(),
+                    "ActionBarAnswer",
+                    Arrays.asList(
+                            "&7options: &f" + contentList.subList(1, contentList.size()),
+                            "&7isDecided: " + (isDecided ? "&atrue" : "&cfalse")
+                    ),
+                    false
+            );
+            return isDecided;
         }
         ActionBarAnswerEvent actionBarAnswerEvent = new ActionBarAnswerEvent(
                 narrator,
                 player,
                 playerData,
                 contentList.subList(1, contentList.size())
+        );
+        debugHandler.debug(
+                player,
+                playerData.getPlayingChapterData(),
+                playerData.getPlayingTaskData(),
+                "ActionBarAnswer",
+                Arrays.asList(
+                        "&7options: &f" + contentList.subList(1, contentList.size()),
+                        "&7isDecided: &cfalse"
+                ),
+                false
         );
         narrator.getCacheData().putCurrentActionBarAnswerEvent(player, actionBarAnswerEvent);
         return false;
@@ -435,6 +588,7 @@ public class ContentHandler {
      */
     private boolean handleActionBarAction(List<String> contentList, Player player){
         boolean isPrint = Boolean.parseBoolean(contentList.get(1));
+        PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
 
         ActionBarEvent actionBarEvent;
         if (isPrint) {
@@ -462,11 +616,39 @@ public class ContentHandler {
             );
             EventUtil.callEvent(actionBarEvent);
             actionBarEvent.showActionbar();
+            debugHandler.debug(
+                    player,
+                    playerData.getPlayingChapterData(),
+                    playerData.getPlayingTaskData(),
+                    "ActionBar",
+                    Arrays.asList(
+                            "&7message: &f" + contentList.get(2),
+                            "&7isPrint: &f" + false,
+                            "&7printInterval: &fN/A",
+                            "&7duration: &fN/A",
+                            "&7isEnded: &atrue"
+                    ),
+                    false
+            );
             return true;
         }
 
         EventUtil.callEvent(actionBarEvent);
         actionBarEvent.showActionbar();
+        debugHandler.debug(
+                player,
+                playerData.getPlayingChapterData(),
+                playerData.getPlayingTaskData(),
+                "ActionBar",
+                Arrays.asList(
+                        "&7message: &f" + contentList.get(4),
+                        "&7isPrint: &f" + true,
+                        "&7printInterval: &f" + contentList.get(2),
+                        "&7duration: &f" + contentList.get(3),
+                        "&7isEnded: " + (actionBarEvent.isEnded() ? "&atrue" : "&cfalse")
+                ),
+                false
+        );
         return actionBarEvent.isEnded();
     }
 
@@ -481,6 +663,19 @@ public class ContentHandler {
         if (!titleEvent.isCancelled()) {
             titleEvent.showTitle();
         }
+
+        PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
+        debugHandler.debug(
+                player,
+                playerData.getPlayingChapterData(),
+                playerData.getPlayingTaskData(),
+                "Title",
+                "&7title: &f" + contentList.get(4) +
+                        " &7| " + "&7subTitle: &f" + contentList.get(5) +
+                        " &7| " + "&7fadeIn: &f" + contentList.get(1) + "&7keep: &f" + contentList.get(2) + "&7fadeOut: &f" + contentList.get(3),
+                titleEvent.isCancelled()
+        );
+
     }
 
     /**
@@ -494,6 +689,16 @@ public class ContentHandler {
         if (!messageEvent.isCancelled()) {
             messageEvent.sendMessage();
         }
+
+        PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
+        debugHandler.debug(
+                player,
+                playerData.getPlayingChapterData(),
+                playerData.getPlayingTaskData(),
+                "Message",
+                "&7message: &f" + contentList.get(1),
+                messageEvent.isCancelled()
+        );
     }
 
     /**
@@ -509,6 +714,19 @@ public class ContentHandler {
     private boolean handleJumpTask(Player player, PlayerData playerData, ChapterData chapterData, int taskOrdinal, int contentIndex, String jumpContent) {
         JumpTaskEvent jumpTaskEvent = new JumpTaskEvent(narrator, player, playerData, chapterData, taskOrdinal, contentIndex, jumpContent);
         EventUtil.callEvent(jumpTaskEvent);
+        debugHandler.debug(
+                player,
+                playerData.getPlayingChapterData(),
+                playerData.getPlayingTaskData(),
+                "jumpTask",
+                Arrays.asList(
+                        "targetChapter: &f" + chapterData.getName(),
+                        "targetTaskOrdinal: &f" + taskOrdinal,
+                        "targetContentIndex: &f" + contentIndex,
+                        "originalContent: &f" + jumpContent
+                ),
+                false
+        );
         return jumpTaskEvent.jumpTask();
     }
 

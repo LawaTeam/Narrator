@@ -2,11 +2,14 @@ package me.sakuratao.narrator.spigot.enums;
 
 public enum FunctionType {
 
-    ENTITY("ENTITY"),
-    PLAYER("PLAYER"),
-    NPC("NPC"), // todo
-    LOC("LOC"),
-    BLOCK("BLOCK"),
+    MATH("@MATH"),
+    ENTITY("@ENTITY"), // fixme 预计删除
+    PLAYER("@PLAYER"),
+    NPC("@NPC"), // todo
+    LOC("@LOC"),
+    BLOCK("@BLOCK"),
+    ITEM_STACK("@ITEM_STACK"),
+    ITEM_META("@ITEM_META"),
     ;
 
     private final String type;

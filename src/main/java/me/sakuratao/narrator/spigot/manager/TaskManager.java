@@ -5,6 +5,7 @@ import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.task.ContentTask;
+import me.sakuratao.narrator.spigot.utils.server.TaskUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
@@ -43,10 +44,7 @@ public class TaskManager {
         data.setContentTask(new ContentTask(narrator, data));
         tasks.put(
                 data.getPlayerName().toLowerCase(),
-                Bukkit.getScheduler().runTaskTimerAsynchronously(NarratorSpigot.getPluginInstance(),
-                        data.getContentTask(),
-                        0, 5
-                )
+                TaskUtil.taskTimerAsync(data.getContentTask(), 0, 5)
         );
     }
 

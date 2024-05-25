@@ -6,7 +6,6 @@ import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.utils.LogUtil;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -99,6 +98,7 @@ public class ChapterHandler {
                 }
             } catch (NumberFormatException e){
                 logNumberFormat(chapterFile);
+                LogUtil.log(Level.SEVERE, "Details(For Developments): " + e.getMessage());
                 return;
             }
         }
@@ -209,7 +209,8 @@ public class ChapterHandler {
                 YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(inputStreamReader);
                 yamlConfiguration.save(new File(path.getPath() + "/ChapterExample.yml"));
             } catch (IOException e) {
-                e.printStackTrace();
+                LogUtil.log(Level.SEVERE, "Couldn't create chapterExample.");
+                LogUtil.log(Level.SEVERE, "Details(For Developments): " + e.getMessage());
             }
 
             LogUtil.log(Level.WARNING, Lang.CHAPTERS_FOLDER_CREATED);
@@ -224,12 +225,11 @@ public class ChapterHandler {
     private void sortLang(){
         for (String lang : langChapters.keySet()) {
 
-            List<Map<ChapterData, YamlConfiguration>> langChapter = langChapters.get(lang);
-
-            langChapters.put(
-                    lang,
-                    langChapter.stream()
-                            .sorted(Comparator.comparingInt((Map<ChapterData, YamlConfiguration> chapter) -> chapter.keySet().stream().iterator().next().getOrdinal()))
+            langChapters.computeIfPresent(
+                    lang, (k, langChapter) -> langChapter.stream()
+                            .sorted(Comparator.comparingInt(
+                                    (Map<ChapterData, YamlConfiguration> chapter) -> chapter.keySet().stream().iterator().next().getOrdinal())
+                            )
                             .toList()
             );
 

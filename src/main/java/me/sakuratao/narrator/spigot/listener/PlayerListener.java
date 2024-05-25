@@ -33,7 +33,7 @@ public class PlayerListener implements Listener {
 
         TaskUtil.taskLaterAsync(() -> {
             PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(p);
-            playerData.setLang(PlayerUtil.getLang(p));
+            // playerData.setLang(PlayerUtil.getLang(p));
         }, 40);
 
     }

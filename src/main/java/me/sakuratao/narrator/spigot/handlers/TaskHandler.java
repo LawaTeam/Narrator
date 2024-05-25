@@ -8,6 +8,7 @@ import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.utils.LogUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.configuration.file.YamlConfiguration;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -63,6 +64,7 @@ public class TaskHandler {
                         LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
                         LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
                         LogUtil.log(Level.SEVERE, "        chapterFile: " + contentConfig.getName());
+                        LogUtil.log(Level.SEVERE, "Details(For Developments): " + e.getMessage());
                         return;
                     }
                 }

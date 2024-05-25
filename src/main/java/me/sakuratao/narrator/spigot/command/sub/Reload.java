@@ -5,8 +5,11 @@ import me.sakuratao.narrator.spigot.command.base.CommandInfo;
 import me.sakuratao.narrator.spigot.command.base.SubCommand;
 import me.sakuratao.narrator.spigot.configuration.Lang;
 import me.sakuratao.narrator.spigot.configuration.Permission;
+import me.sakuratao.narrator.spigot.utils.server.CCUtil;
+import me.sakuratao.narrator.spigot.utils.server.PlayerUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
 
@@ -15,8 +18,9 @@ public class Reload implements SubCommand {
 
     @Override
     public void execute(Narrator narrator, CommandSender sender, Command command, String[] args) {
-        if (args.length != 0) {
+        if (args.length != 1) {
             if (args[1].equals("force")) {
+                if (sender instanceof Player p) PlayerUtil.sendMessage(p, CCUtil.translate(Lang.CHAPTERS_LOAD_FORCE));
                 narrator.getLogger().log(Level.WARNING, Lang.CHAPTERS_LOAD_FORCE);
                 narrator.reloadChapter(true);
                 return;

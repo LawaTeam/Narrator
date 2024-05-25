@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 import java.util.logging.Level;
 
 @UtilityClass
@@ -63,6 +64,16 @@ public class PlayerUtil {
                 break;
         }
         return "US";
+    }
+
+    public void sendMessage(Player p, List<String> messages){
+        for (String message : messages) {
+            p.sendMessage(CCUtil.translate("&8| &8*&bNarrator&8* " + message));
+        }
+    }
+
+    public void sendMessage(Player p, String message){
+        p.sendMessage(CCUtil.translate("&8| &8*&bNarrator&8* " + message));
     }
 
 }

@@ -6,11 +6,11 @@ import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
-public class ContentTask implements Runnable {
-
+public final class ContentTask implements Runnable {
     private final Narrator narrator;
     private final PlayerData data;
 
@@ -24,7 +24,7 @@ public class ContentTask implements Runnable {
 
         if (!data.getPlayer().isOnline()) return;
 
-        if (execute()){
+        if (execute()) {
 
             List<String> content = data.getPlayingTaskData().getContent();
             data.setContentIndex(data.getContentIndex() + 1);
@@ -37,13 +37,43 @@ public class ContentTask implements Runnable {
 
     }
 
-    private boolean execute(){
-        return narrator.getHandlerManager().getContentHandler().execute(
+    private boolean execute() {
+        return narrator.getHandlerManager().getContentHandler().handleContent(
                 data.getPlayer(),
                 data.getPlayingChapterData(),
                 data.getCurrentContent(),
                 this
         );
     }
+
+    public Narrator narrator() {
+        return narrator;
+    }
+
+    public PlayerData data() {
+        return data;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (ContentTask) obj;
+        return Objects.equals(this.narrator, that.narrator) &&
+                Objects.equals(this.data, that.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(narrator, data);
+    }
+
+    @Override
+    public String toString() {
+        return "ContentTask[" +
+                "narrator=" + narrator + ", " +
+                "data=" + data + ']';
+    }
+
 
 }

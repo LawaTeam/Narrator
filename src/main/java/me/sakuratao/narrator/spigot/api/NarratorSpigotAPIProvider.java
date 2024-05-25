@@ -10,8 +10,8 @@ public class NarratorSpigotAPIProvider {
     public NarratorSpigotAPI narratorSpigotAPI = null;
 
     public void setNarratorSpigotAPI(NarratorSpigotAPI narratorSpigotAPI) {
-        if (this.narratorSpigotAPI != null) return;
         // 防止重复注入
+        if (this.narratorSpigotAPI != null) return;
         this.narratorSpigotAPI = narratorSpigotAPI;
     }
 

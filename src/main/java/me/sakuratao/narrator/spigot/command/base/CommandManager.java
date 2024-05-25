@@ -3,6 +3,7 @@ package me.sakuratao.narrator.spigot.command.base;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.sakuratao.narrator.common.Narrator;
+import me.sakuratao.narrator.spigot.command.sub.Debug;
 import me.sakuratao.narrator.spigot.command.sub.Reload;
 import me.sakuratao.narrator.spigot.command.sub.Test;
 import me.sakuratao.narrator.spigot.configuration.Lang;
@@ -34,6 +35,7 @@ public class CommandManager implements TabExecutor {
         subCommands.add(new HelpCommand());
         subCommands.add(new Reload());
         subCommands.add(new Test());
+        subCommands.add(new Debug());
         neaten();
     }
 

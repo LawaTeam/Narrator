@@ -1,6 +1,7 @@
 package me.sakuratao.narrator.spigot.utils;
 
 import lombok.experimental.UtilityClass;
+import me.sakuratao.narrator.spigot.NarratorSpigot;
 import org.bukkit.Bukkit;
 
 import java.util.List;
