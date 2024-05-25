@@ -17,10 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @PieComponent
 public class CacheData {
 
-    private final ConcurrentHashMap<Player, String> debugListeners = new ConcurrentHashMap<>();
-
     private final ConcurrentHashMap<String, ActionBarEvent> currentActionBarEvent = new ConcurrentHashMap<>();
-
     private final ConcurrentHashMap<String, ActionBarAnswerEvent> currentActionBarAnswerEvent = new ConcurrentHashMap<>();
 
     private final ConcurrentHashMap<String, DelayEvent> currentDelayEvent = new ConcurrentHashMap<>();

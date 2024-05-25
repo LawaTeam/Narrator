@@ -25,9 +25,11 @@ public class ConditionHandler {
      * 处理玩家传入的内容，根据一系列条件判断是否执行特定操作。
      *
      * @param player 玩家对象，代表执行操作的玩家。
+     *               如果为 null 或空字符串，则直接返回不做处理。
+     * @param isWaiting 是否为等待状态，如果为 true，则表示当前处于等待状态，需要根据条件判断是否继续执行。
      * @param content 需要处理的字符串内容，包含了条件和要执行的操作。
      */
-    public boolean handle(Player player, String content) {
+    public boolean handle(Player player, boolean isWaiting, String content) {
 
         // 如果内容为空，则直接返回不做处理
         if (content == null || content.isEmpty()) {
@@ -88,6 +90,8 @@ public class ConditionHandler {
         for (String executeContent : executeContents) {
             debugDetails.add("&7executeContent: &f" + executeContent);
         }
+
+        debugDetails.add("&7isWaiting: " + (isWaiting ? "&atrue" : "&cfalse"));
 
         PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
         debugHandler.debug(

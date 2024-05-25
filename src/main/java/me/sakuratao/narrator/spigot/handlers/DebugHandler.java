@@ -1,5 +1,6 @@
 package me.sakuratao.narrator.spigot.handlers;
 
+import lombok.Getter;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.data.chapter.TaskData;
@@ -13,13 +14,15 @@ import top.jingwenmc.spigotpie.common.instance.Wire;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @PieComponent
 public class DebugHandler {
-
-    @Wire private CacheData cacheData;
+    
     @Wire private PlayerManager playerManager;
 
+    @Getter public final ConcurrentHashMap<Player, String> debugListeners = new ConcurrentHashMap<>();
+    
     public void debug(
             Player player,
             ChapterData chapterData,
@@ -29,10 +32,10 @@ public class DebugHandler {
             boolean isCancelled
     ){
         PlayerData playerData = playerManager.getByPlayer(player);
-        List<Player> listeners = cacheData.getDebugListeners().keySet().stream().toList();
+        List<Player> listeners = debugListeners.keySet().stream().toList();
         for (Player listener : listeners) {
 
-            String[] listenDetail = cacheData.getDebugListeners().get(listener).split(";");
+            String[] listenDetail = debugListeners.get(listener).split(";");
             String listenedChapter = listenDetail[0];
             String listenedTask = listenDetail[1];
             String listenedPlayer = listenDetail[2];
@@ -77,10 +80,10 @@ public class DebugHandler {
             boolean isCancelled
     ){
         PlayerData playerData = playerManager.getByPlayer(player);
-        List<Player> listeners = cacheData.getDebugListeners().keySet().stream().toList();
+        List<Player> listeners = debugListeners.keySet().stream().toList();
         for (Player listener : listeners) {
 
-            String[] listenDetail = cacheData.getDebugListeners().get(listener).split(";");
+            String[] listenDetail = debugListeners.get(listener).split(";");
             String listenedChapter = listenDetail[0];
             String listenedTask = listenDetail[1];
             String listenedPlayer = listenDetail[2];
@@ -129,10 +132,10 @@ public class DebugHandler {
             boolean isCancelled
     ){
         PlayerData playerData = playerManager.getByPlayer(player);
-        List<Player> listeners = cacheData.getDebugListeners().keySet().stream().toList();
+        List<Player> listeners = debugListeners.keySet().stream().toList();
         for (Player listener : listeners) {
 
-            String[] listenDetail = cacheData.getDebugListeners().get(listener).split(";");
+            String[] listenDetail = debugListeners.get(listener).split(";");
             String listenedChapter = listenDetail[0];
             String listenedTask = listenDetail[1];
             String listenedPlayer = listenDetail[2];

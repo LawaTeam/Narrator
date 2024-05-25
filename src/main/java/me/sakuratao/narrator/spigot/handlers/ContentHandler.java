@@ -152,9 +152,9 @@ public class ContentHandler {
                 case "C", "CONDITION" -> {
                     String head = content.substring(0, content.indexOf("|"));
                     if (Boolean.parseBoolean(contentList.get(1))) {
-                        yield conditionHandler.handle(player, PapiUtil.getString(player, content.replace(head + "|" + contentList.get(1) + "|", "")));
+                        yield conditionHandler.handle(player, true, PapiUtil.getString(player, content.replace(head + "|" + contentList.get(1) + "|", "")));
                     } else {
-                        conditionHandler.handle(player, PapiUtil.getString(player, content.replace(head, "")));
+                        conditionHandler.handle(player, false, PapiUtil.getString(player, content.replace(head, "")));
                         yield true;
                     }
                 }

@@ -35,7 +35,7 @@ public class CommandManager implements TabExecutor {
         subCommands.add(new HelpCommand());
         subCommands.add(new Reload());
         subCommands.add(new Test());
-        subCommands.add(new Debug(narrator));
+        subCommands.add(new Debug());
         neaten();
     }
 

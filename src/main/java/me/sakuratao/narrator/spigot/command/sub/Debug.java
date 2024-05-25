@@ -11,21 +11,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 @CommandInfo(name = "debug", description = "开启 debug", permission = Permission.COMMAND_ADMIN_DEBUG, syntax = "/%command% debug <Player> <Chapter> <Task> <contentType>", canConsoleUse = true)
 public class Debug implements SubCommand {
 
-    private final Narrator narrator;
-
-    public Debug(Narrator narrator) {
-        this.narrator = narrator;
-    }
-
     @Override
     public void execute(Narrator narrator, CommandSender sender, Command command, String[] args) {
-        CacheData cacheData = narrator.getCacheData();
+        ConcurrentHashMap<Player, String> debugListeners = narrator.getHandlerManager().getDebugHandler().getDebugListeners();
 
         if (args[1].equalsIgnoreCase("clear")) {
-            cacheData.getDebugListeners().remove((Player) sender);
+            debugListeners.remove((Player) sender);
             return;
         }
 
@@ -38,7 +34,6 @@ public class Debug implements SubCommand {
         String listenedTask = args[3];
         String listenedContentType = args[4];
 
-        cacheData.getDebugListeners().put((Player) sender,  listenedChapter + ";" + listenedTask + ";" + listenedPlayer.getName() + ";" + listenedContentType);
-
+        debugListeners.put((Player) sender,  listenedChapter + ";" + listenedTask + ";" + listenedPlayer.getName() + ";" + listenedContentType);
     }
 }
