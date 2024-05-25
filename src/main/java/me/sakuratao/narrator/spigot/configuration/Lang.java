@@ -61,7 +61,9 @@ public class Lang {
             "  &8|- &7章节: &f%chapter%",
             "  &8|- &7任务: &f%task%",
             "  &8|- &7目标玩家: &f%player%",
-            "  &8|- &7content: &f%content%"
+            "  &8|- &7content: &f%content%",
+            "  &8|- &7contentDetails: ",
+            "      &8|- &f%contentDetails%"
     );
 
     @Configuration("command_test_detail")

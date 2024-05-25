@@ -620,7 +620,7 @@ public class ContentHandler {
                     playerData.getPlayingTaskData(),
                     "Actionbar/AB",
                     Arrays.asList(
-                            "&7message: &f" + contentList.get(3),
+                            "&7message: &f" + contentList.get(2),
                             "&7isPrint: &f" + false,
                             "&7printInterval: &fN/A",
                             "&7duration: &fN/A",

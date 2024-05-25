@@ -68,12 +68,12 @@ public class PlayerUtil {
 
     public void sendMessage(Player p, List<String> messages){
         for (String message : messages) {
-            p.sendMessage(CCUtil.translate("&8│ &7*&bNarrator&7* " + messages));
+            p.sendMessage(CCUtil.translate("&8| &8*&bNarrator&8* " + message));
         }
     }
 
     public void sendMessage(Player p, String message){
-        p.sendMessage(CCUtil.translate("&8│ &7*&bNarrator&7* " + message));
+        p.sendMessage(CCUtil.translate("&8| &8*&bNarrator&8* " + message));
     }
 
 }

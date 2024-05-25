@@ -15,10 +15,12 @@ import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-@CommandInfo(name = "debug", description = "开启 debug", permission = Permission.COMMAND_ADMIN_DEBUG, syntax = "/%command% debug <Player> <Chapter> <Task> <contentType>", canConsoleUse = true)
+@CommandInfo(name = "debug", description = "开启 debug", permission = Permission.COMMAND_ADMIN_DEBUG, syntax = "/%command% debug <Player> <Chapter> <Task> <contentType> [contentDetails...]", canConsoleUse = true)
 public class Debug implements SubCommand {
 
     @Override
@@ -37,7 +39,7 @@ public class Debug implements SubCommand {
             return;
         }
 
-        if (args.length != 5) {
+        if (args.length < 5) {
             PlayerUtil.sendMessage(listener, Lang.COMMAND_SYNTAX_ERROR);
             return;
         }
@@ -51,10 +53,28 @@ public class Debug implements SubCommand {
         String listenedChapter = args[2];
         String listenedTask = args[3];
         String listenedContentType = args[4];
+        List<String> listenedContentDetailsList = Collections.singletonList("all");
+        if (args.length >= 6) {
+            listenedContentDetailsList = Arrays.asList(args).subList(5, args.length);
+        }
 
-        debugListeners.put((Player) sender,  listenedChapter + ";" + listenedTask + ";" + listenedPlayer.getName() + ";" + listenedContentType);
+        String listenedContentDetails  = String.join("::", listenedContentDetailsList);
+
+        debugListeners.put((Player) sender,  listenedChapter + ";" + listenedTask + ";" + listenedPlayer.getName() + ";" + listenedContentType + ";" + listenedContentDetails);
         List<String> replacedDetails = new ArrayList<>();
         for (String detail : Lang.COMMAND_DEBUG_DETAIL) {
+            if (detail.contains("%contentDetails%")) {
+
+                if (listenedContentDetails.equalsIgnoreCase("all")) {
+                    replacedDetails.add(detail.replace("%contentDetails%", "all"));
+                    continue;
+                }
+
+                for (String contentDetail : listenedContentDetailsList) {
+                    replacedDetails.add(detail.replace("%contentDetails%", contentDetail));
+                }
+                continue;
+            }
             replacedDetails.add(detail
                     .replace("%chapter%", listenedChapter)
                     .replace("%task%", listenedTask)

@@ -18,7 +18,7 @@ public class Reload implements SubCommand {
 
     @Override
     public void execute(Narrator narrator, CommandSender sender, Command command, String[] args) {
-        if (args.length != 0) {
+        if (args.length != 1) {
             if (args[1].equals("force")) {
                 if (sender instanceof Player p) PlayerUtil.sendMessage(p, CCUtil.translate(Lang.CHAPTERS_LOAD_FORCE));
                 narrator.getLogger().log(Level.WARNING, Lang.CHAPTERS_LOAD_FORCE);

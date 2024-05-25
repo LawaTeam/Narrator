@@ -12,8 +12,10 @@ import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @PieComponent
@@ -40,6 +42,7 @@ public class DebugHandler {
             String listenedTask = listenDetail[1];
             String listenedPlayer = listenDetail[2];
             String listenedContentType = listenDetail[3];
+            List<String> listenedContentDetails = Arrays.stream(listenDetail[4].split("::")).toList();
             DecimalFormat df = new DecimalFormat("0.00");
 
             String chapter = chapterData.getName();
@@ -65,6 +68,7 @@ public class DebugHandler {
                     listenedTask,
                     listenedPlayer,
                     listenedContentType,
+                    listenedContentDetails,
                     df
             );
 
@@ -88,6 +92,7 @@ public class DebugHandler {
             String listenedTask = listenDetail[1];
             String listenedPlayer = listenDetail[2];
             String listenedContentType = listenDetail[3];
+            List<String> listenedContentDetails = Arrays.stream(listenDetail[4].split("::")).toList();
             DecimalFormat df = new DecimalFormat("0.00");
 
             String chapter = chapterData.getName();
@@ -113,6 +118,7 @@ public class DebugHandler {
                     listenedTask,
                     listenedPlayer,
                     listenedContentType,
+                    listenedContentDetails,
                     df
             );
 
@@ -140,6 +146,7 @@ public class DebugHandler {
             String listenedTask = listenDetail[1];
             String listenedPlayer = listenDetail[2];
             String listenedContentType = listenDetail[3];
+            List<String> listenedContentDetails = Arrays.stream(listenDetail[4].split("::")).toList();
             DecimalFormat df = new DecimalFormat("0.00");
 
             sendDebugMessage(
@@ -159,6 +166,7 @@ public class DebugHandler {
                     listenedTask,
                     listenedPlayer,
                     listenedContentType,
+                    listenedContentDetails,
                     df
             );
         }
@@ -182,6 +190,7 @@ public class DebugHandler {
             String listenedTask,
             String listenedPlayer,
             String listenedContentType,
+            List<String> listenedContentDetails,
             DecimalFormat df
     ) {
         if (listenDetail[0].equalsIgnoreCase("all")) {
@@ -198,18 +207,29 @@ public class DebugHandler {
         }
 
         if (
-                chapter.equalsIgnoreCase(listenedChapter)
-                        && taskName.equalsIgnoreCase(listenedTask)
-                        && player.getName().equalsIgnoreCase(listenedPlayer)
+                Objects.equals(chapter, listenedChapter)
+                        && Objects.equals(taskName, listenedTask)
+                        && Objects.equals(player.getName(), listenedPlayer)
                         && contentType.contains(listenedContentType)
         ) {
-            listener.sendMessage(CCUtil.translate("&8&o--- &7Narrator &8[Debug] &7| &f" + chapter + "&7-&f" + chapterVersion + "&7-&f" + language));
-            listener.sendMessage(CCUtil.translate("  &8|- &7Task: &f" + taskName + " &7| contentIndex: &f" + contentIndex + " &7| World: &f" + taskWorld));
-            listener.sendMessage(CCUtil.translate("  &8|- &7Player: &f" + player.getName() + " &7| XYZ: &f" + df.format(player.getLocation().getX()) + " " + df.format(player.getLocation().getY()) + " " + df.format(player.getLocation().getZ())));
+            listener.sendMessage(CCUtil.translate("&8&o--- &7Narrator &8[Debug] &8| &f" + chapter + "&8-&f" + chapterVersion + "&8-&f" + language));
+            listener.sendMessage(CCUtil.translate("  &8|- &7Task: &f" + taskName + " &8| &7contentIndex: &f" + contentIndex + " &8| &7World: &f" + taskWorld));
+            listener.sendMessage(CCUtil.translate("  &8|- &7Player: &f" + player.getName() + " &8| &7XYZ: &f" + df.format(player.getLocation().getX()) + " " + df.format(player.getLocation().getY()) + " " + df.format(player.getLocation().getZ())));
             listener.sendMessage(CCUtil.translate("  &8|- &7contentType: &f" + contentType));
             listener.sendMessage(CCUtil.translate("  &8|- &7contentDetails: &f"));
             for (String contentDetail : contentDetails) {
-                listener.sendMessage(CCUtil.translate("  &8    |- &7&f" + contentDetail));
+
+                if (listenedContentDetails.get(0).equalsIgnoreCase("all")) {
+                    listener.sendMessage(CCUtil.translate("  &8    |- &7&f" + contentDetail));
+                    continue;
+                }
+
+                for (String listenedContentDetail : listenedContentDetails) {
+                    if (CCUtil.translate(contentDetail).startsWith(listenedContentDetail)) {
+                        listener.sendMessage(CCUtil.translate("  &8    |- &7&f" + contentDetail));
+                    }
+                }
+
             }
             listener.sendMessage(CCUtil.translate("  &8|- &7isCancelled: " + (isCancelled ? "&a" + "true" : "&c" + "false")));
         }
