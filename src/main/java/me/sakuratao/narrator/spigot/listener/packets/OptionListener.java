@@ -1,8 +1,8 @@
 package me.sakuratao.narrator.spigot.listener.packets;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
+import com.github.retrooper.packetevents.event.PacketListener;
+import com.github.retrooper.packetevents.event.PacketReceiveEvent;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
@@ -20,20 +20,14 @@ import top.jingwenmc.spigotpie.common.instance.Wire;
     监听玩家 drop 物品并提供回复选项
  */
 @PieComponent
-public class OptionListener extends PacketAdapter {
+public class OptionListener implements PacketListener {
 
     @Wire
     private Narrator narrator;
-    @Wire
-    private CacheData cacheData;
 
-    public OptionListener() {
-        super(NarratorSpigot.getPluginInstance(), PacketType.Play.Client.ARM_ANIMATION, PacketType.Play.Client.HELD_ITEM_SLOT);
-    }
-
-    public void onPacketReceiving(PacketEvent packetEvent) {
-
-        Player player = packetEvent.getPlayer();
+    @Override
+    public void onPacketReceive(PacketReceiveEvent packetEvent) {
+        Player player = (Player) packetEvent.getPlayer();
 
         String playerName = player.getName().toLowerCase();
         PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(player);
@@ -43,22 +37,21 @@ public class OptionListener extends PacketAdapter {
 
         if (
                 contentTask == null
-                || actionBarAnswerEvent == null
-                || actionBarAnswerEvent.getOptionTask() == null
-                || actionBarAnswerEvent.getOptionStatus().equals(OptionStatus.DECIDED)
+                        || actionBarAnswerEvent == null
+                        || actionBarAnswerEvent.getOptionTask() == null
+                        || actionBarAnswerEvent.getOptionStatus().equals(OptionStatus.DECIDED)
         ) return;
 
-        if (packetEvent.getPacketType().equals(PacketType.Play.Client.ARM_ANIMATION)) {
+        if (packetEvent.getPacketType().equals(PacketType.Play.Client.ANIMATION)) {
             actionBarAnswerEvent.setOptionStatus(OptionStatus.DECIDED);
             EventUtil.callEvent(new ActionBarAnsweredEvent(player, actionBarAnswerEvent.getOptions().get(actionBarAnswerEvent.getOptionIndex())));
         }
-        if (packetEvent.getPacketType().equals(PacketType.Play.Client.HELD_ITEM_SLOT)) {
+        if (packetEvent.getPacketType().equals(PacketType.Play.Client.HELD_ITEM_CHANGE)) {
             actionBarAnswerEvent.setOptionIndex(actionBarAnswerEvent.getOptionIndex() + 1);
             if (actionBarAnswerEvent.getOptionIndex() >= actionBarAnswerEvent.getOptions().size()) {
                 actionBarAnswerEvent.setOptionIndex(0);
             }
         }
-
     }
 
 }

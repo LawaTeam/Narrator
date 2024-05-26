@@ -1,6 +1,8 @@
 package me.sakuratao.narrator.spigot.listener.packets;
 
-import com.comphenix.protocol.ProtocolManager;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.EventManager;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import me.sakuratao.narrator.common.Narrator;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -16,8 +18,9 @@ public class PacketsHandler {
     @Wire
     private OptionListener optionListener;
 
-    public void register(ProtocolManager pm){
-        pm.addPacketListener(optionListener);
+    public void register(){
+        EventManager em = PacketEvents.getAPI().getEventManager();
+        em.registerListener(optionListener, PacketListenerPriority.NORMAL);
     }
 
 }

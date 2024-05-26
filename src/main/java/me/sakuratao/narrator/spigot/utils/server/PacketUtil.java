@@ -1,23 +1,20 @@
 package me.sakuratao.narrator.spigot.utils.server;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.EventManager;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.wrapper.PacketWrapper;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientAnimation;
 import lombok.experimental.UtilityClass;
 import org.bukkit.entity.Player;
 
 @UtilityClass
 public class PacketUtil {
 
-    private final ProtocolManager pm = ProtocolLibrary.getProtocolManager();
+    private final EventManager em = PacketEvents.getAPI().getEventManager();
 
-    public PacketContainer createPacket(PacketType type) {
-        return pm.createPacket(type);
-    }
-
-    public void sendPacket(Player player, PacketContainer packet){
-        pm.sendServerPacket(player, packet);
+    public void sendPacket(Player player, PacketWrapper<?> packet){
+        PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
     }
 
 }

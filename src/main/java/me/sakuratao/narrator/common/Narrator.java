@@ -1,7 +1,6 @@
 package me.sakuratao.narrator.common;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
+import com.github.retrooper.packetevents.PacketEvents;
 import lombok.Getter;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
@@ -34,8 +33,6 @@ public class Narrator {
 
     @Getter
     private BukkitAudiences adventure;
-    @Getter
-    private ProtocolManager protocolManager;
     @Wire
     private PapiExpansion papiExpansion;
 
@@ -50,8 +47,6 @@ public class Narrator {
     @Wire
     private CommandManager commandManager;
 
-
-
     /**
      * 初始化
      */
@@ -60,9 +55,11 @@ public class Narrator {
         // 判断 Spigot or Bungee
         if (isSpigot) {
             adventure = BukkitAudiences.create(NarratorSpigot.getPluginInstance());
-            protocolManager = ProtocolLibrary.getProtocolManager();
-            packetsHandler.register(protocolManager);
             papiExpansion.register();
+
+            packetsHandler.register();
+            PacketEvents.getAPI().init();
+
             Bukkit.getPluginCommand("narrator").setExecutor(commandManager);
         } else {
             isBungee = true;
@@ -85,6 +82,7 @@ public class Narrator {
     }
 
     public void close() {
+        PacketEvents.getAPI().terminate();
     }
 
     public void reloadChapter(boolean force){
