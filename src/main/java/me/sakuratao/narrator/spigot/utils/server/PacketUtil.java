@@ -14,7 +14,7 @@ public class PacketUtil {
     private final EventManager em = PacketEvents.getAPI().getEventManager();
 
     public void sendPacket(Player player, PacketWrapper<?> packet){
-        PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+        PacketEvents.getAPI().getProtocolManager().sendPacket(player, packet);
     }
 
 }
