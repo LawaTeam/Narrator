@@ -66,7 +66,7 @@ public class ActionBarEvent extends NarratorEvent{
             printStatus = PrintStatus.KEPT;
             printTask.cancel();
 
-            long keepTime = (duration /20 * 1000) + System.currentTimeMillis();
+            long keepTime = (duration / 20 * 1000) + System.currentTimeMillis();
             printTask = runActionBarKeep(audience, keepTime);
         }
 
@@ -83,20 +83,29 @@ public class ActionBarEvent extends NarratorEvent{
     }
 
     private BukkitTask runActionBarPrint(Audience audience, AtomicInteger textLength){
-        return TaskUtil.taskTimerAsync(() -> { // fixme 改成毫秒制打印
-            if (textLength.get() >= text.length()) {
-                printStatus = (PrintStatus.KEEPING);
-                return;
-            }
-            textLength.set(textLength.get() + 1);
-            String outputText = text.substring(0, textLength.get());
+        return TaskUtil.taskAsync(() -> {
+            long interval = System.currentTimeMillis() + printInterval;
+            while (true) {
 
-            if (textLength.get() % 2 == 0 && textLength.get() != text.length()) {
-                audience.sendActionBar(Component.text(CCUtil.translate(outputText + "&kA&r_")));
-                return;
+                if (interval >= System.currentTimeMillis()) {
+                    continue;
+                }
+                interval = System.currentTimeMillis() + printInterval;
+
+                if (textLength.get() >= text.length()) {
+                    printStatus = (PrintStatus.KEEPING);
+                    return;
+                }
+                textLength.set(textLength.get() + 1);
+                String outputText = text.substring(0, textLength.get());
+
+                if (textLength.get() % 2 == 0 && textLength.get() != text.length()) {
+                    audience.sendActionBar(Component.text(CCUtil.translate(outputText + "&kA&r_")));
+                    continue;
+                }
+                audience.sendActionBar(Component.text(CCUtil.translate(outputText)));
             }
-            audience.sendActionBar(Component.text(CCUtil.translate(outputText)));
-        }, 0, printInterval);
+        });
     }
 
     public boolean isEnded(){

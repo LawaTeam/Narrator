@@ -33,17 +33,16 @@ public class PapiExpansion extends PlaceholderExpansion {
 
     @Override
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
-        //todo papi custom
         PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(player);
         return switch (params) {
-            case "chapter_name" -> playerData.getPlayingChapterData().getName();
-            case "chapter_ordinal" -> String.valueOf(playerData.getPlayingChapterOrdinal());
-            case "task_name" -> playerData.getPlayingTaskData().getName();
-            case "task_ordinal" -> String.valueOf(playerData.getPlayingTaskOrdinal());
-            case "content_index" -> String.valueOf(playerData.getContentIndex());
-            case "last_option" -> playerData.getLastOption();
-            case "content" -> playerData.getCurrentContent();
-            case "lang" -> playerData.getLang();
+            case "player_chapter_name" -> playerData.getPlayingChapterData().getName();
+            case "player_chapter_ordinal" -> String.valueOf(playerData.getPlayingChapterOrdinal());
+            case "player_task_name" -> playerData.getPlayingTaskData().getName();
+            case "player_task_ordinal" -> String.valueOf(playerData.getPlayingTaskOrdinal());
+            case "player_content_index" -> String.valueOf(playerData.getContentIndex());
+            case "player_last_option" -> playerData.getLastOption();
+            case "player_content" -> playerData.getCurrentContent();
+            case "player_lang" -> playerData.getLang();
             default -> "";
         };
     }
