@@ -3,7 +3,6 @@ package me.sakuratao.narrator.common;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import lombok.Getter;
-import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.command.base.CommandManager;
 import me.sakuratao.narrator.spigot.configuration.Lang;
@@ -32,12 +31,8 @@ public class Narrator {
     private Logger logger;
     private File workFolder = new File("");
 
-    @Getter
-    private BukkitAudiences adventure;
-    @Getter
-    private ProtocolManager protocolManager;
-    @Wire
-    private PapiExpansion papiExpansion;
+    @Getter private BukkitAudiences adventure;
+    @Wire private PapiExpansion papiExpansion;
 
     @Wire
     private HandlerManager handlerManager;
@@ -50,8 +45,6 @@ public class Narrator {
     @Wire
     private CommandManager commandManager;
 
-
-
     /**
      * 初始化
      */
@@ -60,9 +53,9 @@ public class Narrator {
         // 判断 Spigot or Bungee
         if (isSpigot) {
             adventure = BukkitAudiences.create(NarratorSpigot.getPluginInstance());
-            protocolManager = ProtocolLibrary.getProtocolManager();
-            packetsHandler.register(protocolManager);
             papiExpansion.register();
+            packetsHandler.register();
+
             Bukkit.getPluginCommand("narrator").setExecutor(commandManager);
         } else {
             isBungee = true;
@@ -85,6 +78,7 @@ public class Narrator {
     }
 
     public void close() {
+        ProtocolLibrary.getProtocolManager().removePacketListeners(NarratorSpigot.getPluginInstance());
     }
 
     public void reloadChapter(boolean force){

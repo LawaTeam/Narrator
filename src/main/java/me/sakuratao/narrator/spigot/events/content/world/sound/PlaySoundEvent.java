@@ -53,9 +53,6 @@ public class PlaySoundEvent extends NarratorEvent {
                 System.out.println(("[Narrator] PlaySoundEvent: " + target + " " + sound + " " + category + " " + volume + " " + pitch));
                 player.playSound(fh.decodePlayer(target).getLocation(), sound, category, volume, pitch);
                 break;
-            case ENTITY:
-                // todo
-                break;
             case NPC:
                 // todo
                 break;

@@ -18,6 +18,10 @@ public class NarratorSpigot extends JavaPlugin {
     private static JavaPlugin pluginInstance;
 
     @Override
+    public void onLoad() {
+    }
+
+    @Override
     public void onEnable() {
         this.getLogger().info("Injecting SpigotPie...");
         pluginInstance = this;
@@ -27,6 +31,6 @@ public class NarratorSpigot extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        narrator.close();
     }
 }

@@ -36,7 +36,7 @@ public class TeleportEvent extends NarratorEvent implements Cancellable {
         switch (tpType) {
             case LOC -> {
                 Location location = fh.decodeLoc(target);
-                if (location.getWorld() != null) {
+                if (location != null && location.getWorld() != null) {
                     player.teleport(location);
                 }
             }
@@ -45,9 +45,6 @@ public class TeleportEvent extends NarratorEvent implements Cancellable {
                 if (targetPlayer != null) {
                     player.teleport(targetPlayer);
                 }
-            }
-            case ENTITY -> {
-                // todo
             }
             case NPC -> {
                 // todo teleport

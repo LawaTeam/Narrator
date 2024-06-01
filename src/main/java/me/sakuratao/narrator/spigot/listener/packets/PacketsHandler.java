@@ -1,5 +1,6 @@
 package me.sakuratao.narrator.spigot.listener.packets;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import me.sakuratao.narrator.common.Narrator;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
@@ -16,7 +17,8 @@ public class PacketsHandler {
     @Wire
     private OptionListener optionListener;
 
-    public void register(ProtocolManager pm){
+    public void register(){
+        ProtocolManager pm = ProtocolLibrary.getProtocolManager();
         pm.addPacketListener(optionListener);
     }
 

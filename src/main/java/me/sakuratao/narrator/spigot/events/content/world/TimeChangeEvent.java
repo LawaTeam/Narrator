@@ -67,9 +67,11 @@ public class TimeChangeEvent extends NarratorEvent implements Cancellable {
 
                     world.setTime(fade.get());
                 } else {
+                    narrator.getCacheData().getTimeChangeEventList().remove(this);
                     fadeTask.cancel();
+                    return;
                 }
-            },0, 1);
+            }, 0, 1);
             return;
 
         }
@@ -87,9 +89,11 @@ public class TimeChangeEvent extends NarratorEvent implements Cancellable {
 
                     world.setTime(fade.get());
                 } else {
+                    narrator.getCacheData().getTimeChangeEventList().remove(this);
                     fadeTask.cancel();
+                    return;
                 }
-            },0, 1);
+            }, 0, 1);
         }
 
 
@@ -105,6 +109,10 @@ public class TimeChangeEvent extends NarratorEvent implements Cancellable {
     @Override
     public void setCancelled(boolean isCancelled) {
         this.isCancelled = isCancelled;
+        if (isCancelled) {
+            if (fadeTask != null) fadeTask.cancel();
+            narrator.getCacheData().getTimeChangeEventList().remove(this);
+        }
     }
 
 }

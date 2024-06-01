@@ -7,10 +7,12 @@ import me.sakuratao.narrator.spigot.enums.Weather;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
 import me.sakuratao.narrator.spigot.utils.server.PacketUtil;
 import me.sakuratao.narrator.spigot.utils.server.TaskUtil;
+import org.bukkit.WeatherType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class WeatherChangeEvent extends NarratorEvent implements Cancellable {
@@ -27,16 +29,15 @@ public class WeatherChangeEvent extends NarratorEvent implements Cancellable {
     }
 
     public void changeWeather(){
+
+        PacketContainer weatherPacket = PacketUtil.createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
+
         if (weather.equals(Weather.CLEAR)) {
-            player.resetPlayerWeather();
+            weatherPacket.getGameStateIDs().write(0, 1);
+            PacketUtil.sendPacket(player, weatherPacket);
             return;
         }
 
-        PacketContainer weatherPacket = PacketUtil.createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
-        if (weather.equals(Weather.SUNSHINE)) {
-            player.resetPlayerWeather();
-            return;
-        }
         if (weather.equals(Weather.THUNDER)) {
             AtomicReference<Float> fadein = new AtomicReference<>(0F);
             this.fade = TaskUtil.taskTimerAsync(() -> {

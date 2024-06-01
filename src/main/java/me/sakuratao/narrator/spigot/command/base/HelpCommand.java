@@ -42,14 +42,16 @@ public class HelpCommand implements SubCommand {
                 return;
             }
 
-            sendHelpPage(sender, commandPages, pageNumber, command);
+            sendHelpPage(sender, commandPages, pageNumber, command, narrator);
             return;
         }
 
-        sendHelpPage(sender, commandPages, 1, command);
+        sendHelpPage(sender, commandPages, 1, command, narrator);
     }
 
-    private void sendHelpPage(CommandSender sender, List<List<CommandInfo>> commandPages, int pageNumber, Command command) {
+    private void sendHelpPage(CommandSender sender, List<List<CommandInfo>> commandPages, int pageNumber, Command command, Narrator narrator) {
+        sender.sendMessage(CCUtil.translate(" &f◆ &8| &bNarrator &8- &bVersion: " + narrator.getVersion()));
+        sender.sendMessage(CCUtil.translate(" &f◆ &8| &bContributors: SakuraTao"));
         for (String s : Lang.COMMAND_HELP) {
             if (s.equalsIgnoreCase("%commands%")) {
                 List<CommandInfo> pageCommands = commandPages.get(pageNumber - 1);

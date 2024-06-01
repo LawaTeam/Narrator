@@ -19,5 +19,4 @@ public class PacketUtil {
     public void sendPacket(Player player, PacketContainer packet){
         pm.sendServerPacket(player, packet);
     }
-
 }

@@ -5,10 +5,12 @@ import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEven
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelayEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelaySingleEvent;
+import me.sakuratao.narrator.spigot.events.content.world.TimeChangeEvent;
 import org.bukkit.entity.Player;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 
 import java.awt.*;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,6 +24,16 @@ public class CacheData {
 
     private final ConcurrentHashMap<String, DelayEvent> currentDelayEvent = new ConcurrentHashMap<>();
     private final List<DelaySingleEvent> delaySingleEventList = new ArrayList<>();
+    private final List<TimeChangeEvent> timeChangeEventList = new ArrayList<>();
+
+    public void putTimeChangeEvent(TimeChangeEvent e){
+        timeChangeEventList.add(e);
+    }
+
+    public void cancelAllTimeChangeEvent() {
+        timeChangeEventList.forEach(e -> e.setCancelled(true));
+        timeChangeEventList.clear();
+    }
 
     /**
      * 添加 delaySingle
@@ -34,7 +46,7 @@ public class CacheData {
     /**
      * 暂停所有 delaySingle 并清空缓存
      */
-    public void cancelAllDelaySingleEvent(){
+    public void cancelAllDelaySingleEvent() {
         delaySingleEventList.forEach(e -> e.setCancelled(true));
         delaySingleEventList.clear();
     }
@@ -166,6 +178,23 @@ public class CacheData {
      * @param player - 玩家
      */
     public void clear(Player player){
+
+        while (delaySingleEventList.iterator().hasNext()) {
+            DelaySingleEvent delaySingleEvent = delaySingleEventList.iterator().next();
+            if (delaySingleEvent.getPlayer().equals(player)) {
+                delaySingleEvent.setCancelled(true);
+                delaySingleEventList.remove(delaySingleEvent);
+            }
+        }
+
+        while (timeChangeEventList.iterator().hasNext()) {
+            TimeChangeEvent timeChangeEvent = timeChangeEventList.iterator().next();
+            if (timeChangeEvent.getPlayer().equals(player)) {
+                timeChangeEvent.setCancelled(true);
+                timeChangeEventList.remove(timeChangeEvent);
+            }
+        }
+
         if (currentActionBarEvent.containsKey(player.getName().toLowerCase())) {
             currentActionBarEvent.get(player.getName().toLowerCase()).getPrintTask().cancel();
             currentActionBarEvent.remove(player.getName().toLowerCase());

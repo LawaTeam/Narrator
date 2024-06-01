@@ -24,16 +24,14 @@ public class OptionListener extends PacketAdapter {
 
     @Wire
     private Narrator narrator;
-    @Wire
-    private CacheData cacheData;
 
-    public OptionListener() {
+    public OptionListener(){
         super(NarratorSpigot.getPluginInstance(), PacketType.Play.Client.ARM_ANIMATION, PacketType.Play.Client.HELD_ITEM_SLOT);
     }
 
-    public void onPacketReceiving(PacketEvent packetEvent) {
-
-        Player player = packetEvent.getPlayer();
+    @Override
+    public void onPacketReceiving(PacketEvent event) {
+        Player player = event.getPlayer();
 
         String playerName = player.getName().toLowerCase();
         PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(player);
@@ -43,22 +41,21 @@ public class OptionListener extends PacketAdapter {
 
         if (
                 contentTask == null
-                || actionBarAnswerEvent == null
-                || actionBarAnswerEvent.getOptionTask() == null
-                || actionBarAnswerEvent.getOptionStatus().equals(OptionStatus.DECIDED)
+                        || actionBarAnswerEvent == null
+                        || actionBarAnswerEvent.getOptionTask() == null
+                        || actionBarAnswerEvent.getOptionStatus().equals(OptionStatus.DECIDED)
         ) return;
 
-        if (packetEvent.getPacketType().equals(PacketType.Play.Client.ARM_ANIMATION)) {
+        if (event.getPacketType().equals(PacketType.Play.Client.ARM_ANIMATION)) {
             actionBarAnswerEvent.setOptionStatus(OptionStatus.DECIDED);
             EventUtil.callEvent(new ActionBarAnsweredEvent(player, actionBarAnswerEvent.getOptions().get(actionBarAnswerEvent.getOptionIndex())));
         }
-        if (packetEvent.getPacketType().equals(PacketType.Play.Client.HELD_ITEM_SLOT)) {
+        if (event.getPacketType().equals(PacketType.Play.Client.HELD_ITEM_SLOT)) {
             actionBarAnswerEvent.setOptionIndex(actionBarAnswerEvent.getOptionIndex() + 1);
             if (actionBarAnswerEvent.getOptionIndex() >= actionBarAnswerEvent.getOptions().size()) {
                 actionBarAnswerEvent.setOptionIndex(0);
             }
         }
-
     }
 
 }

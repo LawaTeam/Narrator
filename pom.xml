@@ -85,6 +85,10 @@
 
     <repositories>
         <repository>
+            <id>codemc-releases</id>
+            <url>https://repo.codemc.io/repository/maven-releases/</url>
+        </repository>
+        <repository>
             <id>codemc</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
