@@ -1,8 +1,8 @@
 package me.sakuratao.narrator.spigot.listener.packets;
 
-import com.github.retrooper.packetevents.event.PacketListener;
-import com.github.retrooper.packetevents.event.PacketReceiveEvent;
-import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
@@ -20,14 +20,18 @@ import top.jingwenmc.spigotpie.common.instance.Wire;
     监听玩家 drop 物品并提供回复选项
  */
 @PieComponent
-public class OptionListener implements PacketListener {
+public class OptionListener extends PacketAdapter {
 
     @Wire
     private Narrator narrator;
 
+    public OptionListener(){
+        super(NarratorSpigot.getPluginInstance(), PacketType.Play.Client.ARM_ANIMATION, PacketType.Play.Client.HELD_ITEM_SLOT);
+    }
+
     @Override
-    public void onPacketReceive(PacketReceiveEvent packetEvent) {
-        Player player = (Player) packetEvent.getPlayer();
+    public void onPacketReceiving(PacketEvent event) {
+        Player player = event.getPlayer();
 
         String playerName = player.getName().toLowerCase();
         PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(player);
@@ -42,11 +46,11 @@ public class OptionListener implements PacketListener {
                         || actionBarAnswerEvent.getOptionStatus().equals(OptionStatus.DECIDED)
         ) return;
 
-        if (packetEvent.getPacketType().equals(PacketType.Play.Client.ANIMATION)) {
+        if (event.getPacketType().equals(PacketType.Play.Client.ARM_ANIMATION)) {
             actionBarAnswerEvent.setOptionStatus(OptionStatus.DECIDED);
             EventUtil.callEvent(new ActionBarAnsweredEvent(player, actionBarAnswerEvent.getOptions().get(actionBarAnswerEvent.getOptionIndex())));
         }
-        if (packetEvent.getPacketType().equals(PacketType.Play.Client.HELD_ITEM_CHANGE)) {
+        if (event.getPacketType().equals(PacketType.Play.Client.HELD_ITEM_SLOT)) {
             actionBarAnswerEvent.setOptionIndex(actionBarAnswerEvent.getOptionIndex() + 1);
             if (actionBarAnswerEvent.getOptionIndex() >= actionBarAnswerEvent.getOptions().size()) {
                 actionBarAnswerEvent.setOptionIndex(0);

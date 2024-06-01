@@ -10,7 +10,7 @@ commands:
       - n
       - narr
 depend:
-  - packetevents
+  - ProtocolLib
   - CrazyAdvancementsAPI
   - PlaceholderAPI
   - DecentHolograms

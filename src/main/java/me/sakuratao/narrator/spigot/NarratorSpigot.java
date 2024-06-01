@@ -1,7 +1,5 @@
 package me.sakuratao.narrator.spigot;
 
-import com.github.retrooper.packetevents.PacketEvents;
-import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.Getter;
 import me.sakuratao.narrator.common.Narrator;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,12 +19,6 @@ public class NarratorSpigot extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
-        //Are all listeners read only?
-        PacketEvents.getAPI().getSettings().reEncodeByDefault(false)
-                .checkForUpdates(false)
-                .bStats(false);
-        PacketEvents.getAPI().load();
     }
 
     @Override

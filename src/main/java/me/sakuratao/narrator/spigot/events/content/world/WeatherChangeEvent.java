@@ -1,6 +1,7 @@
 package me.sakuratao.narrator.spigot.events.content.world;
 
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerChangeGameState;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
 import lombok.Getter;
 import me.sakuratao.narrator.spigot.enums.Weather;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
@@ -35,18 +36,15 @@ public class WeatherChangeEvent extends NarratorEvent implements Cancellable {
             player.resetPlayerWeather();
             return;
         }
+        PacketContainer weatherPacket = PacketUtil.createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
         if (weather.equals(Weather.THUNDER)) {
             AtomicReference<Float> fadein = new AtomicReference<>(0F);
             this.fade = TaskUtil.taskTimerAsync(() -> {
+                weatherPacket.getGameStateIDs().write(0, 7);
                 if (fadein.get() < 1F) {
                     fadein.set(fadein.get() + 0.01f);
-                    PacketUtil.sendPacket(
-                            player,
-                            new WrapperPlayServerChangeGameState(
-                                    WrapperPlayServerChangeGameState.Reason.THUNDER_LEVEL_CHANGE,
-                                    fadein.get()
-                            )
-                    );
+                    weatherPacket.getModifier().write(1, fadein.get());
+                    PacketUtil.sendPacket(player, weatherPacket);
                 } else {
                     fade.cancel();
                 }
@@ -54,13 +52,9 @@ public class WeatherChangeEvent extends NarratorEvent implements Cancellable {
             return;
         }
         if (weather.equals(Weather.RAINING)) {
-            PacketUtil.sendPacket(
-                    player,
-                    new WrapperPlayServerChangeGameState(
-                            WrapperPlayServerChangeGameState.Reason.RAIN_LEVEL_CHANGE,
-                            0.5F
-                    )
-            );
+            weatherPacket.getGameStateIDs().write(0, 2);
+            weatherPacket.getModifier().write(1, 0.5F);
+            PacketUtil.sendPacket(player, weatherPacket);
         }
     }
 
