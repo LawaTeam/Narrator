@@ -48,6 +48,7 @@ public class DelaySingleEvent extends NarratorEvent implements Cancellable {
         delayTask = TaskUtil.taskLaterAsync(() -> {
             PlayerData playerData = playerManager.getByPlayer(player);
             narrator.getHandlerManager().getContentHandler().handleContent(player, chapterData, content, contentTask);
+            narrator.getCacheData().getDelaySingleEventList().remove(this);
             debugHandler.debug(
                     player,
                     playerData.getPlayingChapterData(),
@@ -85,8 +86,9 @@ public class DelaySingleEvent extends NarratorEvent implements Cancellable {
     @Override
     public void setCancelled(boolean isCancelled) {
         this.isCancelled = isCancelled;
-        delayed = true;
+        delayed = isCancelled;
         if (delayed && delayTask != null) {
+            narrator.getCacheData().getDelaySingleEventList().remove(this);
             delayTask.cancel();
         }
     }

@@ -5,7 +5,6 @@ import lombok.Getter;
 @Getter
 public enum Weather {
 
-    SUNSHINE("SUNSHINE"),
     RAINING("RAINING"),
     THUNDER("THUNDER"),
     CLEAR("CLEAR")

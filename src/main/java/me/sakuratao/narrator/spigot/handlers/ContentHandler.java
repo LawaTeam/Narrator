@@ -350,7 +350,7 @@ public class ContentHandler {
         if (!timeChangeEvent.isCancelled()) {
             timeChangeEvent.changeTime();
         }
-
+        narrator.getCacheData().putTimeChangeEvent(timeChangeEvent);
         PlayerData playerData = managerHandler.getPlayerManager().getByPlayer(player);
         debugHandler.debug(
                 player,
