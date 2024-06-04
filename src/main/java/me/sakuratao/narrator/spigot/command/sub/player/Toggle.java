@@ -14,7 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-@CommandInfo(name = "toggle", description = "开始/暂停剧情", permission = Permission.COMMAND_PLAYER_PLAY, syntax = "/%command% toggle", canConsoleUse = false)
+@CommandInfo(name = "toggle", description = "开始/暂停剧情", permission = Permission.COMMAND_PLAY, syntax = "/%command% toggle", canConsoleUse = false)
 public class Toggle implements SubCommand {
 
     @Override

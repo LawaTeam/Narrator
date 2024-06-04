@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
 
-@CommandInfo(name = "reload", description = "重载章节", permission = Permission.COMMAND_ADMIN_RELOAD, syntax = "/%command% reload", canConsoleUse = true)
+@CommandInfo(name = "reload", description = "重载章节", permission = Permission.COMMAND_RELOAD, syntax = "/%command% reload", canConsoleUse = true)
 public class Reload implements SubCommand {
 
     @Override

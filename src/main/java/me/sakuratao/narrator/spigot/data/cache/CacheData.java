@@ -14,6 +14,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Getter
 @PieComponent
@@ -23,8 +24,8 @@ public class CacheData {
     private final ConcurrentHashMap<String, ActionBarAnswerEvent> currentActionBarAnswerEvent = new ConcurrentHashMap<>();
 
     private final ConcurrentHashMap<String, DelayEvent> currentDelayEvent = new ConcurrentHashMap<>();
-    private final List<DelaySingleEvent> delaySingleEventList = new ArrayList<>();
-    private final List<TimeChangeEvent> timeChangeEventList = new ArrayList<>();
+    private final CopyOnWriteArrayList<DelaySingleEvent> delaySingleEventList = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<TimeChangeEvent> timeChangeEventList = new CopyOnWriteArrayList<>();
 
     public void putTimeChangeEvent(TimeChangeEvent e){
         timeChangeEventList.add(e);
@@ -179,34 +180,32 @@ public class CacheData {
      */
     public void clear(Player player){
 
-        while (delaySingleEventList.iterator().hasNext()) {
-            DelaySingleEvent delaySingleEvent = delaySingleEventList.iterator().next();
-            if (delaySingleEvent.getPlayer().equals(player)) {
-                delaySingleEvent.setCancelled(true);
-                delaySingleEventList.remove(delaySingleEvent);
+        if (player == null) {
+            throw new IllegalArgumentException("Player cannot be null.");
+        }
+
+        // 使用增强for循环遍历，提高代码的可读性
+        for (DelaySingleEvent event : delaySingleEventList) {
+            if (event.getPlayer().equals(player)) {
+                event.setCancelled(true);
+            }
+        }
+        // 这里不需要手动删除，CopyOnWriteArrayList在迭代时自动处理并发修改
+
+        for (TimeChangeEvent event : timeChangeEventList) {
+            if (event.getPlayer().equals(player)) {
+                event.setCancelled(true);
             }
         }
 
-        while (timeChangeEventList.iterator().hasNext()) {
-            TimeChangeEvent timeChangeEvent = timeChangeEventList.iterator().next();
-            if (timeChangeEvent.getPlayer().equals(player)) {
-                timeChangeEvent.setCancelled(true);
-                timeChangeEventList.remove(timeChangeEvent);
-            }
-        }
+        currentActionBarEvent.get(player.getName().toLowerCase()).getPrintTask().cancel();
+        currentActionBarEvent.remove(player.getName().toLowerCase());
 
-        if (currentActionBarEvent.containsKey(player.getName().toLowerCase())) {
-            currentActionBarEvent.get(player.getName().toLowerCase()).getPrintTask().cancel();
-            currentActionBarEvent.remove(player.getName().toLowerCase());
-        }
-        if (currentActionBarAnswerEvent.containsKey(player.getName().toLowerCase())) {
-            currentActionBarAnswerEvent.get(player.getName().toLowerCase()).getOptionTask().cancel();
-            currentActionBarAnswerEvent.remove(player.getName().toLowerCase());
-        }
-        if (currentDelayEvent.containsKey(player.getName().toLowerCase())) {
-            currentDelayEvent.get(player.getName().toLowerCase()).setCancelled(true);
-            currentDelayEvent.remove(player.getName().toLowerCase());
-        }
+        currentActionBarAnswerEvent.get(player.getName().toLowerCase()).getOptionTask().cancel();
+        currentActionBarAnswerEvent.remove(player.getName().toLowerCase());
+
+        currentDelayEvent.get(player.getName().toLowerCase()).setCancelled(true);
+        currentDelayEvent.remove(player.getName().toLowerCase());
     }
 
 }

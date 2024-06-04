@@ -5,7 +5,6 @@ import me.sakuratao.narrator.spigot.command.base.CommandInfo;
 import me.sakuratao.narrator.spigot.command.base.SubCommand;
 import me.sakuratao.narrator.spigot.configuration.lang.LangPlugin;
 import me.sakuratao.narrator.spigot.configuration.Permission;
-import me.sakuratao.narrator.spigot.utils.server.CCUtil;
 import me.sakuratao.narrator.spigot.utils.server.PlayerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -18,16 +17,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-@CommandInfo(name = "debug", description = "开启 debug", permission = Permission.COMMAND_ADMIN_DEBUG, syntax = "/%command% debug <Player> <Chapter> <Task> <contentType> [contentDetails...]", canConsoleUse = true)
+@CommandInfo(name = "debug", description = "开启 debug", permission = Permission.COMMAND_DEBUG, syntax = "/%command% debug <Player> <Chapter> <Task> <contentType> [contentDetails...]", canConsoleUse = false)
 public class Debug implements SubCommand {
 
     @Override
     public void execute(Narrator narrator, CommandSender sender, Command command, String[] args) {
-
-        if (!(sender instanceof Player listener)) {
-            sender.sendMessage(CCUtil.translate(LangPlugin.COMMAND_PLAYER_ONLY));
-            return;
-        }
+        Player listener = (Player) sender;
 
         ConcurrentHashMap<Player, String> debugListeners = narrator.getHandlerManager().getDebugHandler().getDebugListeners();
 

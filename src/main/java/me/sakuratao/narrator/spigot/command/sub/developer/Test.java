@@ -16,17 +16,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-@CommandInfo(name = "test", description = "测试", permission = Permission.COMMAND_ADMIN_TEST, syntax = "/%command% test <ChapterOrdinal> <TaskOrdinal> <ContentIndex> <Lang>", canConsoleUse = true)
+@CommandInfo(name = "test", description = "测试", permission = Permission.COMMAND_TEST, syntax = "/%command% test <ChapterOrdinal> <TaskOrdinal> <ContentIndex> <Lang>", canConsoleUse = false)
 public class Test implements SubCommand {
 
     @Override
     public void execute(Narrator narrator, CommandSender sender, Command command, String[] args) {
 
-        if (!(sender instanceof Player tester)) {
-            sender.sendMessage(CCUtil.translate(LangPlugin.COMMAND_PLAYER_ONLY));
-            return;
-        }
-        
+        Player tester = (Player) sender;
+
         if (args.length != 5) {
             sender.sendMessage(CCUtil.translate(LangPlugin.COMMAND_SYNTAX_ERROR));
             return;

@@ -84,7 +84,7 @@ public class CommandManager implements TabExecutor {
 
         // 如果没有提供命令参数，检查发送者是否有帮助页面访问权限
         if (args == null || args.length == 0){
-            if (!sender.hasPermission(Permission.HELP)){
+            if (!sender.hasPermission(Permission.COMMAND_HELP)){
                 sender.sendMessage("Unknown command. Type \"/help\" for help.");
                 return true;
             }

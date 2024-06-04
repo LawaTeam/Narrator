@@ -3,12 +3,11 @@ package me.sakuratao.narrator.spigot.configuration;
 public class Permission {
 
     public final static String ADMIN = "narrator.admin";
-    public final static String HELP = "narrator.help";
 
-    public final static String COMMAND_PLAYER_PLAY = "narrator.command.player.play";
-
-    public final static String COMMAND_ADMIN_RELOAD = "narrator.command.admin.help";
-    public final static String COMMAND_ADMIN_TEST = "narrator.command.admin.test";
-    public final static String COMMAND_ADMIN_DEBUG = "narrator.command.admin.debug";
+    public final static String COMMAND_HELP = "narrator.command.help";
+    public final static String COMMAND_PLAY = "narrator.command.play";
+    public final static String COMMAND_RELOAD = "narrator.command.help";
+    public final static String COMMAND_TEST = "narrator.command.test";
+    public final static String COMMAND_DEBUG = "narrator.command.debug";
 
 }
