@@ -1,9 +1,9 @@
-package me.sakuratao.narrator.spigot.command.sub;
+package me.sakuratao.narrator.spigot.command.sub.developer;
 
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.command.base.CommandInfo;
 import me.sakuratao.narrator.spigot.command.base.SubCommand;
-import me.sakuratao.narrator.spigot.configuration.Lang;
+import me.sakuratao.narrator.spigot.configuration.lang.LangPlugin;
 import me.sakuratao.narrator.spigot.configuration.Permission;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.utils.server.CCUtil;
@@ -23,12 +23,12 @@ public class Test implements SubCommand {
     public void execute(Narrator narrator, CommandSender sender, Command command, String[] args) {
 
         if (!(sender instanceof Player tester)) {
-            sender.sendMessage(CCUtil.translate(Lang.COMMAND_PLAYER_ONLY));
+            sender.sendMessage(CCUtil.translate(LangPlugin.COMMAND_PLAYER_ONLY));
             return;
         }
         
         if (args.length != 5) {
-            sender.sendMessage(CCUtil.translate(Lang.COMMAND_SYNTAX_ERROR));
+            sender.sendMessage(CCUtil.translate(LangPlugin.COMMAND_SYNTAX_ERROR));
             return;
         }
 
@@ -69,7 +69,7 @@ public class Test implements SubCommand {
     private static @NotNull List<String> getReplacedDetails(PlayerData playerData) {
         List<String> replacedDetails = new ArrayList<>();
 
-        for (String detail : Lang.COMMAND_TEST_DETAIL) {
+        for (String detail : LangPlugin.COMMAND_TEST_DETAIL) {
             replacedDetails.add(detail
                     .replace("%chapter%", playerData.getPlayingChapterData().getName())
                     .replace("%chapterOrdinal%", playerData.getPlayingChapterData().getOrdinal() + "")

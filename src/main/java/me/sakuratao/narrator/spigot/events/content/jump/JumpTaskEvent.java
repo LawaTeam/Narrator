@@ -2,7 +2,7 @@ package me.sakuratao.narrator.spigot.events.content.jump;
 
 import lombok.Getter;
 import me.sakuratao.narrator.common.Narrator;
-import me.sakuratao.narrator.spigot.configuration.Lang;
+import me.sakuratao.narrator.spigot.configuration.lang.LangPlugin;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.events.NarratorEvent;
@@ -43,8 +43,8 @@ public class JumpTaskEvent extends NarratorEvent {
 
     public boolean jumpTask() {
         if (taskOrdinal < 1 || contentIndex < 0) {
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_EXECUTE_JT_NUMBER_FORMAT);
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_EXECUTE_JT_NUMBER_FORMAT);
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
             narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + currentData.getName());
             narrator.getLogger().log(Level.SEVERE, "        Content: " + jumpContent);
             return false;

@@ -1,14 +1,13 @@
 package me.sakuratao.narrator.spigot.handlers;
 
 import me.sakuratao.narrator.common.Narrator;
-import me.sakuratao.narrator.spigot.configuration.Lang;
+import me.sakuratao.narrator.spigot.configuration.lang.LangPlugin;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.data.chapter.TaskData;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.utils.LogUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.WorldCreator;
 import org.bukkit.configuration.file.YamlConfiguration;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
@@ -61,8 +60,8 @@ public class TaskHandler {
                         data.getTasks().sort(Comparator.comparingInt(TaskData::getOrdinal));
 
                     } catch (NumberFormatException e) {
-                        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
-                        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+                        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
+                        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
                         LogUtil.log(Level.SEVERE, "        chapterFile: " + contentConfig.getName());
                         LogUtil.log(Level.SEVERE, "Details(For Developments): " + e.getMessage());
                         return;
@@ -76,8 +75,8 @@ public class TaskHandler {
 
     private boolean isWorldNull(ChapterData data, String taskName, World world, String worldName) {
         if (world == null) {
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_TASK_WORLD_NULL);
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_TASK_WORLD_NULL);
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
             LogUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
             LogUtil.log(Level.SEVERE, "        taskName: " + taskName);
             LogUtil.log(Level.SEVERE, "        worldName: " + worldName);
@@ -103,8 +102,8 @@ public class TaskHandler {
             if (!t.getSection().equalsIgnoreCase(section)) {
 
                 if (t.getName().equalsIgnoreCase(name)) {
-                    LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_TASK_NAME_SAME);
-                    LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+                    LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_TASK_NAME_SAME);
+                    LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
                     LogUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
                     LogUtil.log(Level.SEVERE, "        taskName: " + t.getName());
                     return true;
@@ -114,8 +113,8 @@ public class TaskHandler {
                     同序号
                  */
                 if (t.getOrdinal() == ordinal) {
-                    LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_ORDINAL_CONFLICT);
-                    LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+                    LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_ORDINAL_CONFLICT);
+                    LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
                     LogUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
                     LogUtil.log(Level.SEVERE, "        taskName: " + section);
                     LogUtil.log(Level.SEVERE, "        taskName: " + t.getName());
@@ -136,8 +135,8 @@ public class TaskHandler {
      */
     private boolean isOrdinalLowerThanOne(int ordinal, ChapterData data, String section){
         if (ordinal < 1) {
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
             LogUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
             LogUtil.log(Level.SEVERE, "        taskName: " + section);
             return true;
@@ -158,8 +157,8 @@ public class TaskHandler {
                         contentConfig.getString( "chapterTasks." + section + ".world") == null ||
                         contentConfig.getString("chapterTasks." + section + ".ordinal") == null
         ) {
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_TASK_NULL);
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_TASK_NULL);
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
             LogUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
             LogUtil.log(Level.SEVERE, "        taskName: " + section);
             return true;
@@ -190,8 +189,8 @@ public class TaskHandler {
             playerData.setPlayingTaskOrdinal(taskOrdinal);
             playerData.setContentIndex(contentIndex - 1); // 此处 -1 是为了抵消 ContentTask 的 +1，因为执行 jump 后 contentTask 会进行 +1
         } else {
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_EXECUTE_JT_NOT_EXIST);
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_EXECUTE_JT_NOT_EXIST);
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
             LogUtil.log(Level.SEVERE, "        chapterName: " + chapterData.getName());
             LogUtil.log(Level.SEVERE, "        content: " + playerData.getCurrentContent());
         }

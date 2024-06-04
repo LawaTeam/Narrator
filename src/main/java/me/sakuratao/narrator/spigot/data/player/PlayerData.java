@@ -7,6 +7,8 @@ import me.sakuratao.narrator.spigot.data.chapter.TaskData;
 import me.sakuratao.narrator.spigot.task.ContentTask;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 @Data
 public class PlayerData {
@@ -26,6 +28,9 @@ public class PlayerData {
     private int playingTaskOrdinal = 1;
     private int contentIndex = 0;
     private String lastOption = null;
+
+    private ItemStack[] cachedInventory = null; // TODO: 当玩家暂停剧情时发挥作用，需要保存到数据库避免特殊情况导致缓存丢失
+    private boolean isStopped = false; // 暂停剧情
 
     private ContentTask contentTask = null;
 

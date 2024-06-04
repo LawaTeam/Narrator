@@ -1,4 +1,4 @@
-package me.sakuratao.narrator.spigot.configuration;
+package me.sakuratao.narrator.spigot.configuration.lang;
 
 import top.jingwenmc.spigotpie.common.configuration.Configuration;
 import top.jingwenmc.spigotpie.common.configuration.ConfigurationFile;
@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 
 @PieComponent
-@ConfigurationFile("lang.yml")
-public class Lang {
+@ConfigurationFile("lang_plugin.yml")
+public class LangPlugin {
 
     @Configuration("language_code")
     public static String LANGUAGE_CODE = "zh_CN";

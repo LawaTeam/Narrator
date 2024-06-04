@@ -1,7 +1,7 @@
 package me.sakuratao.narrator.spigot.command.base;
 
 import me.sakuratao.narrator.common.Narrator;
-import me.sakuratao.narrator.spigot.configuration.Lang;
+import me.sakuratao.narrator.spigot.configuration.lang.LangPlugin;
 import me.sakuratao.narrator.spigot.configuration.Permission;
 import me.sakuratao.narrator.spigot.utils.server.CCUtil;
 import org.bukkit.command.Command;
@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @CommandInfo(name = "help", description = "查看帮助列表", permission = Permission.HELP, syntax = "/%command% help <Pages>", canConsoleUse = true)
-public class HelpCommand implements SubCommand {
+public class Help implements SubCommand {
 
     @Override
     public void execute(Narrator narrator, CommandSender sender, Command command, String[] args) {
         // 检查参数长度
         if (args.length > 2) {
-            sender.sendMessage(CCUtil.translate(Lang.COMMAND_HELP_PAGE));
+            sender.sendMessage(CCUtil.translate(LangPlugin.COMMAND_HELP_PAGE));
             return;
         }
 
@@ -32,7 +32,7 @@ public class HelpCommand implements SubCommand {
 
         if (args.length == 2) {
             if (!isValidPageInput(args[1])) {
-                sender.sendMessage(CCUtil.translate(Lang.COMMAND_NOT_NUMBER));
+                sender.sendMessage(CCUtil.translate(LangPlugin.COMMAND_NOT_NUMBER));
                 return;
             }
 
@@ -52,7 +52,7 @@ public class HelpCommand implements SubCommand {
     private void sendHelpPage(CommandSender sender, List<List<CommandInfo>> commandPages, int pageNumber, Command command, Narrator narrator) {
         sender.sendMessage(CCUtil.translate(" &f◆ &8| &bNarrator &8- &bVersion: " + narrator.getVersion()));
         sender.sendMessage(CCUtil.translate(" &f◆ &8| &bContributors: SakuraTao"));
-        for (String s : Lang.COMMAND_HELP) {
+        for (String s : LangPlugin.COMMAND_HELP) {
             if (s.equalsIgnoreCase("%commands%")) {
                 List<CommandInfo> pageCommands = commandPages.get(pageNumber - 1);
                 for (CommandInfo ci : pageCommands) {
@@ -84,9 +84,9 @@ public class HelpCommand implements SubCommand {
 
     private void handleInvalidPageNumber(CommandSender sender, int pageNumber, int maxPages) {
         if (pageNumber <= 0) {
-            sender.sendMessage(CCUtil.translate(Lang.COMMAND_LESS_THAN_MAX_PAGES));
+            sender.sendMessage(CCUtil.translate(LangPlugin.COMMAND_LESS_THAN_MAX_PAGES));
         } else {
-            sender.sendMessage(CCUtil.translate(Lang.COMMAND_MORE_THAN_MAX_PAGES));
+            sender.sendMessage(CCUtil.translate(LangPlugin.COMMAND_MORE_THAN_MAX_PAGES));
         }
     }
 

@@ -1,11 +1,10 @@
 package me.sakuratao.narrator.common;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import lombok.Getter;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.command.base.CommandManager;
-import me.sakuratao.narrator.spigot.configuration.Lang;
+import me.sakuratao.narrator.spigot.configuration.lang.LangPlugin;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
 import me.sakuratao.narrator.spigot.handlers.HandlerManager;
 import me.sakuratao.narrator.spigot.listener.packets.PacketsHandler;
@@ -89,7 +88,7 @@ public class Narrator {
         handlerManager.getChapterHandler().load(force);
         handlerManager.getTaskHandler().load();
 
-        getLogger().info(Lang.CHAPTERS_LOADED);
+        getLogger().info(LangPlugin.CHAPTERS_LOADED);
     }
 
 }

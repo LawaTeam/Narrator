@@ -2,7 +2,7 @@ package me.sakuratao.narrator.spigot.handlers;
 
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
-import me.sakuratao.narrator.spigot.configuration.Lang;
+import me.sakuratao.narrator.spigot.configuration.lang.LangPlugin;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.utils.LogUtil;
@@ -130,10 +130,10 @@ public class ChapterHandler {
      * @param chapterFile - 文件
      */
     private void logNumberFormat(File chapterFile){
-        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
-        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
+        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
         LogUtil.log(Level.SEVERE, "        chapterFile: " + chapterFile.getName());
-        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_LOAD_STOP);
+        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_LOAD_STOP);
     }
 
     /**
@@ -143,8 +143,8 @@ public class ChapterHandler {
      * @param ordinal - 序数
      */
     private void logOrdinalConflicted(String name, ChapterData data, int ordinal){
-        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_ORDINAL_CONFLICT);
-        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_ORDINAL_CONFLICT);
+        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
         LogUtil.log(Level.SEVERE, "        chapterName: " + name);
         LogUtil.log(Level.SEVERE, "        chapterName: " + data.getName());
         LogUtil.log(Level.SEVERE, "        equalOrdinal: " + ordinal);
@@ -157,8 +157,8 @@ public class ChapterHandler {
      * @param lowerVersion - 更低的版本号
      */
     private void logVersionHigher(String name, double higherVersion, double lowerVersion){
-        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_VERSION_HIGHER);
-        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_VERSION_HIGHER);
+        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
         LogUtil.log(Level.SEVERE, "        chapterName: " + name);
         LogUtil.log(Level.SEVERE, "        higherVersion: " + higherVersion);
         LogUtil.log(Level.SEVERE, "        lowerVersion: " + lowerVersion);
@@ -171,8 +171,8 @@ public class ChapterHandler {
      * @param lowerVersion - 更低的版本号
      */
     private void logVersionLower(String name, double higherVersion, double lowerVersion){
-        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_VERSION_LOWER);
-        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_VERSION_LOWER);
+        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
         LogUtil.log(Level.SEVERE, "        chapterName: " + name);
         LogUtil.log(Level.SEVERE, "        higherVersion: " + higherVersion);
         LogUtil.log(Level.SEVERE, "        lowerVersion: " + lowerVersion);
@@ -187,12 +187,12 @@ public class ChapterHandler {
      * @param version2 - 冲突版本2
      */
     private void logVersionEqual(String name, int ordinal1, int ordinal2, double version1, double version2){
-        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NAME_EQUAL);
-        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_NAME_EQUAL);
+        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
         LogUtil.log(Level.SEVERE, "        equalName: " + name);
         LogUtil.log(Level.SEVERE, "        Ordinal: " + ordinal1 + " | Version: " + version1);
         LogUtil.log(Level.SEVERE, "        Ordinal: " + ordinal2 + " | Version: " + version2);
-        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_LOAD_STOP);
+        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_LOAD_STOP);
     }
 
     /**
@@ -213,7 +213,7 @@ public class ChapterHandler {
                 LogUtil.log(Level.SEVERE, "Details(For Developments): " + e.getMessage());
             }
 
-            LogUtil.log(Level.WARNING, Lang.CHAPTERS_FOLDER_CREATED);
+            LogUtil.log(Level.WARNING, LangPlugin.CHAPTERS_FOLDER_CREATED);
             return true;
         }
         return false;
@@ -267,8 +267,8 @@ public class ChapterHandler {
                 chapter.getString("chapterInfo.version") == null ||
                 chapter.getString("chapterInfo.ordinal") == null ||
                 chapter.getString("chapterInfo.lang") == null) {
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NULL);
-            LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_NULL);
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
             LogUtil.log(Level.SEVERE, "        chapterFile: " + chapterFile.getName());
             return true;
         }
@@ -285,8 +285,8 @@ public class ChapterHandler {
     private boolean isOrdinalLowerThanOne(int ordinal, String name){
         if (ordinal >= 1) return false;
 
-        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
-        LogUtil.log(Level.SEVERE, Lang.CHAPTERS_CONSOLE_HELP);
+        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_FOLDER_CHECK_NUMBER_FORMAT);
+        LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
         LogUtil.log(Level.SEVERE, "        chapterName: " + name);
         return true;
     }

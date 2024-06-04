@@ -3,10 +3,11 @@ package me.sakuratao.narrator.spigot.command.base;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.sakuratao.narrator.common.Narrator;
-import me.sakuratao.narrator.spigot.command.sub.Debug;
-import me.sakuratao.narrator.spigot.command.sub.Reload;
-import me.sakuratao.narrator.spigot.command.sub.Test;
-import me.sakuratao.narrator.spigot.configuration.Lang;
+import me.sakuratao.narrator.spigot.command.sub.developer.Debug;
+import me.sakuratao.narrator.spigot.command.sub.developer.Reload;
+import me.sakuratao.narrator.spigot.command.sub.developer.Test;
+import me.sakuratao.narrator.spigot.command.sub.player.Toggle;
+import me.sakuratao.narrator.spigot.configuration.lang.LangPlugin;
 import me.sakuratao.narrator.spigot.configuration.Permission;
 import me.sakuratao.narrator.spigot.utils.server.CCUtil;
 import org.bukkit.Bukkit;
@@ -32,7 +33,8 @@ public class CommandManager implements TabExecutor {
 
     @SneakyThrows
     public CommandManager() {
-        subCommands.add(new HelpCommand());
+        subCommands.add(new Help());
+        subCommands.add(new Toggle());
         subCommands.add(new Reload());
         subCommands.add(new Test());
         subCommands.add(new Debug());
@@ -76,7 +78,7 @@ public class CommandManager implements TabExecutor {
     ) {
         // 检查发送者是否有管理员权限
         if (!sender.hasPermission(Permission.ADMIN)){
-            sender.sendMessage(Lang.NO_PERMISSION);
+            sender.sendMessage(LangPlugin.NO_PERMISSION);
             return true;
         }
 
@@ -86,7 +88,7 @@ public class CommandManager implements TabExecutor {
                 sender.sendMessage("Unknown command. Type \"/help\" for help.");
                 return true;
             }
-            sender.sendMessage(CCUtil.translate(Lang.USE_HELP_PLEASE));
+            sender.sendMessage(CCUtil.translate(LangPlugin.USE_HELP_PLEASE));
             return true;
         }
 
@@ -98,7 +100,7 @@ public class CommandManager implements TabExecutor {
             executeSubCommand(sender, command, subCommand, args);
         } else {
             // 如果没有找到匹配的子命令，发送帮助信息
-            sender.sendMessage(CCUtil.translate(Lang.USE_HELP_PLEASE));
+            sender.sendMessage(CCUtil.translate(LangPlugin.USE_HELP_PLEASE));
         }
         return true;
 
@@ -114,13 +116,13 @@ public class CommandManager implements TabExecutor {
 
         // 检查非玩家是否具有使用该命令的权限
         if (!(sender instanceof Player) && !commandInfo.canConsoleUse()) {
-            sender.sendMessage(CCUtil.translate(Lang.COMMAND_PLAYER_ONLY));
+            sender.sendMessage(CCUtil.translate(LangPlugin.COMMAND_PLAYER_ONLY));
             return;
         }
 
         // 检查发送者是否具有命令所需的权限
         if (!sender.hasPermission(commandInfo.permission())) {
-            sender.sendMessage(CCUtil.translate(Lang.NO_PERMISSION));
+            sender.sendMessage(CCUtil.translate(LangPlugin.NO_PERMISSION));
             return;
         }
 

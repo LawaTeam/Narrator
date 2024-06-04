@@ -3,7 +3,14 @@ package me.sakuratao.narrator.spigot.task;
 import lombok.Getter;
 import lombok.Setter;
 import me.sakuratao.narrator.common.Narrator;
+import me.sakuratao.narrator.spigot.configuration.lang.LangPlayer;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
+import me.sakuratao.narrator.spigot.utils.server.CCUtil;
+import me.sakuratao.narrator.spigot.utils.server.ItemUtil;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +29,13 @@ public final class ContentTask implements Runnable {
     @Override
     public void run() {
 
-        if (!data.getPlayer().isOnline()) return;
+        Player player = data().getPlayer();
+
+        if (!player.isOnline()) return;
+
+        if (data.isStopped()) {
+            return;
+        }
 
         if (execute()) {
 
@@ -30,7 +43,7 @@ public final class ContentTask implements Runnable {
             data.setContentIndex(data.getContentIndex() + 1);
 
             if (data.getContentIndex() >= content.size()) {
-                narrator.getManagerHandler().getTaskManager().killTask(data.getPlayerName());
+                narrator.getManagerHandler().getTaskManager().killTask(player.getName());
             }
 
         }

@@ -8,6 +8,8 @@ import me.sakuratao.narrator.spigot.utils.server.TaskUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import top.jingwenmc.spigotpie.common.event.SpigotEventListener;
@@ -48,5 +50,31 @@ public class PlayerListener implements Listener {
         narrator.getManagerHandler().getPlayerManager().removeByPlayer(e.getPlayer());
 
     }
+
+    @EventHandler
+    public void onInvClickCancel(InventoryClickEvent e){
+
+        Player p = (Player) e.getWhoClicked();
+        PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(p);
+
+        if (playerData.isStopped()) {
+            e.setCancelled(true);
+        }
+
+    }
+
+    @EventHandler
+    public void onItemDropCancel(PlayerDropItemEvent e){
+
+        Player p = e.getPlayer();
+        PlayerData playerData = narrator.getManagerHandler().getPlayerManager().getByPlayer(p);
+
+        if (playerData.isStopped()) {
+            e.setCancelled(true);
+        }
+
+
+    }
+
 
 }

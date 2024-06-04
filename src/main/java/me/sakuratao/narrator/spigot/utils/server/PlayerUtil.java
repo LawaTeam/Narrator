@@ -1,7 +1,12 @@
 package me.sakuratao.narrator.spigot.utils.server;
 
 import lombok.experimental.UtilityClass;
+import me.sakuratao.narrator.common.Narrator;
+import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.utils.LogUtil;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
@@ -74,6 +79,11 @@ public class PlayerUtil {
 
     public void sendMessage(Player p, String message){
         p.sendMessage(CCUtil.translate("&8| &8*&bNarrator&8* " + message));
+    }
+
+    public void sendActionBar(Narrator narrator, Player p, String message) {
+        Audience audience = narrator.getAdventure().player(p);
+        audience.sendActionBar(Component.text(CCUtil.translate(message)));
     }
 
 }

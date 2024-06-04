@@ -1,18 +1,16 @@
-package me.sakuratao.narrator.spigot.command.sub;
+package me.sakuratao.narrator.spigot.command.sub.developer;
 
 import me.sakuratao.narrator.common.Narrator;
 import me.sakuratao.narrator.spigot.command.base.CommandInfo;
 import me.sakuratao.narrator.spigot.command.base.SubCommand;
-import me.sakuratao.narrator.spigot.configuration.Lang;
+import me.sakuratao.narrator.spigot.configuration.lang.LangPlugin;
 import me.sakuratao.narrator.spigot.configuration.Permission;
-import me.sakuratao.narrator.spigot.data.cache.CacheData;
 import me.sakuratao.narrator.spigot.utils.server.CCUtil;
 import me.sakuratao.narrator.spigot.utils.server.PlayerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import top.jingwenmc.spigotpie.common.instance.PieComponent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +25,7 @@ public class Debug implements SubCommand {
     public void execute(Narrator narrator, CommandSender sender, Command command, String[] args) {
 
         if (!(sender instanceof Player listener)) {
-            sender.sendMessage(CCUtil.translate(Lang.COMMAND_PLAYER_ONLY));
+            sender.sendMessage(CCUtil.translate(LangPlugin.COMMAND_PLAYER_ONLY));
             return;
         }
 
@@ -35,18 +33,18 @@ public class Debug implements SubCommand {
 
         if (args[1].equalsIgnoreCase("clear")) {
             debugListeners.remove(listener);
-            PlayerUtil.sendMessage(listener, Lang.COMMAND_DEBUG_CLEAR);
+            PlayerUtil.sendMessage(listener, LangPlugin.COMMAND_DEBUG_CLEAR);
             return;
         }
 
         if (args.length < 5) {
-            PlayerUtil.sendMessage(listener, Lang.COMMAND_SYNTAX_ERROR);
+            PlayerUtil.sendMessage(listener, LangPlugin.COMMAND_SYNTAX_ERROR);
             return;
         }
 
         Player listenedPlayer = Bukkit.getPlayerExact(args[1]);
         if (listenedPlayer == null) {
-            PlayerUtil.sendMessage(listener, Lang.COMMAND_PLAYER_NULL);
+            PlayerUtil.sendMessage(listener, LangPlugin.COMMAND_PLAYER_NULL);
             return;
         }
 
@@ -62,7 +60,7 @@ public class Debug implements SubCommand {
 
         debugListeners.put((Player) sender,  listenedChapter + ";" + listenedTask + ";" + listenedPlayer.getName() + ";" + listenedContentType + ";" + listenedContentDetails);
         List<String> replacedDetails = new ArrayList<>();
-        for (String detail : Lang.COMMAND_DEBUG_DETAIL) {
+        for (String detail : LangPlugin.COMMAND_DEBUG_DETAIL) {
             if (detail.contains("%contentDetails%")) {
 
                 if (listenedContentDetails.equalsIgnoreCase("all")) {
