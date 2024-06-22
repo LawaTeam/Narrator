@@ -212,9 +212,12 @@ public class DebugHandler {
                         && Objects.equals(player.getName(), listenedPlayer)
                         && contentType.toUpperCase().contains(listenedContentType.toUpperCase())
         ) {
+
+            PlayerData playerData = playerManager.getByPlayer(player);
+            String coordinate = df.format(player.getLocation().getX()) + " " + df.format(player.getLocation().getY()) + " " + df.format(player.getLocation().getZ());
             listener.sendMessage(CCUtil.translate("&8&o--- &7Narrator &8[Debug] &8| &f" + chapter + "&8-&f" + chapterVersion + "&8-&f" + language));
-            listener.sendMessage(CCUtil.translate("  &8|- &7Task: &f" + taskName + " &8| &7contentIndex: &f" + contentIndex + " &8| &7World: &f" + taskWorld));
-            listener.sendMessage(CCUtil.translate("  &8|- &7Player: &f" + player.getName() + " &8| &7XYZ: &f" + df.format(player.getLocation().getX()) + " " + df.format(player.getLocation().getY()) + " " + df.format(player.getLocation().getZ())));
+            listener.sendMessage(CCUtil.translate("  &8|- &7Task: &f" + taskName + " &8| &7contentIndex: &f" + contentIndex + " &7| &7taskTicks: &f" + playerData.getContentTask().getTaskTicks()));
+            listener.sendMessage(CCUtil.translate("  &8|- &7Player: &f" + player.getName() + "&8| &7World: &f" + taskWorld + " &8| &7XYZ: &f" + coordinate));
             listener.sendMessage(CCUtil.translate("  &8|- &7contentType: &f" + contentType));
             listener.sendMessage(CCUtil.translate("  &8|- &7contentDetails: &f"));
             for (String contentDetail : contentDetails) {
