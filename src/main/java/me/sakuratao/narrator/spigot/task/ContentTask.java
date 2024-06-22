@@ -21,6 +21,8 @@ public final class ContentTask implements Runnable {
     private final Narrator narrator;
     private final PlayerData data;
 
+    private int taskTicks; // 用于校对时间轴
+
     public ContentTask(Narrator narrator, PlayerData data) {
         this.narrator = narrator;
         this.data = data;
@@ -32,10 +34,9 @@ public final class ContentTask implements Runnable {
         Player player = data().getPlayer();
 
         if (!player.isOnline()) return;
+        if (data.isStopped()) return;
 
-        if (data.isStopped()) {
-            return;
-        }
+        taskTicks++;
 
         if (execute()) {
 

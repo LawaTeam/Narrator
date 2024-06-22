@@ -66,7 +66,7 @@ public class PlayerData {
         return getPlayingTaskData().getContent().get(contentIndex);
     }
 
-    public String getPlayStats(){
+    public String getPlayedStats(){
         return lang + ";" + playingChapterOrdinal + ";" + playingTaskOrdinal + ";" + contentIndex;
     }
 
