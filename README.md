@@ -42,7 +42,7 @@ Narrator 是一个剧情部署工具，可以快速部署你的剧情。提供�
 
 ### 构建环境
 
-*  JDK 17
+*  JDK 21
 <p align="right">(<a href="#readme-top">回到顶部</a>)</p>
 
 

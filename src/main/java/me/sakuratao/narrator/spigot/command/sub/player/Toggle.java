@@ -45,7 +45,6 @@ public class Toggle implements SubCommand {
             playerData.setStopped(false);
             player.getInventory().clear();
             player.getInventory().setContents(playerData.getCachedInventory());
-
         }
 
     }

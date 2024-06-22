@@ -36,6 +36,16 @@ public class LangPlugin {
     @Configuration("command_help_page")
     public static String COMMAND_HELP_PAGE = "请使用: /narrator help <Pages>";
 
+    @Configuration("command_chapter_help")
+    public static List<String> COMMAND_CHAPTER_HELP = Arrays.asList(
+            " &f◆ &8| &bNarrator &8- &fChapter 指令集",
+            " &f◆ &8| &f&n此处使用 ~ 指代 /narr chapter",
+            " &f◆ &8| &7 ",
+            " &f◆ &8| &b~ list <all/lang> - 查看指定语言的章节列表"
+    );
+
+    @Configuration("command_chapter_non_lang")
+    public static String COMMAND_CHAPTER_NON_LANG = "&c你输入的语言不正确或不存在";
 
     @Configuration("command_not_number")
     public static String COMMAND_NOT_NUMBER = "&c你输入的不是数字";

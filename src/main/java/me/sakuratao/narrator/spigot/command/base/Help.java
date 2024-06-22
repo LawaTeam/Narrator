@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@CommandInfo(name = "help", description = "查看帮助列表", permission = Permission.HELP, syntax = "/%command% help <Pages>", canConsoleUse = true)
+@CommandInfo(name = "help", description = "查看帮助列表", permission = Permission.COMMAND_HELP, syntax = "/%command% help <Pages>", canConsoleUse = true)
 public class Help implements SubCommand {
 
     @Override
@@ -80,14 +80,6 @@ public class Help implements SubCommand {
                         .toList()
                 )
                 .toList();
-    }
-
-    private void handleInvalidPageNumber(CommandSender sender, int pageNumber, int maxPages) {
-        if (pageNumber <= 0) {
-            sender.sendMessage(CCUtil.translate(LangPlugin.COMMAND_LESS_THAN_MAX_PAGES));
-        } else {
-            sender.sendMessage(CCUtil.translate(LangPlugin.COMMAND_MORE_THAN_MAX_PAGES));
-        }
     }
 
     private boolean isValidPageInput(String input) {

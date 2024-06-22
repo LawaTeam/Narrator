@@ -31,7 +31,7 @@ public class TaskHandler {
      */
     public void load(){
         for (String lang : handlerManager.getChapterHandler().getTotalLang()) {
-            for (Map<ChapterData, YamlConfiguration> chapterDataMap : handlerManager.getChapterHandler().getLangChapterMaps(lang)) {
+            for (Map<ChapterData, YamlConfiguration> chapterDataMap : handlerManager.getChapterHandler().getChapterMapsByLang(lang)) {
                 for (YamlConfiguration contentConfig : chapterDataMap.values()) {
                     try {
                         ChapterData data = handlerManager.getChapterHandler().getDataByMap(chapterDataMap);

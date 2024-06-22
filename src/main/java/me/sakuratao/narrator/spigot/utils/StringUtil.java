@@ -1,14 +1,14 @@
 package me.sakuratao.narrator.spigot.utils;
 
 import lombok.experimental.UtilityClass;
+import me.sakuratao.narrator.spigot.command.base.CommandInfo;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @UtilityClass
 public class StringUtil {
@@ -128,5 +128,45 @@ public class StringUtil {
         return result.toArray(new String[0]); // 将结果列表转换为数组并返回
     }
 
+    /**
+     * 将字符串列表分页。
+     * 该方法通过将字符串列表分成多个较小的列表来实现分页。每个小列表包含原列表中连续的一部分字符串。
+     * 分页的逻辑是基于字符串在原列表中的索引，将索引划分为不同的组，每个组对应一页。
+     * 例如，如果原列表有20个字符串，每页包含5个字符串，则会生成4个分页，每个分页包含原列表中索引的某个范围的字符串。
+     *
+     * @param stringList 原始字符串列表，将被分页。
+     * @return 分页后的字符串列表的列表。每个元素都是原列表中的一页。
+     */
+    public List<List<String>> paginateStrings(List<String> stringList, int volume) {
+        // 通过流处理索引范围，将索引按照页码进行分组
+        return IntStream.range(0, stringList.size())
+                .boxed() // 将整型流转换为盒装类型流，以便使用 Collectors.groupingBy 进行分组
+                .collect(Collectors.groupingBy(i -> i / volume)) // 根据索引除以每页的字符串数量得到的商进行分组，商即为页码
+                .values() // 获取分组后的值，即每个页码对应的索引列表
+                .stream() // 对每个页码的索引列表进行流处理
+                .map(indices -> indices // 对每个索引列表，映射为对应的字符串列表
+                        .stream() // 将索引列表转换为流
+                        .map(stringList::get) // 根据索引获取字符串列表中的对应字符串
+                        .toList() // 将流转换为列表
+                )
+                .toList(); // 将所有页的字符串列表收集到一个列表中，作为最终结果
+    }
+
+    /**
+     * 根据字符串的自然顺序（包括首字母）进行排序。
+     * 自然顺序即是字典顺序，考虑了字符串的所有字符。
+     *
+     * @param strings 需要排序的字符串列表。
+     * @return 排序后的字符串列表。
+     */
+    public static List<String> sortNaturally(List<String> strings) {
+        if (strings == null || strings.isEmpty()) {
+            return strings; // 如果列表为空或null，直接返回
+        }
+
+        Collections.sort(strings);
+
+        return strings;
+    }
 
 }

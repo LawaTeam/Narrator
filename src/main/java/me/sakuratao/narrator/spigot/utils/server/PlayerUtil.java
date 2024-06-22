@@ -81,6 +81,16 @@ public class PlayerUtil {
         p.sendMessage(CCUtil.translate("&8| &8*&bNarrator&8* " + message));
     }
 
+    public void sendMessageNoPrefix(Player p, List<String> messages){
+        for (String message : messages) {
+            p.sendMessage(CCUtil.translate(message));
+        }
+    }
+
+    public void sendMessageNoPrefix(Player p, String message){
+        p.sendMessage(CCUtil.translate(message));
+    }
+
     public void sendActionBar(Narrator narrator, Player p, String message) {
         Audience audience = narrator.getAdventure().player(p);
         audience.sendActionBar(Component.text(CCUtil.translate(message)));

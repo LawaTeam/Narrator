@@ -3,6 +3,7 @@ package me.sakuratao.narrator.spigot.command.base;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.sakuratao.narrator.common.Narrator;
+import me.sakuratao.narrator.spigot.command.sub.developer.Chapter;
 import me.sakuratao.narrator.spigot.command.sub.developer.Debug;
 import me.sakuratao.narrator.spigot.command.sub.developer.Reload;
 import me.sakuratao.narrator.spigot.command.sub.developer.Test;
@@ -34,6 +35,7 @@ public class CommandManager implements TabExecutor {
     @SneakyThrows
     public CommandManager() {
         subCommands.add(new Help());
+        subCommands.add(new Chapter());
         subCommands.add(new Toggle());
         subCommands.add(new Reload());
         subCommands.add(new Test());
@@ -163,6 +165,15 @@ public class CommandManager implements TabExecutor {
             }
         }
         return player;
+    }
+
+    private CommandInfo getCommandInfoByName(String name) {
+        for (CommandInfo commandInfo : commandInfos) {
+            if (commandInfo.name().equalsIgnoreCase(name)) {
+                return commandInfo;
+            }
+        }
+        return null;
     }
 
 }

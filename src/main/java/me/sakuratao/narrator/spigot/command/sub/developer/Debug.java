@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-@CommandInfo(name = "debug", description = "开启 debug", permission = Permission.COMMAND_DEBUG, syntax = "/%command% debug <Player> <Chapter> <Task> <contentType> [contentDetails...]", canConsoleUse = false)
+@CommandInfo(name = "debug", description = "开启/清除 debug", permission = Permission.COMMAND_DEBUG, syntax = "/%command% debug [clear] <Player> <Chapter> <Task> <contentType> [contentDetails...]", canConsoleUse = false)
 public class Debug implements SubCommand {
 
     @Override
@@ -26,7 +26,7 @@ public class Debug implements SubCommand {
 
         ConcurrentHashMap<Player, String> debugListeners = narrator.getHandlerManager().getDebugHandler().getDebugListeners();
 
-        if (args[1].equalsIgnoreCase("clear")) {
+        if (args.length == 2 && args[1].equalsIgnoreCase("clear")) {
             debugListeners.remove(listener);
             PlayerUtil.sendMessage(listener, LangPlugin.COMMAND_DEBUG_CLEAR);
             return;
