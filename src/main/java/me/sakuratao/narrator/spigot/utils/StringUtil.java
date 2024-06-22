@@ -152,21 +152,4 @@ public class StringUtil {
                 .toList(); // 将所有页的字符串列表收集到一个列表中，作为最终结果
     }
 
-    /**
-     * 根据字符串的自然顺序（包括首字母）进行排序。
-     * 自然顺序即是字典顺序，考虑了字符串的所有字符。
-     *
-     * @param strings 需要排序的字符串列表。
-     * @return 排序后的字符串列表。
-     */
-    public static List<String> sortNaturally(List<String> strings) {
-        if (strings == null || strings.isEmpty()) {
-            return strings; // 如果列表为空或null，直接返回
-        }
-
-        Collections.sort(strings);
-
-        return strings;
-    }
-
 }

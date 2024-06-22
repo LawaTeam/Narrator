@@ -75,7 +75,7 @@ public class Chapter implements SubCommand {
 
     private void sendChapterList(Narrator narrator, CommandSender sender, String lang, int pageNumber){
 
-        if (!narrator.getHandlerManager().getChapterHandler().getTotalLang().contains(lang)) {
+        if (!lang.equalsIgnoreCase("all") && !narrator.getHandlerManager().getChapterHandler().getTotalLang().contains(lang)) {
             ServerUtil.sendMessage(sender, LangPlugin.COMMAND_CHAPTER_NON_LANG);
             return;
         }
