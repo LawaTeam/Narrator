@@ -184,15 +184,26 @@ public class TaskHandler {
      * @param taskOrdinal - 任务ordinal
      * @param contentIndex - content索引
      */
-    public void jump(PlayerData playerData, ChapterData chapterData, int taskOrdinal, int contentIndex){
+    public boolean jump(PlayerData playerData, ChapterData chapterData, int taskOrdinal, int contentIndex){
+
+        if (taskOrdinal < 1 || contentIndex < 0) {
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_EXECUTE_JT_NUMBER_FORMAT);
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
+            narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + chapterData.getName());
+            narrator.getLogger().log(Level.SEVERE, "        Content: " + playerData.getPlayingTaskData().getContentByIndex(contentIndex));
+            return false;
+        }
+
         if (chapterData.getTasks().stream().anyMatch(taskData -> taskData.getOrdinal() == taskOrdinal)) {
             playerData.setPlayingTaskOrdinal(taskOrdinal);
-            playerData.setContentIndex(contentIndex - 1); // 此处 -1 是为了抵消 ContentTask 的 +1，因为执行 jump 后 contentTask 会进行 +1
+            playerData.setContentIndex(contentIndex);
+            return true;
         } else {
             LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_EXECUTE_JT_NOT_EXIST);
             LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
             LogUtil.log(Level.SEVERE, "        chapterName: " + chapterData.getName());
             LogUtil.log(Level.SEVERE, "        content: " + playerData.getCurrentContent());
+            return false;
         }
     }
 

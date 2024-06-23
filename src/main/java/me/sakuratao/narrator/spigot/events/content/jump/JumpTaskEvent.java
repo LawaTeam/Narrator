@@ -42,20 +42,12 @@ public class JumpTaskEvent extends NarratorEvent {
     }
 
     public boolean jumpTask() {
-        if (taskOrdinal < 1 || contentIndex < 0) {
-            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_EXECUTE_JT_NUMBER_FORMAT);
-            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
-            narrator.getLogger().log(Level.SEVERE, "        Chapter Name: " + currentData.getName());
-            narrator.getLogger().log(Level.SEVERE, "        Content: " + jumpContent);
-            return false;
-        }
-        narrator.getHandlerManager().getTaskHandler().jump(
+        return narrator.getHandlerManager().getTaskHandler().jump(
                 playerData,
                 currentData,
                 taskOrdinal,
-                contentIndex
+                contentIndex - 1  // 此处 -1 是为了抵消 ContentTask 的 +1，因为执行 jump 后 contentTask 会进行 +1
         );
-        return true;
     }
 
 }

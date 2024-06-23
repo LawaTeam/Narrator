@@ -53,8 +53,14 @@ public class TaskManager {
      * @param playerName - 玩家名
      */
     public void killTask(String playerName){
+        if (!isExists(playerName)) return;
         tasks.get(playerName.toLowerCase()).cancel();
         tasks.remove(playerName.toLowerCase());
+    }
+
+    public void cancelAll(){
+        tasks.forEach((s, bukkitTask) -> bukkitTask.cancel());
+        tasks.clear();
     }
 
     /**

@@ -9,6 +9,7 @@ import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarAnswerEven
 import me.sakuratao.narrator.spigot.events.content.actionbar.ActionBarEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelayEvent;
 import me.sakuratao.narrator.spigot.events.content.delay.DelaySingleEvent;
+import me.sakuratao.narrator.spigot.events.content.jump.JumpChapterEvent;
 import me.sakuratao.narrator.spigot.events.content.jump.JumpTaskEvent;
 import me.sakuratao.narrator.spigot.events.content.player.MessageEvent;
 import me.sakuratao.narrator.spigot.events.content.player.TitleEvent;
@@ -161,11 +162,9 @@ public class ContentHandler {
                     }
                 }
                 // 任务跳转处理
-                case "JT", "JUMP_TASK" ->
-                        handleJumpTask(player, playerData, chapterData, Integer.parseInt(contentList.get(1)),
-                                Integer.parseInt(contentList.get(2)), content);
+                case "JT", "JUMP_TASK" -> handleJumpTask(player, playerData, chapterData, contentList, content);
                 // 章节跳转处理（待完成）
-                case "JC", "JUMP_CHAPTER" -> true;
+                case "JC", "JUMP_CHAPTER" -> handleJumpChapter(player, playerData, chapterData, contentList, content);
                 // 默认情况，无对应功能时执行
                 default -> true;
             };
@@ -180,6 +179,47 @@ public class ContentHandler {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private boolean handleJumpChapter(
+            Player player,
+            PlayerData playerData,
+            ChapterData currentData,
+            List<String> contentList,
+            String jumpContent
+    ){
+        int targetChapterOrdinal = 1;
+        int targetTaskOrdinal = 1;
+        int targetContentIndex = 0;
+
+        if (contentList.size() >= 2) {
+            targetChapterOrdinal = Integer.parseInt(contentList.get(1));
+        }
+        if (contentList.size() >= 3) {
+            targetTaskOrdinal = Integer.parseInt(contentList.get(2));
+        }
+        if (contentList.size() >= 4) {
+            targetContentIndex = Integer.parseInt(contentList.get(3));
+        }
+
+        JumpChapterEvent jumpChapterEvent = new JumpChapterEvent(narrator, player, playerData, currentData, targetChapterOrdinal, targetTaskOrdinal, targetContentIndex,  jumpContent);
+        EventUtil.callEvent(jumpChapterEvent);
+        debugHandler.debug(
+                player,
+                playerData.getPlayingChapterData(),
+                playerData.getPlayingTaskData(),
+                "JumpChapter",
+                Arrays.asList(
+                        "lang: &f" + currentData.getLang(),
+                        "currentDataOrdinal: &f" + currentData.getOrdinal(),
+                        "targetDataOrdinal: &f" + targetChapterOrdinal,
+                        "targetTaskOrdinal: &f" + targetTaskOrdinal,
+                        "targetContentIndex: &f" + targetContentIndex
+                ),
+                false
+        );
+        return jumpChapterEvent.jumpChapter();
+
     }
 
     /**
@@ -706,12 +746,15 @@ public class ContentHandler {
      * @param player - 玩家
      * @param playerData - 玩家数据
      * @param chapterData - 章节数据
-     * @param taskOrdinal - 任务序数
-     * @param contentIndex - 内容索引数
+     * @param contentList - 内容列表
      * @param jumpContent - 关于转跳的content
      * @return 转跳完成
      */
-    private boolean handleJumpTask(Player player, PlayerData playerData, ChapterData chapterData, int taskOrdinal, int contentIndex, String jumpContent) {
+    private boolean handleJumpTask(Player player, PlayerData playerData, ChapterData chapterData, List<String> contentList, String jumpContent) {
+
+        int taskOrdinal = Integer.parseInt(contentList.get(1));
+        int contentIndex = Integer.parseInt(contentList.get(2));
+
         JumpTaskEvent jumpTaskEvent = new JumpTaskEvent(narrator, player, playerData, chapterData, taskOrdinal, contentIndex, jumpContent);
         EventUtil.callEvent(jumpTaskEvent);
         debugHandler.debug(

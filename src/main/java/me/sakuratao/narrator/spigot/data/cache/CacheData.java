@@ -198,13 +198,13 @@ public class CacheData {
             }
         }
 
-        currentActionBarEvent.get(player.getName().toLowerCase()).getPrintTask().cancel();
+        // currentActionBarEvent.get(player.getName().toLowerCase()).getPrintTask().cancel();
         currentActionBarEvent.remove(player.getName().toLowerCase());
 
-        currentActionBarAnswerEvent.get(player.getName().toLowerCase()).getOptionTask().cancel();
+        // currentActionBarAnswerEvent.get(player.getName().toLowerCase()).getOptionTask().cancel();
         currentActionBarAnswerEvent.remove(player.getName().toLowerCase());
 
-        currentDelayEvent.get(player.getName().toLowerCase()).setCancelled(true);
+        // currentDelayEvent.get(player.getName().toLowerCase()).setCancelled(true);
         currentDelayEvent.remove(player.getName().toLowerCase());
     }
 

@@ -87,7 +87,7 @@ public class LangPlugin {
     );
 
     @Configuration("chapters_loaded")
-    public static String CHAPTERS_LOADED = "所有章节已完成加载! &8(%type%&8)";
+    public static String CHAPTERS_LOADED = "所有章节已完成加载! (%type%)";
 
     @Configuration("chapters_load_force")
     public static String CHAPTERS_LOAD_FORCE = "正在执行强制重载...";
@@ -152,13 +152,25 @@ public class LangPlugin {
 
     @Configuration("chapter_execute_jt_number_format")
     public static List<String> CHAPTERS_EXECUTE_JT_NUMBER_FORMAT = Arrays.asList(
-            "请检查你的内容 'JT/JUMPTASK', 其中存在格式问题.",
+            "请检查你的内容 'JT/JUMP_TASK', 其中存在格式问题.",
             "所填写的 Ordinal 必须大于 1, Content 索引必须大于 0"
     );
 
     @Configuration("chapter_execute_jt_not_exist")
     public static List<String> CHAPTERS_EXECUTE_JT_NOT_EXIST = Arrays.asList(
-            "请检查你的内容 'JT/JUMPTASK', 其中存在内容问题.",
+            "请检查你的内容 'JT/JUMP_TASK', 其中存在内容问题.",
+            "所填写的 Ordinal 指定的任务不存在"
+    );
+
+    @Configuration("chapter_execute_jc_number_format")
+    public static List<String> CHAPTERS_EXECUTE_JC_NUMBER_FORMAT = Arrays.asList(
+            "请检查你的内容 'JC/JUMP_CHAPTER', 其中存在格式问题.",
+            "所填写的 Ordinal 必须大于 1, Content 索引必须大于 0"
+    );
+
+    @Configuration("chapter_execute_jc_not_exist")
+    public static List<String> CHAPTERS_EXECUTE_JC_NOT_EXIST = Arrays.asList(
+            "请检查你的内容 'JC/JUMP_CHAPTER', 其中存在内容问题.",
             "所填写的 Ordinal 指定的任务不存在"
     );
 

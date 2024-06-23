@@ -16,4 +16,10 @@ public class TaskData {
     private World world;
     private List<String> content = new ArrayList<>();
 
+    public String getContentByIndex(int contentIndex){
+        contentIndex -= 1;
+        if (contentIndex < 0 || contentIndex >= content.size()) return "Error";
+        return content.get(contentIndex);
+    }
+
 }

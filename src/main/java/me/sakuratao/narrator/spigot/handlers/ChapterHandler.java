@@ -10,7 +10,6 @@ import me.sakuratao.narrator.spigot.utils.server.CCUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
@@ -47,14 +46,13 @@ public class ChapterHandler {
                 cancelAllTasks();
             }
 
-            // 分别加载章节和任务。
+            // 加载章节。
             // 分离加载章节和任务的逻辑，提高代码的可读性和可维护性
             loadChapters(force);
-            loadTasks();
 
             // 记录加载日志，区分强制加载和常规加载。
             // 增加了对加载方式的记录，提高日志的详细性
-            LogUtil.log(Level.INFO, CCUtil.translate(LangPlugin.CHAPTERS_LOADED.replace("%type%", force ? "&c强制加载" : "&a常规加载")));
+            LogUtil.log(Level.INFO, LangPlugin.CHAPTERS_LOADED.replace("%type%", force ? "强制加载" : "常规加载"));
         } catch (Exception e) {
             // 捕获并记录加载过程中可能出现的异常。
             // 添加了异常处理逻辑，避免因为未捕获的异常导致方法意外终止
@@ -96,6 +94,7 @@ public class ChapterHandler {
             handleChapterFile(files, isForce);
         }
 
+        loadTasks();
         // 对加载的章节内容按语言进行排序。
         sortLang();
 
@@ -178,12 +177,18 @@ public class ChapterHandler {
                         // 根据版本号比较结果，决定是否覆盖或记录版本冲突信息。
                         // 是否存在版本冲突
                         if (version < equalData.getVersion()) {
-                            if (isForce) putLang(dataMap, getDataByMap(dataMap));
+                            if (isForce) {
+                                putLang(dataMap, getDataByMap(dataMap));
+                                return;
+                            }
                             logVersionHigher(name, equalData.getVersion(), version);
                         } else if (version > equalData.getVersion()) {
                             logVersionLower(name, version, equalData.getVersion());
                         } else {
-                            if (isForce) putLang(dataMap, getDataByMap(dataMap));
+                            if (isForce) {
+                                putLang(dataMap, getDataByMap(dataMap));
+                                return;
+                            }
                             logVersionEqual(name, ordinal, equalData.getOrdinal(), version, equalData.getVersion());
                         }
                     }
@@ -627,7 +632,8 @@ public class ChapterHandler {
 
     private void cancelAllTasks() {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            narrator.getManagerHandler().getTaskManager().getTasks().get(p.getName().toLowerCase()).cancel();
+            if (!narrator.getManagerHandler().getTaskManager().isExists(p.getName())) continue;
+            narrator.getManagerHandler().getTaskManager().killTask(p.getName());
         }
         narrator.getManagerHandler().getTaskManager().getTasks().clear();
     }
@@ -644,12 +650,30 @@ public class ChapterHandler {
 
     /**
      * 转跳章节 (玩家现有语言)
-     * @param ordinal - 章节序数
+     * @param targetChapterOrdinal - 章节序数
      */
-    public void jump(PlayerData playerData, int ordinal){
-        playerData.setPlayingChapterOrdinal(ordinal);
-        playerData.setPlayingTaskOrdinal(0);
-        playerData.setContentIndex(0);
+    public boolean jump(PlayerData playerData, int targetChapterOrdinal, int targetTaskOrdinal, int targetContentIndex, String jumpContent){
+
+        if (targetChapterOrdinal < 1 || targetTaskOrdinal < 1 || targetContentIndex < 0) {
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_EXECUTE_JC_NUMBER_FORMAT);
+            LogUtil.log(Level.SEVERE, LangPlugin.CHAPTERS_CONSOLE_HELP);
+            narrator.getLogger().log(Level.SEVERE, "        Current:");
+            narrator.getLogger().log(Level.SEVERE, "            ChapterName: " + playerData.getPlayingChapterData().getName());
+            narrator.getLogger().log(Level.SEVERE, "            ChapterOrdinal: " + playerData.getPlayingChapterOrdinal());
+            narrator.getLogger().log(Level.SEVERE, "            TaskName: " + playerData.getPlayingTaskData().getName());
+            narrator.getLogger().log(Level.SEVERE, "            TaskOrdinal: " + playerData.getPlayingTaskOrdinal());
+            narrator.getLogger().log(Level.SEVERE, "        Target:");
+            narrator.getLogger().log(Level.SEVERE, "            ChapterOrdinal: " + targetChapterOrdinal);
+            narrator.getLogger().log(Level.SEVERE, "            TaskOrdinal: " + targetTaskOrdinal);
+            narrator.getLogger().log(Level.SEVERE, "            ContentIndexOrdinal: " + targetContentIndex);
+            narrator.getLogger().log(Level.SEVERE, "        Content: " + jumpContent);
+            return false;
+        }
+
+        playerData.setPlayingChapterOrdinal(targetChapterOrdinal);
+        playerData.setPlayingTaskOrdinal(targetTaskOrdinal);
+        playerData.setContentIndex(targetContentIndex);
+        return true;
     }
 
 }

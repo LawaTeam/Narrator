@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @CommandInfo(name = "chapter", description = "与剧情相关的指令集", permission = Permission.ADMIN, syntax = "/%command% chapter", canConsoleUse = true)
@@ -65,7 +66,7 @@ public class Chapter implements SubCommand {
     }
 
     private void sendChapterLangList(Narrator narrator, CommandSender sender) {
-        ServerUtil.sendMessage(sender,  " &f◆ &8| &bNarrator &8- &fChapter 指令集 &8[&7List&8]");
+        ServerUtil.sendMessage(sender,  " &f◆ &8| &fChapter 指令集 &8[&7List&8]");
         ServerUtil.sendMessage(sender,  " &f◆ &8| &b请选择需要的语言: ");
         ServerUtil.sendMessage(sender,  " &f◆ &8|  &7  |- &fall");
         for (String lang : narrator.getHandlerManager().getChapterHandler().getTotalLang()) {
@@ -80,14 +81,14 @@ public class Chapter implements SubCommand {
             return;
         }
 
-        ServerUtil.sendMessage(sender,  " &f◆ &8| &bNarrator &8- &fChapter 指令集 &8[&7List&8-&f" + lang + "&8]");
+        ServerUtil.sendMessage(sender,  " &f◆ &8| &fChapter 指令集 &8[&7List&8-&f" + lang + "&8]");
         List<String> tempList = new ArrayList<>();
 
-        for (ChapterData data  : narrator.getHandlerManager().getChapterHandler().getChapterListByLang(lang)) {
-            tempList.add(" &f◆ &8| &b" + data.getName() + " &8- &f" + data.getAuthor() + " &8- &f" + data.getVersion());
+        for (ChapterData data : narrator.getHandlerManager().getChapterHandler().getChapterListByLang(lang).stream().sorted(Comparator.comparing(ChapterData::getName)).toList()) {
+            tempList.add(" &f◆ &8| &b" + data.getName() + " &8- &f" + data.getAuthor());
+            tempList.add("          &8|- &fOrdinal: " + data.getOrdinal() + "&8- &fVer: " + data.getVersion());
         }
-        Collections.sort(tempList);
-        List<List<String>> messageList = StringUtil.paginateStrings(tempList, 5);
+        List<List<String>> messageList = StringUtil.paginateStrings(tempList, 8);
 
         if (!handleInvalidPageNumber(sender, pageNumber, messageList.size())) {
             ServerUtil.sendMessageNoPrefix(sender, "&8&m---»--*---------------&7/ &f页数: " + pageNumber + "/" + messageList.size() + " &7/&8&m--------------*--«---");

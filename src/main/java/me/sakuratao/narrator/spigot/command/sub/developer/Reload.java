@@ -19,7 +19,7 @@ public class Reload implements SubCommand {
     @Override
     public void execute(Narrator narrator, CommandSender sender, Command command, String[] args) {
         if (args.length != 1) {
-            if (args[1].equals("force")) {
+            if (args[1].equals("force")) { // fixme 已加载的旧的数据没被删除
                 if (sender instanceof Player p) PlayerUtil.sendMessage(p, CCUtil.translate(LangPlugin.CHAPTERS_LOAD_FORCE));
                 narrator.getLogger().log(Level.WARNING, LangPlugin.CHAPTERS_LOAD_FORCE);
                 narrator.getHandlerManager().getChapterHandler().initLoad(true);
