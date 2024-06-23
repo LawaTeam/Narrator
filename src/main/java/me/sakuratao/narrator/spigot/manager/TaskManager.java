@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TaskManager {
 
     @Getter
-    private final ConcurrentHashMap<String, BukkitTask> tasks = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, BukkitTask> tasks = new ConcurrentHashMap<>(); // String 为 lowercase
 
     @Wire private Narrator narrator;
 
@@ -29,10 +29,10 @@ public class TaskManager {
      * @param data - PlayerData
      */
     public void createTask(@NotNull PlayerData data) {
-
-        if (tasks.containsKey(data.getPlayerName())) {
+        String playerName = data.getPlayerName().toLowerCase();
+        if (tasks.containsKey(playerName)) {
             narrator.getCacheData().clear(data.getPlayer());
-            tasks.get(data.getPlayerName()).cancel();
+            tasks.get(playerName).cancel();
         }
         /*      fixme 报错
                 World cloneWorld = WorldCreator
@@ -43,7 +43,7 @@ public class TaskManager {
          */
         data.setContentTask(new ContentTask(narrator, data));
         tasks.put(
-                data.getPlayerName().toLowerCase(),
+                playerName,
                 TaskUtil.taskTimerAsync(data.getContentTask(), 0, 5)
         );
     }

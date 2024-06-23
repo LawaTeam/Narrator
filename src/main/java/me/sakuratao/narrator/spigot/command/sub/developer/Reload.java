@@ -22,11 +22,11 @@ public class Reload implements SubCommand {
             if (args[1].equals("force")) {
                 if (sender instanceof Player p) PlayerUtil.sendMessage(p, CCUtil.translate(LangPlugin.CHAPTERS_LOAD_FORCE));
                 narrator.getLogger().log(Level.WARNING, LangPlugin.CHAPTERS_LOAD_FORCE);
-                narrator.reloadChapter(true);
+                narrator.getHandlerManager().getChapterHandler().initLoad(true);
                 return;
             }
         }
-        narrator.reloadChapter(false);
+        narrator.getHandlerManager().getChapterHandler().initLoad(false);
     }
 
 }

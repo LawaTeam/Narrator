@@ -87,7 +87,7 @@ public class LangPlugin {
     );
 
     @Configuration("chapters_loaded")
-    public static String CHAPTERS_LOADED = "所有章节已完成加载!";
+    public static String CHAPTERS_LOADED = "所有章节已完成加载! &8(%type%&8)";
 
     @Configuration("chapters_load_force")
     public static String CHAPTERS_LOAD_FORCE = "正在执行强制重载...";

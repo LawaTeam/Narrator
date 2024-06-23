@@ -4,7 +4,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import lombok.Getter;
 import me.sakuratao.narrator.spigot.NarratorSpigot;
 import me.sakuratao.narrator.spigot.command.base.CommandManager;
-import me.sakuratao.narrator.spigot.configuration.lang.LangPlugin;
 import me.sakuratao.narrator.spigot.data.cache.CacheData;
 import me.sakuratao.narrator.spigot.handlers.HandlerManager;
 import me.sakuratao.narrator.spigot.listener.packets.PacketsHandler;
@@ -12,7 +11,6 @@ import me.sakuratao.narrator.spigot.manager.ManagerHandler;
 import me.sakuratao.narrator.spigot.papi.PapiExpansion;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitTask;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
@@ -24,8 +22,6 @@ import java.util.logging.Logger;
 public class Narrator {
 
     private final String version = "1.0";
-
-    private boolean isBungee = false;
 
     private Logger logger;
     private File workFolder = new File("");
@@ -47,18 +43,13 @@ public class Narrator {
     /**
      * 初始化
      */
-    public void init(boolean isSpigot, Logger logger, File workFolder) {
+    public void init(Logger logger, File workFolder) {
 
-        // 判断 Spigot or Bungee
-        if (isSpigot) {
-            adventure = BukkitAudiences.create(NarratorSpigot.getPluginInstance());
-            papiExpansion.register();
-            packetsHandler.register();
+        adventure = BukkitAudiences.create(NarratorSpigot.getPluginInstance());
+        papiExpansion.register();
+        packetsHandler.register();
 
-            Bukkit.getPluginCommand("narrator").setExecutor(commandManager);
-        } else {
-            isBungee = true;
-        }
+        Bukkit.getPluginCommand("narrator").setExecutor(commandManager);
 
         this.logger = logger;
         this.workFolder = workFolder;
@@ -70,25 +61,14 @@ public class Narrator {
         logger.info(" / /|  / /_/ / /  / /  / /_/ / /_/ /_/ / /    ");
         logger.info("/_/ |_/\\__,_/_/  /_/   \\__,_/\\__/\\____/_/    ");
         logger.info("                                              ");
-        logger.info("Platform: " + (isSpigot ? "Spigot" : "Bungee") + " | " + "Ver: " + version);
+        logger.info("Platform: Spigot | " + "Ver: " + version);
 
-        reloadChapter(false);
+        handlerManager.getChapterHandler().initLoad(false);
 
     }
 
     public void close() {
         ProtocolLibrary.getProtocolManager().removePacketListeners(NarratorSpigot.getPluginInstance());
-    }
-
-    public void reloadChapter(boolean force){
-
-        Bukkit.getOnlinePlayers().forEach(p -> cacheData.clear(p));
-        managerHandler.getTaskManager().getTasks().values().forEach(BukkitTask::cancel);
-
-        handlerManager.getChapterHandler().load(force);
-        handlerManager.getTaskHandler().load();
-
-        getLogger().info(LangPlugin.CHAPTERS_LOADED);
     }
 
 }

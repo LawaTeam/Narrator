@@ -6,7 +6,11 @@ import me.sakuratao.narrator.spigot.configuration.lang.LangPlugin;
 import me.sakuratao.narrator.spigot.data.chapter.ChapterData;
 import me.sakuratao.narrator.spigot.data.player.PlayerData;
 import me.sakuratao.narrator.spigot.utils.LogUtil;
+import me.sakuratao.narrator.spigot.utils.server.CCUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 import top.jingwenmc.spigotpie.common.instance.PieComponent;
 import top.jingwenmc.spigotpie.common.instance.Wire;
 
@@ -27,9 +31,39 @@ public class ChapterHandler {
     private final ConcurrentHashMap<String, List<Map<ChapterData, YamlConfiguration>>> langChapters = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, List<String>> totalChapters = new ConcurrentHashMap<>();
 
+    /**
+     * 初始化加载章节和任务的函数。
+     * 此函数用于在程序启动或需要时初始化章节和任务的加载过程。它首先清除玩家缓存并取消所有任务，
+     * 然后根据强制加载标志加载章节和任务，并记录加载类型。
+     *
+     * @param force 强制加载标志，决定是否强制重新加载章节和任务。
+     */
+    public void initLoad(boolean force) {
+        try {
+            // 同步清理玩家缓存和任务，以避免并发问题。
+            // 对玩家缓存和任务进行同步处理，以避免并发问题
+            synchronized (this) {
+                clearPlayerCache();
+                cancelAllTasks();
+            }
+
+            // 分别加载章节和任务。
+            // 分离加载章节和任务的逻辑，提高代码的可读性和可维护性
+            loadChapters(force);
+            loadTasks();
+
+            // 记录加载日志，区分强制加载和常规加载。
+            // 增加了对加载方式的记录，提高日志的详细性
+            LogUtil.log(Level.INFO, CCUtil.translate(LangPlugin.CHAPTERS_LOADED.replace("%type%", force ? "&c强制加载" : "&a常规加载")));
+        } catch (Exception e) {
+            // 捕获并记录加载过程中可能出现的异常。
+            // 添加了异常处理逻辑，避免因为未捕获的异常导致方法意外终止
+            LogUtil.log(Level.SEVERE, "Error during initialization load: " + e.getMessage());
+        }
+    }
 
     /**
-     * 加载章节数据。
+     * 章节数据加载。
      * 根据是否强制加载的标志，决定是否重新加载章节内容。
      * 此方法首先检查是否存在有效的章节目录，如果存在则不进行任何操作。
      * 如果目录无效或不存在，则遍历章节目录下的所有文件和子目录，分别处理文件和子目录中的章节内容。
@@ -37,7 +71,7 @@ public class ChapterHandler {
      *
      * @param isForce 强制加载标志，决定是否忽略现有缓存并重新加载章节。
      */
-    public void load(boolean isForce) {
+    public void loadChapter(boolean isForce) {
 
         // 获取 narrator 的工作目录路径。
         String basePath = narrator.getWorkFolder().getPath();
@@ -48,17 +82,18 @@ public class ChapterHandler {
             return;
         }
 
+        Optional<File[]> mainPathFiles = Optional.ofNullable(mainPath.listFiles());
         // 遍历章节主目录下的所有文件和子目录。
-        for (File files : mainPath.listFiles()) {
+        for (File files : mainPathFiles.orElseGet(() -> new File[0])) {
 
             // 如果是子目录，则处理该子目录下的文件。
             if (files.isDirectory()) {
-                filesInFolder(files, isForce);
+                handleFilesInFolder(files, isForce);
                 continue;
             }
 
-            // 如果是文件，则加载该文件中的章节内容。
-            loadChapter(files, isForce);
+            // 如果是文件，则直接加载该文件中的章节内容。
+            handleChapterFile(files, isForce);
         }
 
         // 对加载的章节内容按语言进行排序。
@@ -67,23 +102,40 @@ public class ChapterHandler {
     }
 
 
-    private void filesInFolder(File folder, boolean isForce) {
-        for (File file : folder.listFiles()) {
+    /**
+     * 处理给定文件夹中的文件。
+     * 递归地遍历文件夹中的所有文件和子文件夹，对每个文件执行特定操作。
+     * 如果文件是目录，则递归处理该目录；如果是普通文件，则根据是否强制处理来执行操作。
+     *
+     * @param folder 要处理的文件夹
+     * @param isForce 是否强制处理文件，如果为真，则忽略某些条件直接处理；如果为假，则可能根据某些条件跳过处理。
+     */
+    private void handleFilesInFolder(File folder, boolean isForce) {
+        // 使用Optional包装folder.listFiles()的返回值，以优雅地处理null情况
+        Optional<File[]> folderFiles = Optional.ofNullable(folder.listFiles());
+        // 如果文件夹为空，则直接返回，不进行后续处理
+        if (folderFiles.isEmpty()) return;
+
+        // 遍历文件夹中的每个文件或子文件夹
+        for (File file : folderFiles.get()) {
+            // 如果当前项是文件夹，则递归处理该文件夹
             if (file.isDirectory()) {
-                filesInFolder(file, isForce);
+                handleFilesInFolder(file, isForce);
                 continue;
             }
-            loadChapter(file, isForce);
+            // 如果当前项是普通文件，则根据isForce参数处理该文件
+            handleChapterFile(file, isForce);
         }
     }
 
+
     /**
-     * 加载章节配置文件。
+     * 处理章节配置文件。
      *
      * @param chapterFile 章节配置文件，用于加载章节信息。
      * @param isForce 是否强制覆盖已存在的章节数据。
      */
-    private void loadChapter(File chapterFile, boolean isForce) {
+    private void handleChapterFile(File chapterFile, boolean isForce) {
         // 如果章节文件为空，则直接返回。
         if (chapterFile == null) return;
 
@@ -152,7 +204,6 @@ public class ChapterHandler {
             return;
         }
     }
-
 
     /**
      * 检查是否存在 ordinal 冲突
@@ -568,6 +619,27 @@ public class ChapterHandler {
     public void clear(){
         totalChapters.clear();
         langChapters.clear();
+    }
+
+    private void clearPlayerCache() {
+        Bukkit.getOnlinePlayers().forEach(player -> narrator.getCacheData().clear(player));
+    }
+
+    private void cancelAllTasks() {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            narrator.getManagerHandler().getTaskManager().getTasks().get(p.getName().toLowerCase()).cancel();
+        }
+        narrator.getManagerHandler().getTaskManager().getTasks().clear();
+    }
+
+    private void loadChapters(boolean force) {
+        // 将加载章节的逻辑移至此方法，提高代码的模块化
+        narrator.getHandlerManager().getChapterHandler().loadChapter(force);
+    }
+
+    private void loadTasks() {
+        // 将加载任务的逻辑移至此方法
+        narrator.getHandlerManager().getTaskHandler().load();
     }
 
     /**
